@@ -1,7 +1,3 @@
-Thank you for sharing your repository link! Here’s an updated README.md for your EverBloom project, tailored for anyone who clones from your GitHub repo. You can copy-paste and further personalize it as needed.
-
----
-
 # 🌱 EverBloom
 
 EverBloom is a full-stack web application designed to [insert brief project purpose, e.g., “help manage and track your plants with ease”].
