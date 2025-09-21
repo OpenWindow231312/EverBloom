@@ -1,0 +1,142 @@
+/* Hero Banner Styles */
+.hero-banner {
+    position: relative;
+    width: 100%;
+    height: calc(100vh - 80px);
+    /* Adjust height to account for navbar height */
+    overflow: hidden;
+    display: flex;
+    align-items: flex-start;
+    /* Align content to the top of the banner */
+    justify-content: center;
+}
+
+.hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    /* Focus on the top-center of the image */
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+.hero-content {
+    width: 100%;
+    /* Match the width of the hero-banner */
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    /* Align content to the top */
+    padding: 75px 20px;
+    box-sizing: border-box;
+    /* Ensure padding is included in the dimensions */
+    text-align: center;
+    color: white;
+}
+
+.hero-heading {
+    font-family: "Losta Masta", sans-serif;
+    font-size: 64px;
+    text-shadow: 2px 2px 4px grey;
+    margin: 0;
+}
+
+.hero-subheading {
+    font-family: "Losta Masta", sans-serif;
+    font-size: 100px;
+    text-shadow: 2px 2px 4px grey;
+    margin: 0px 0;
+}
+
+.hero-buttons {
+    position: absolute;
+    bottom: 100px;
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    width: 100%;
+
+}
+
+.primary-button,
+.secondary-button {
+    padding: 20px 40px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+    .hero-heading {
+        font-size: 52px;
+        /* Reduce heading size for tablets */
+    }
+
+    .hero-subheading {
+        font-size: 72px;
+        /* Reduce subheading size for tablets */
+    }
+
+    /* Remove button-specific styles for tablets since they are now the same as desktop */
+}
+
+@media (max-width: 768px) {
+    .hero-banner {
+        height: 70vh;
+        /* Reduce banner height for smaller screens */
+    }
+
+    .hero-heading {
+        font-size: 72px;
+        /* Further reduce heading size for mobile */
+    }
+
+    .hero-subheading {
+        font-size: 100px;
+        /* Further reduce subheading size for mobile */
+    }
+
+    .hero-buttons {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .primary-button,
+    .secondary-button {
+        width: 90%;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-heading {
+        font-size: 42px;
+    }
+
+    .hero-subheading {
+        font-size: 36px;
+    }
+
+    .hero-content {
+        padding: 50px 15px;
+    }
+
+    .primary-button,
+    .secondary-button {
+        width: 80%;
+        align-self: center;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+}

@@ -1,15 +1,40 @@
 import React from "react";
-import NavBar from "../components/NavBar";
+import { useNavigate } from "react-router-dom";
+import NavBar from "../components/NavBar"; // Importing the NavBar component
+import "./Home.css";
 
 function Home() {
+  const navigate = useNavigate();
+
   return (
-    <>
-      <NavBar />
-      <div>
-        <h1>Welcome to the Home Page</h1>
-        <p>This is the content of the Home page.</p>
+    <div>
+      <NavBar /> {/* Adding the NavBar component at the top */}
+      <div className="hero-banner">
+        <img
+          src={require("../assets/HeroImageNew.jpeg")}
+          alt="Hero Banner"
+          className="hero-image"
+        />
+        <div className="hero-content">
+          <h1 className="hero-heading">Beautiful Blooms</h1>
+          <h2 className="hero-subheading">Delivered Fresh</h2>
+          <div className="hero-buttons">
+            <button
+              className="primary-button"
+              onClick={() => navigate("/Shop")}
+            >
+              Shop Collection
+            </button>
+            <button
+              className="secondary-button"
+              onClick={() => navigate("/Rewards")}
+            >
+              Florist Rewards
+            </button>
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   );
 }
 
