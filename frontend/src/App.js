@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Rewards from "./pages/Rewards"; // Updated import for Rewards
 import Login from "./pages/Login"; // Import Login page
 import Signup from "./pages/Signup"; // Import Signup page
+import Cart from "./pages/Cart";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
       {/* Added Rewards route */}
       <Route path="/login" element={<Login />} /> {/* Added Login route */}
       <Route path="/signup" element={<Signup />} /> {/* Added Signup route */}
+      <Route path="/cart" element={<Cart />} /> {/* Added Cart route */}
     </Routes>
   );
 }

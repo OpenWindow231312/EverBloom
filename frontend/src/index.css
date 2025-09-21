@@ -32,9 +32,9 @@
    Color Variables
 ================================= */
 :root {
-  --red: #DE0D22;
+  --red: #b80315;
   --pink: #FF9A9F;
-  --orange: #FF4A01;
+  --orange: #de4204;
   --yellow: #FCB207;
   --beige: #F4E3CB;
   --white: #FFFFFF;
@@ -81,6 +81,7 @@ h3 {
 h4 {
   font-family: "La Belle Aurore", cursive;
   font-weight: 400;
+  font-style: normal;
   font-size: 32px;
 }
 

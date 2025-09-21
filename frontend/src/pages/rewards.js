@@ -1,19 +1,30 @@
 import React from "react";
-import NavBar from "../components/NavBar";
+import Navbar from "../components/NavBar";
+import Footer from "../components/Footer";
+import "./Rewards.css"; // Importing the CSS file for Rewards page styling
 
-function Rewards() {
+const Rewards = () => {
   return (
-    <>
-      <NavBar />
-      <div style={{ padding: "20px" }}>
-        <h1>Rewards</h1>
-        <p>
-          Welcome to the Rewards page! Here you can find information about your
-          rewards and benefits.
-        </p>
-      </div>
-    </>
+    <div>
+      {/* Navbar */}
+      <Navbar />
+
+      {/* Rewards Page Content */}
+      <section className="rewards-section">
+        <div className="container">
+          <h1 className="rewards-heading">Rewards Program</h1>
+          <p className="rewards-description">
+            Join our rewards program and earn points for every purchase! Redeem
+            your points for exclusive discounts and special offers.
+          </p>
+          {/* Add your rewards program details or functionality here */}
+        </div>
+      </section>
+
+      {/* Footer */}
+      <Footer />
+    </div>
   );
-}
+};
 
 export default Rewards;
