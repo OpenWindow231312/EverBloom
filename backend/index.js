@@ -1,51 +1,18 @@
-require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const db = require("./db");
+const sequelize = require("./db");
+const User = require("./models/user");
+
+require("dotenv").config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Simple healthcheck
-app.get("/api/ping", (req, res) => res.json({ pong: true }));
+// Routes
+app.use("/api/auth", require("./routes/authRoutes"));
 
-// Get users
-app.get("/api/users", async (req, res) => {
-  try {
-    const [rows] = await db.query(
-      "SELECT id, name, email FROM users ORDER BY id ASC"
-    );
-    res.json(rows);
-  } catch (err) {
-    console.error("DB error (GET /api/users):", err);
-    res.status(500).json({ error: "Database error" });
-  }
-});
-
-// Create user
-app.post("/api/users", async (req, res) => {
-  const { name, email } = req.body;
-  if (!name || !email)
-    return res.status(400).json({ error: "name and email required" });
-
-  try {
-    const [result] = await db.query(
-      "INSERT INTO users (name, email) VALUES (?, ?)",
-      [name, email]
-    );
-    res.status(201).json({ id: result.insertId, name, email });
-  } catch (err) {
-    console.error("DB error (POST /api/users):", err);
-    // handle duplicate email gracefully
-    if (err && err.code === "ER_DUP_ENTRY") {
-      return res.status(409).json({ error: "Email already exists" });
-    }
-    res.status(500).json({ error: "Database error" });
-  }
-});
-
-const PORT = process.env.PORT || 5001;
-app.listen(PORT, () => {
-  console.log(`Server listening on port ${PORT}`);
+sequelize.sync().then(() => {
+  console.log("✅ DB synced");
+  app.listen(5000, () => console.log("🚀 Server running on port 5000"));
 });

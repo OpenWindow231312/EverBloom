@@ -8,14 +8,17 @@
     "dev": "cross-env PORT=5001 nodemon index.js"
   },
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
     "express": "^4.21.2",
-    "mysql2": "^3.15.0"
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.15.0",
+    "sequelize": "^6.37.7"
   },
   "devDependencies": {
-    "nodemon": "^2.0.22",
-    "cross-env": "^7.0.3"
+    "cross-env": "^7.0.3",
+    "nodemon": "^2.0.22"
   },
   "license": "MIT",
   "keywords": [],
