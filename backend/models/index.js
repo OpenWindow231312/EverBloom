@@ -8,13 +8,19 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config.json")[env];
 
+// Initialize Sequelize
 const sequelize = new Sequelize(
   process.env.DB_NAME || config.database,
   process.env.DB_USER || config.username,
   process.env.DB_PASS || config.password,
-  { host: process.env.DB_HOST || config.host, dialect: "mysql", logging: false }
+  {
+    host: process.env.DB_HOST || config.host,
+    dialect: "mysql",
+    logging: false,
+  }
 );
 
+// Load models
 const db = {};
 fs.readdirSync(__dirname)
   .filter((file) => file !== basename && file.endsWith(".js"))
@@ -23,7 +29,7 @@ fs.readdirSync(__dirname)
     db[model.name] = model;
   });
 
-// Associations
+// Destructure for easier references
 const {
   User,
   Role,
@@ -39,60 +45,94 @@ const {
   Discard,
 } = db;
 
+/* ===============================
+   🔹 Associations
+================================*/
+
+// Users & Roles (many-to-many through UserRole)
 if (User && Role && UserRole) {
-  User.belongsToMany(Role, { through: UserRole, foreignKey: "user_id" });
-  Role.belongsToMany(User, { through: UserRole, foreignKey: "role_id" });
+  User.belongsToMany(Role, {
+    through: UserRole,
+    foreignKey: "user_id",
+  });
+  Role.belongsToMany(User, {
+    through: UserRole,
+    foreignKey: "role_id",
+  });
+
+  User.hasMany(UserRole, { foreignKey: "user_id" });
+  UserRole.belongsTo(User, { foreignKey: "user_id" });
+
+  Role.hasMany(UserRole, { foreignKey: "role_id" });
+  UserRole.belongsTo(Role, { foreignKey: "role_id" });
+
+  // User ↔ Order
   User.hasMany(Order, { foreignKey: "user_id" });
+  Order.belongsTo(User, { foreignKey: "user_id" });
 }
 
+// FlowerType ↔ Flower
 if (FlowerType && Flower) {
   FlowerType.hasMany(Flower, { foreignKey: "type_id" });
   Flower.belongsTo(FlowerType, { foreignKey: "type_id" });
 }
 
+// Flower ↔ HarvestBatch
 if (Flower && HarvestBatch) {
   Flower.hasMany(HarvestBatch, { foreignKey: "flower_id" });
   HarvestBatch.belongsTo(Flower, { foreignKey: "flower_id" });
 }
 
+// HarvestBatch ↔ Inventory
 if (HarvestBatch && Inventory) {
   HarvestBatch.hasOne(Inventory, { foreignKey: "harvestBatch_id" });
   Inventory.belongsTo(HarvestBatch, { foreignKey: "harvestBatch_id" });
 }
 
+// Order ↔ OrderItem
 if (Order && OrderItem) {
   Order.hasMany(OrderItem, { foreignKey: "order_id" });
   OrderItem.belongsTo(Order, { foreignKey: "order_id" });
 }
 
+// Flower ↔ OrderItem
 if (Flower && OrderItem) {
   Flower.hasMany(OrderItem, { foreignKey: "flower_id" });
   OrderItem.belongsTo(Flower, { foreignKey: "flower_id" });
 }
 
+// Store ↔ Order
 if (Order && Store) {
   Store.hasMany(Order, { foreignKey: "pickupStoreID" });
   Order.belongsTo(Store, { foreignKey: "pickupStoreID" });
 }
 
+// OrderItem / HarvestBatch ↔ ColdroomReservation
 if (OrderItem && HarvestBatch && ColdroomReservation) {
   OrderItem.hasMany(ColdroomReservation, { foreignKey: "orderItem_id" });
   ColdroomReservation.belongsTo(OrderItem, { foreignKey: "orderItem_id" });
+
   HarvestBatch.hasMany(ColdroomReservation, { foreignKey: "harvestBatch_id" });
   ColdroomReservation.belongsTo(HarvestBatch, {
     foreignKey: "harvestBatch_id",
   });
 }
 
+// HarvestBatch / User ↔ Discard
 if (HarvestBatch && Discard && User) {
   HarvestBatch.hasMany(Discard, { foreignKey: "harvestBatch_id" });
   Discard.belongsTo(HarvestBatch, { foreignKey: "harvestBatch_id" });
+
   Discard.belongsTo(User, {
     foreignKey: "discardedByEmployeeID",
     as: "discardedBy",
   });
 }
 
+/* ===============================
+   🔹 Export
+================================*/
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
+
 module.exports = db;
