@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Signup.css";
 
 function Signup() {
@@ -6,11 +7,12 @@ function Signup() {
     fullName: "",
     email: "",
     password: "",
-    florist: false, // 👈 new field
+    florist: false,
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [showPopup, setShowPopup] = useState(false); // 👈 florist popup
+  const [showPopup, setShowPopup] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -34,17 +36,19 @@ function Signup() {
       });
 
       const data = await res.json();
+      console.log("🔍 Signup response:", data); // 👈 debug log
 
       if (res.ok) {
-        setSuccess("Account created successfully! You can now log in.");
-
+        setSuccess("Account created successfully!");
         if (formData.florist) {
-          setShowPopup(true); // 👈 trigger fake popup
+          setShowPopup(true);
         }
+        setTimeout(() => navigate("/login"), 2000);
       } else {
         setError(data.error || "Signup failed");
       }
     } catch (err) {
+      console.error("❌ Signup error:", err); // 👈 debug log
       setError("Server error. Please try again.");
     }
   };
@@ -83,7 +87,6 @@ function Signup() {
             required
           />
 
-          {/* Florist checkbox */}
           <div className="terms-container">
             <input
               type="checkbox"
@@ -113,7 +116,6 @@ function Signup() {
         {error && <p className="error-message">{error}</p>}
         {success && <p className="success-message">{success}</p>}
 
-        {/* Fake popup */}
         {showPopup && (
           <div className="popup">
             <div className="popup-content">
@@ -129,7 +131,7 @@ function Signup() {
 
         <p className="signin-text">
           Have an account?{" "}
-          <a href="login" className="login-link">
+          <a href="/login" className="login-link">
             Sign In
           </a>
         </p>

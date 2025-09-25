@@ -24,15 +24,20 @@ function Login() {
       });
 
       const data = await res.json();
+      console.log("🔍 Login response:", data); // 👈 log full backend response
 
       if (res.ok) {
-        // Save token to localStorage
         localStorage.setItem("token", data.token);
-        navigate("/dashboard"); // redirect after login
+        navigate("/dashboard");
       } else {
-        setError(data.message || "Login failed");
+        setError(
+          data.error ||
+            (data.errors && data.errors[0]?.msg) ||
+            "Invalid email or password"
+        );
       }
     } catch (err) {
+      console.error("❌ Login error:", err);
       setError("Server error. Please try again.");
     }
   };

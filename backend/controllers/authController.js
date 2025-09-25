@@ -6,6 +6,9 @@ const { body, validationResult } = require("express-validator");
 const sign = (payload) =>
   jwt.sign(payload, process.env.JWT_SECRET || "dev", { expiresIn: "7d" });
 
+// =======================
+// REGISTER
+// =======================
 exports.registerValidators = [
   body("fullName").trim().notEmpty(),
   body("email").isEmail().normalizeEmail(),
@@ -14,13 +17,19 @@ exports.registerValidators = [
 
 exports.register = async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty())
+  if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
+  }
 
   const { fullName, email, password, florist } = req.body;
-  const existing = await User.findOne({ where: { email } });
-  if (existing) return res.status(409).json({ error: "Email already in use" });
 
+  // Check if email exists
+  const existing = await User.findOne({ where: { email } });
+  if (existing) {
+    return res.status(409).json({ error: "Email already in use" });
+  }
+
+  // Create user
   const passwordHash = await bcrypt.hash(password, 10);
   const user = await User.create({
     fullName,
@@ -29,12 +38,12 @@ exports.register = async (req, res) => {
     isActive: true,
   });
 
-  // Always assign Customer
+  // Always assign Customer role
   let customer = await Role.findOne({ where: { roleName: "Customer" } });
   if (!customer) customer = await Role.create({ roleName: "Customer" });
   await UserRole.create({ user_id: user.user_id, role_id: customer.role_id });
 
-  // If florist box was checked
+  // Optionally assign Florist role
   if (florist) {
     let floristRole = await Role.findOne({ where: { roleName: "Florist" } });
     if (!floristRole) floristRole = await Role.create({ roleName: "Florist" });
@@ -53,6 +62,9 @@ exports.register = async (req, res) => {
   });
 };
 
+// =======================
+// LOGIN
+// =======================
 exports.loginValidators = [
   body("email").isEmail().normalizeEmail(),
   body("password").notEmpty(),
@@ -60,17 +72,25 @@ exports.loginValidators = [
 
 exports.login = async (req, res) => {
   const errors = validationResult(req);
-  if (!errors.isEmpty())
+  if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
+  }
 
   const { email, password } = req.body;
+
+  // Find user
   const user = await User.findOne({ where: { email } });
-  if (!user) return res.status(401).json({ error: "Invalid credentials" });
+  if (!user) {
+    return res.status(401).json({ error: "Invalid credentials" });
+  }
 
+  // Check password
   const ok = await bcrypt.compare(password, user.passwordHash);
-  if (!ok) return res.status(401).json({ error: "Invalid credentials" });
+  if (!ok) {
+    return res.status(401).json({ error: "Invalid credentials" });
+  }
 
-  // 🔹 Fetch roles for this user
+  // Fetch roles
   const userRoles = await UserRole.findAll({
     where: { user_id: user.user_id },
     include: [{ model: Role }],
@@ -78,7 +98,9 @@ exports.login = async (req, res) => {
 
   const roles = userRoles.map((ur) => ur.Role.roleName);
 
+  // Sign JWT
   const token = sign({ user_id: user.user_id, roles });
+
   res.json({
     token,
     user: {
@@ -90,6 +112,12 @@ exports.login = async (req, res) => {
   });
 };
 
+// =======================
+// ME
+// =======================
 exports.me = async (req, res) => {
-  res.json({ user_id: req.user.user_id, roles: req.user.roles });
+  res.json({
+    user_id: req.user.user_id,
+    roles: req.user.roles,
+  });
 };
