@@ -1,16 +1,16 @@
 const jwt = require("jsonwebtoken");
 
-// DEV MODE: allow any request and give Admin/Employee roles.
-// Remove this block once real auth is in.
 exports.requireAuth = (req, res, next) => {
   const hdr = req.headers.authorization || "";
   const token = hdr.replace("Bearer ", "");
-  if (token === "test") {
-    // <<< our curl uses this
-    req.user = { roles: ["Admin", "Employee", "Customer"] };
+
+  // dev helper still supported
+  if (process.env.NODE_ENV !== "production" && token === "test") {
+    req.user = { user_id: 0, roles: ["Admin", "Employee", "Customer"] };
     return next();
   }
-  // fallback to real JWT if you already have it
+
+  if (!token) return res.status(401).json({ error: "No token" });
   try {
     req.user = jwt.verify(token, process.env.JWT_SECRET || "dev");
     return next();

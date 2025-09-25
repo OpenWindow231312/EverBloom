@@ -11,6 +11,7 @@ app.use(express.json());
 app.use("/api/products", require("./routes/productRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/discards", require("./routes/discardRoutes"));
+app.use("/api/auth", require("./routes/authRoutes"));
 
 app.get("/health", (_req, res) => res.json({ ok: true }));
 
