@@ -1,0 +1,364 @@
+/* Hero Section */
+.about-hero {
+    position: relative;
+    width: 100%;
+    height: 70vh;
+    overflow: hidden;
+}
+
+.about-hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.about-hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(222, 13, 34, 0.4);
+    /* Red color with 40% opacity */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-align: center;
+    padding: 0 20px;
+}
+
+.about-hero-heading {
+    font-family: "Losta Masta", serif;
+    font-size: 72px;
+    margin-bottom: 10px;
+}
+
+.about-hero-subheading {
+    font-size: 20px;
+    max-width: 700px;
+    line-height: 1.5;
+}
+
+/* Timeline Section */
+.timeline {
+    background: #fff5f5;
+    padding: 80px 20px;
+    position: relative;
+}
+
+.section-title {
+    text-align: center;
+    color: #fffff;
+}
+
+.timeline-container {
+    position: relative;
+    max-width: 1000px;
+    margin: auto;
+}
+
+.timeline-container::before {
+    content: '';
+    position: absolute;
+    width: 4px;
+    background-color: #de0d22;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+}
+
+.section-title {
+    color: #de0d22;
+}
+
+.timeline-item {
+    padding: 20px 40px;
+    position: relative;
+    width: 50%;
+    box-sizing: border-box;
+}
+
+.timeline-item.left {
+    left: 0;
+    text-align: right;
+}
+
+.timeline-item.right {
+    left: 50%;
+    text-align: left;
+}
+
+.timeline-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    position: relative;
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 0.8s ease;
+}
+
+.timeline-item.in-view .timeline-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.timeline h4 {
+    color: #de0d22;
+    margin-bottom: -10px;
+    font-size: 22px;
+}
+
+.timeline p {
+    color: gray;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.timeline-item::after {
+    content: '';
+    position: absolute;
+    top: 30px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #de0d22;
+    border: 3px solid white;
+    z-index: 1;
+}
+
+.timeline-item.left::after {
+    right: -12px;
+}
+
+.timeline-item.right::after {
+    left: -12px;
+}
+
+@media (max-width: 768px) {
+    .timeline-container::before {
+        left: 8px;
+    }
+
+    .timeline-item {
+        width: 100%;
+        padding-left: 40px;
+        text-align: left;
+    }
+
+    .timeline-item.left,
+    .timeline-item.right {
+        left: 0;
+    }
+
+    .timeline-item::after {
+        left: 0;
+    }
+
+    .timeline-content {
+        max-width: 100%;
+    }
+}
+
+/* Founders Section */
+.about-team {
+    padding: 60px 20px;
+    text-align: center;
+    background-color: #ffe4e1;
+}
+
+.team-cards {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 40px;
+    flex-wrap: wrap;
+}
+
+.team-card {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    text-align: center;
+}
+
+.team-image {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.team-name {
+    font-size: 22px;
+    margin-top: 15px;
+    color: #de0d22;
+}
+
+.team-role {
+    font-size: 16px;
+    color: #666;
+}
+
+/* Mission Split Section */
+.about-mission-split {
+    padding: 80px 20px;
+    background: #fff;
+}
+
+.about-mission-container {
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.mission-image img {
+    width: 100%;
+    max-width: 550px;
+    border-radius: 12px;
+    object-fit: fill;
+}
+
+.mission-text {
+    flex: 1;
+}
+
+.mission-text .section-title {
+    color: #de0d22;
+}
+
+.mission-text .section-text {
+    font-size: 18px;
+    line-height: 1.8;
+    color: #444;
+}
+
+/* Values Section */
+.about-values {
+    background-color: #fff;
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.values-grid {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-top: 40px;
+}
+
+.value-card {
+    background: transparent;
+    padding: 30px;
+    width: 250px;
+    text-align: center;
+}
+
+.value-icon-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 15px;
+}
+
+.value-icon {
+    width: 40px;
+    height: 40px;
+}
+
+.value-title {
+    font-family: "Losta Masta", serif;
+    font-size: 20px;
+    color: #de0d22;
+    margin-bottom: 10px;
+}
+
+/* Testimonials Carousel */
+.testimonials {
+    background-color: #de0d22;
+    color: white;
+    padding: 80px 20px;
+    text-align: center;
+    overflow: hidden;
+}
+
+.testimonial-carousel {
+    overflow: hidden;
+    width: 100%;
+}
+
+.testimonial-track {
+    display: flex;
+    gap: 20px;
+    animation: scroll 25s linear infinite;
+}
+
+.testimonial-card {
+    background: white;
+    color: #333;
+    border-radius: 12px;
+    padding: 30px;
+    width: 280px;
+    font-style: italic;
+    flex-shrink: 0;
+}
+
+.testimonial-text {
+    margin-bottom: 15px;
+}
+
+.testimonial-name {
+    color: #de0d22;
+    font-weight: bold;
+}
+
+@keyframes scroll {
+    0% {
+        transform: translateX(0);
+    }
+
+    100% {
+        transform: translateX(-50%);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .about-hero-heading {
+        font-size: 42px;
+    }
+
+    .about-hero-subheading {
+        font-size: 16px;
+    }
+
+    .about-mission-container {
+        flex-direction: column;
+    }
+
+    .team-cards {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .team-card {
+        width: 80%;
+    }
+}
