@@ -8,19 +8,24 @@ const basename = path.basename(__filename);
 const env = process.env.NODE_ENV || "development";
 const config = require("../config/config.json")[env];
 
-// Initialize Sequelize
+// ===============================
+// 🔹 Initialize Sequelize
+// ===============================
 const sequelize = new Sequelize(
   process.env.DB_NAME || config.database,
   process.env.DB_USER || config.username,
   process.env.DB_PASS || config.password,
   {
     host: process.env.DB_HOST || config.host,
+    port: process.env.DB_PORT || config.port || 3306,
     dialect: "mysql",
     logging: false,
   }
 );
 
-// Load models
+// ===============================
+// 🔹 Load models dynamically
+// ===============================
 const db = {};
 fs.readdirSync(__dirname)
   .filter((file) => file !== basename && file.endsWith(".js"))
@@ -29,7 +34,9 @@ fs.readdirSync(__dirname)
     db[model.name] = model;
   });
 
-// Destructure for easier references
+// ===============================
+// 🔹 Associations
+// ===============================
 const {
   User,
   Role,
@@ -45,20 +52,10 @@ const {
   Discard,
 } = db;
 
-/* ===============================
-   🔹 Associations
-================================*/
-
 // Users & Roles (many-to-many through UserRole)
 if (User && Role && UserRole) {
-  User.belongsToMany(Role, {
-    through: UserRole,
-    foreignKey: "user_id",
-  });
-  Role.belongsToMany(User, {
-    through: UserRole,
-    foreignKey: "role_id",
-  });
+  User.belongsToMany(Role, { through: UserRole, foreignKey: "user_id" });
+  Role.belongsToMany(User, { through: UserRole, foreignKey: "role_id" });
 
   User.hasMany(UserRole, { foreignKey: "user_id" });
   UserRole.belongsTo(User, { foreignKey: "user_id" });
@@ -66,7 +63,6 @@ if (User && Role && UserRole) {
   Role.hasMany(UserRole, { foreignKey: "role_id" });
   UserRole.belongsTo(Role, { foreignKey: "role_id" });
 
-  // User ↔ Order
   User.hasMany(Order, { foreignKey: "user_id" });
   Order.belongsTo(User, { foreignKey: "user_id" });
 }
@@ -129,9 +125,26 @@ if (HarvestBatch && Discard && User) {
   });
 }
 
-/* ===============================
-   🔹 Export
-================================*/
+// ===============================
+// 🔹 Sync (Auto-Rebuild)
+// ===============================
+// 🌼 ADDED FOR SYNC
+async function initializeDatabase() {
+  try {
+    await sequelize.authenticate();
+    console.log("✅ DB connection established.");
+
+    // 🚨 Use force: true ONCE to rebuild broken tables
+    await sequelize.sync({ alter: true });
+    console.log("✅ Tables successfully recreated from models.");
+  } catch (err) {
+    console.error("❌ Database initialization error:", err);
+  }
+}
+initializeDatabase();
+// 🌼 END OF ADDED CODE
+
+// ===============================
 db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
