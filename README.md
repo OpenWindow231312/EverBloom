@@ -2,7 +2,7 @@
 
 **EverBloom** is a floral e-commerce platform that connects buyers, florists, and farm suppliers in a simple, modern online marketplace. Built using the **MERN stack** (MySQL, Express, React, Node.js) with Sequelize ORM, the platform features product listings, order management, dashboards, and integrated Google Analytics tracking.
 
----
+<img width="4098" height="2400" alt="Everbloom Dashboard Front image" src="https://github.com/user-attachments/assets/f9b27a79-c3cd-483a-8182-5e00b915d024" />
 
 ### 🪴 Tech Stack
 
