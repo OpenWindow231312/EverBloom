@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "cross-env PORT=5001 nodemon index.js",
-    "heroku-postbuild": "cd client && npm install && npm run build"
+    "heroku-postbuild": "cd ../client && npm install && npm run build"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
