@@ -11,17 +11,18 @@ const { sequelize } = require("./models");
 const app = express();
 
 // ========================
-// 🔧 CORS Middleware (FINAL FIX)
+// 🔧 CORS Middleware (Render-safe version)
 // ========================
-app.use((req, res, next) => {
-  const allowedOrigins = [
-    "https://www.everbloomshop.co.za",
-    "https://everbloomshop.co.za",
-    "https://everbloom-frontend.vercel.app", // ✅ your Vercel frontend if applicable
-    "http://localhost:3000",
-    "http://localhost:5173",
-  ];
+const allowedOrigins = [
+  "https://www.everbloomshop.co.za",
+  "https://everbloomshop.co.za",
+  "https://everbloom-frontend.vercel.app", // optional: your Vercel domain if used
+  "http://localhost:3000",
+  "http://localhost:5173",
+];
 
+// 🛡️ Set headers manually for all requests (Render friendly)
+app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
     res.header("Access-Control-Allow-Origin", origin);
@@ -37,6 +38,7 @@ app.use((req, res, next) => {
   if (req.method === "OPTIONS") {
     return res.sendStatus(200);
   }
+
   next();
 });
 
