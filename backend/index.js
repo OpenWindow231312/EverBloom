@@ -78,6 +78,37 @@ app.get("/", (req, res) => {
 });
 
 // ========================
+// 🧭 Route Logging Utility
+// ========================
+function listRoutes(app) {
+  console.log("📋 Registered API Routes:");
+  app._router.stack
+    .filter((r) => r.route)
+    .forEach((r) =>
+      console.log(
+        `  ➜ ${Object.keys(r.route.methods)[0].toUpperCase()} ${r.route.path}`
+      )
+    );
+
+  app._router.stack
+    .filter((r) => r.name === "router")
+    .forEach((r) => {
+      const base = r.regexp?.toString().replace("/^\\", "").split("\\/?")[0];
+      if (r.handle.stack) {
+        r.handle.stack.forEach((layer) => {
+          if (layer.route && layer.route.path) {
+            console.log(
+              `  ➜ ${Object.keys(
+                layer.route.methods
+              )[0].toUpperCase()} ${base}${layer.route.path}`
+            );
+          }
+        });
+      }
+    });
+}
+
+// ========================
 // 🚀 Server + Database Init
 // ========================
 const PORT = process.env.PORT || 5001;
@@ -93,9 +124,10 @@ const PORT = process.env.PORT || 5001;
     await sequelize.sync({ alter });
     console.log(`✅ Models synchronized (${alter ? "altered" : "safe mode"})`);
 
-    app.listen(PORT, () =>
-      console.log(`🚀 EverBloom API live at: http://localhost:${PORT}`)
-    );
+    app.listen(PORT, () => {
+      console.log(`🚀 EverBloom API live at: http://localhost:${PORT}`);
+      listRoutes(app); // 👈 show all available API routes
+    });
   } catch (err) {
     console.error("❌ Database connection error:", err.message);
     process.exit(1);
