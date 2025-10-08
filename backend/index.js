@@ -68,20 +68,14 @@ app.get("/health", (_req, res) =>
 );
 
 // ========================
-// 🌐 Serve React Frontend (Production)
+// 🌐 Root route for API-only Render deployment
 // ========================
-if (process.env.NODE_ENV === "production") {
-  const clientBuildPath = path.join(__dirname, "../client", "build");
-  app.use(express.static(clientBuildPath));
-
-  app.get("*", (req, res) =>
-    res.sendFile(path.join(clientBuildPath, "index.html"))
-  );
-} else {
-  app.get("/", (req, res) => {
-    res.send("🌱 EverBloom backend running in development mode");
+app.get("/", (req, res) => {
+  res.json({
+    message: "🌸 EverBloom API is live on Render",
+    status: "OK",
   });
-}
+});
 
 // ========================
 // 🚀 Server + Database Init
