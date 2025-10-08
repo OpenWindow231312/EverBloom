@@ -226,6 +226,69 @@
     background: #fafafa;
 }
 
+/* Orders Page */
+.dashboard-orders {
+    margin-left: 40px;
+}
+
+.status-dropdown {
+    padding: 6px 10px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    background-color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    outline: none;
+    transition: border 0.2s ease;
+}
+
+.status-dropdown:hover,
+.status-dropdown:focus {
+    border-color: var(--red);
+}
+
+/* ================================
+   Inventory Page
+================================= */
+.dashboard-inventory {
+    margin-left: 40px;
+}
+
+.dashboard-inventory h2 {
+    margin-bottom: 20px;
+    font-weight: 600;
+    color: #7c2d12;
+}
+
+/* ================================
+   Users Management Page
+================================= */
+.dashboard-users {
+    margin-left: 40px;
+}
+
+.toggle-btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    cursor: pointer;
+    color: #fff;
+    transition: background 0.3s ease;
+}
+
+.toggle-btn.activate {
+    background-color: #007a33;
+}
+
+.toggle-btn.deactivate {
+    background-color: #b91c1c;
+}
+
+.toggle-btn:hover {
+    opacity: 0.9;
+}
+
 /* ================================
    Responsive
 ================================= */

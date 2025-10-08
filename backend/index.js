@@ -18,7 +18,8 @@ app.use(
     origin: [
       "https://www.everbloomshop.co.za",
       "https://everbloomshop.co.za",
-      "http://localhost:5173", // optional: for local React dev
+      "http://localhost:5173", // for local Vite frontend
+      "http://localhost:3000", // for local CRA frontend (optional)
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
@@ -31,6 +32,7 @@ app.use(express.urlencoded({ extended: true }));
 // ========================
 // 🛣️ API Routes
 // ========================
+
 // 💐 Core Business Routes
 app.use("/api/flowers", require("./routes/flowerRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
@@ -38,6 +40,9 @@ app.use("/api/discards", require("./routes/discardRoutes"));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/deliveries", require("./routes/deliveryRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
+
+// 🌿 Stock Management Routes
+app.use("/api/stock", require("./routes/stockRoutes")); // ✅ ensure this is defined after imports
 
 // 🌼 Admin Dashboard Routes
 app.use("/api/dashboard", require("./routes/dashboardRoutes"));
@@ -54,7 +59,7 @@ if (process.env.NODE_ENV === "production") {
   const clientBuildPath = path.join(__dirname, "../client", "build");
   app.use(express.static(clientBuildPath));
 
-  // React Router Fallback
+  // React Router fallback
   app.get("*", (req, res) => {
     res.sendFile(path.join(clientBuildPath, "index.html"));
   });
@@ -75,15 +80,13 @@ const PORT = process.env.PORT || 5001;
     await sequelize.authenticate();
     console.log("✅ Database connected successfully");
 
-    // ⚙️ Sync models (safe mode)
-    // Use { alter: true } only in DEV to match small model changes without dropping data
+    // ⚙️ Only use { alter: true } during local development
     await sequelize.sync({ alter: process.env.NODE_ENV === "development" });
     console.log("✅ Models synchronized");
 
-    // 🚀 Start server
-    app.listen(PORT, () => {
-      console.log(`🚀 EverBloom API live at: http://localhost:${PORT}`);
-    });
+    app.listen(PORT, () =>
+      console.log(`🚀 EverBloom API running at http://localhost:${PORT}`)
+    );
   } catch (err) {
     console.error("❌ Database connection error:", err.message);
     process.exit(1);

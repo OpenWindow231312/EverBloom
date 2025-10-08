@@ -1,5 +1,5 @@
-// src/pages/DashboardStock.js
 import React, { useState, useEffect } from "react";
+import "./Dashboard.css";
 
 function DashboardStock() {
   const [stockForm, setStockForm] = useState({
@@ -9,6 +9,8 @@ function DashboardStock() {
     quantity: "",
   });
   const [inventory, setInventory] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editQty, setEditQty] = useState("");
 
   const handleChange = (e) => {
     setStockForm({ ...stockForm, [e.target.name]: e.target.value });
@@ -16,38 +18,71 @@ function DashboardStock() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-
-    const res = await fetch("http://localhost:5001/api/stock/add", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify(stockForm),
-    });
-
-    if (res.ok) {
-      alert("✅ Stock added successfully!");
-      setStockForm({
-        typeName: "",
-        flowerName: "",
-        harvestDate: "",
-        quantity: "",
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/stock/add`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(stockForm),
       });
-      loadInventory();
-    } else {
-      alert("❌ Failed to add stock");
+
+      if (res.ok) {
+        alert("✅ Stock added!");
+        setStockForm({
+          typeName: "",
+          flowerName: "",
+          harvestDate: "",
+          quantity: "",
+        });
+        loadInventory();
+      } else {
+        alert("❌ Failed to add stock");
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const loadInventory = async () => {
-    const token = localStorage.getItem("token");
-    const res = await fetch("http://localhost:5001/api/stock/inventory", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/stock/inventory`);
     const data = await res.json();
     setInventory(data);
+  };
+
+  const handleEdit = (id, currentQty) => {
+    setEditingId(id);
+    setEditQty(currentQty);
+  };
+
+  const handleSaveEdit = async (id) => {
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/stock/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quantity: editQty }),
+      });
+      if (res.ok) {
+        alert("✅ Stock updated!");
+        setEditingId(null);
+        loadInventory();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("🗑️ Delete this stock item?")) return;
+    try {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/stock/${id}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        alert("🗑️ Stock deleted");
+        loadInventory();
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -97,25 +132,69 @@ function DashboardStock() {
       <table className="inventory-table">
         <thead>
           <tr>
+            <th>ID</th>
             <th>Flower</th>
             <th>Type</th>
             <th>Harvest Date</th>
-            <th>Available Qty</th>
+            <th>Quantity</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           {inventory.length > 0 ? (
-            inventory.map((item) => (
-              <tr key={item.inventory_id}>
-                <td>{item.flowerName}</td>
-                <td>{item.typeName}</td>
-                <td>{item.harvestDate}</td>
-                <td>{item.availableQuantity}</td>
-              </tr>
-            ))
+            inventory.map((item) => {
+              const flower = item.HarvestBatch?.Flower;
+              return (
+                <tr key={item.inventory_id}>
+                  <td>{item.inventory_id}</td>
+                  <td>{flower?.variety || "-"}</td>
+                  <td>{flower?.FlowerType?.type_name || "-"}</td>
+                  <td>
+                    {item.HarvestBatch?.harvestDateTime
+                      ? new Date(
+                          item.HarvestBatch.harvestDateTime
+                        ).toLocaleDateString()
+                      : "-"}
+                  </td>
+                  <td>
+                    {editingId === item.inventory_id ? (
+                      <input
+                        type="number"
+                        value={editQty}
+                        onChange={(e) => setEditQty(e.target.value)}
+                        style={{ width: "80px" }}
+                      />
+                    ) : (
+                      item.stemsInColdroom
+                    )}
+                  </td>
+                  <td>
+                    {editingId === item.inventory_id ? (
+                      <button onClick={() => handleSaveEdit(item.inventory_id)}>
+                        💾 Save
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() =>
+                          handleEdit(item.inventory_id, item.stemsInColdroom)
+                        }
+                      >
+                        ✏️ Edit
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleDelete(item.inventory_id)}
+                      style={{ marginLeft: "8px" }}
+                    >
+                      🗑️ Delete
+                    </button>
+                  </td>
+                </tr>
+              );
+            })
           ) : (
             <tr>
-              <td colSpan="4">No stock available</td>
+              <td colSpan="6">No stock available</td>
             </tr>
           )}
         </tbody>
