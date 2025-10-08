@@ -2,7 +2,7 @@
 
 **EverBloom** is a floral e-commerce platform that connects buyers, florists, and farm suppliers in a simple, modern online marketplace. Built using the **MERN stack** (MySQL, Express, React, Node.js) with Sequelize ORM, the platform features product listings, order management, dashboards, and integrated Google Analytics tracking.
 
----
+<img width="4098" height="2400" alt="Everbloom Dashboard Front image" src="https://github.com/user-attachments/assets/f9b27a79-c3cd-483a-8182-5e00b915d024" />
 
 ### 🪴 Tech Stack
 
@@ -15,7 +15,18 @@
 | **Hosting**    | Custom Domain: [everbloomshop.co.za](https://everbloomshop.co.za) | Managed via GoDaddy DNS                        |
 | **Analytics**  | Google Analytics (G-T7VC5RXVVK)                                   | Tracks user activity and events                |
 
----
+### 🎨 UI & Brand Design
+
+EverBloom’s visual identity captures the warmth and creativity of local floristry — blending handcrafted typography, rich reds, and soft natural tones.
+The brand is rooted in celebration, community, and craftsmanship, reflected through its bold floral-inspired logo and organic color palette.
+
+| Element                      | Description                                                           |
+| ---------------------------- | --------------------------------------------------------------------- |
+| **Primary Logo**             | “EverBloom” wordmark with custom floral letterform                    |
+| **Secondary Logo & Submark** | Simplified typographic versions for packaging, favicon, and dashboard |
+| **Logo Mark (E B)**          | Used in social icons and app headers                                  |
+
+<img width="1920" height="2696" alt="Everbloom Style Guide" src="https://github.com/user-attachments/assets/cc0cf371-a9ab-44f2-ba1b-972231bdc630" />
 
 ## ⚙️ Local Development Setup
 
