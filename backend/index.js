@@ -11,23 +11,34 @@ const { sequelize } = require("./models");
 const app = express();
 
 // ========================
-// 🔧 Middleware
+// 🔧 CORS Middleware (FINAL FIX)
 // ========================
-app.use(
-  cors({
-    origin: [
-      "https://www.everbloomshop.co.za",
-      "https://everbloomshop.co.za",
-      "http://localhost:5173", // for local Vite frontend
-      "http://localhost:3000", // for local CRA frontend (optional)
-    ],
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    credentials: true,
-  })
-);
+app.use((req, res, next) => {
+  const allowedOrigins = [
+    "https://www.everbloomshop.co.za",
+    "https://everbloomshop.co.za",
+    "https://everbloom-frontend.vercel.app", // ✅ your Vercel frontend if applicable
+    "http://localhost:3000",
+    "http://localhost:5173",
+  ];
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.header("Access-Control-Allow-Origin", origin);
+  }
+
+  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept, Authorization"
+  );
+  res.header("Access-Control-Allow-Credentials", "true");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 // ========================
 // 🛣️ API Routes
@@ -42,7 +53,7 @@ app.use("/api/deliveries", require("./routes/deliveryRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
 
 // 🌿 Stock Management Routes
-app.use("/api/stock", require("./routes/stockRoutes")); // ✅ ensure this is defined after imports
+app.use("/api/stock", require("./routes/stockRoutes"));
 
 // 🌼 Admin Dashboard Routes
 app.use("/api/dashboard", require("./routes/dashboardRoutes"));
@@ -50,7 +61,9 @@ app.use("/api/dashboard", require("./routes/dashboardRoutes"));
 // ========================
 // 🩺 Health Check Route
 // ========================
-app.get("/health", (_req, res) => res.json({ ok: true }));
+app.get("/health", (_req, res) =>
+  res.json({ status: "ok", message: "🌿 EverBloom backend running smoothly" })
+);
 
 // ========================
 // 🌐 Serve React Frontend (Production)
@@ -59,10 +72,9 @@ if (process.env.NODE_ENV === "production") {
   const clientBuildPath = path.join(__dirname, "../client", "build");
   app.use(express.static(clientBuildPath));
 
-  // React Router fallback
-  app.get("*", (req, res) => {
-    res.sendFile(path.join(clientBuildPath, "index.html"));
-  });
+  app.get("*", (req, res) =>
+    res.sendFile(path.join(clientBuildPath, "index.html"))
+  );
 } else {
   app.get("/", (req, res) => {
     res.send("🌱 EverBloom backend running in development mode");
@@ -80,12 +92,13 @@ const PORT = process.env.PORT || 5001;
     await sequelize.authenticate();
     console.log("✅ Database connected successfully");
 
-    // ⚙️ Only use { alter: true } during local development
-    await sequelize.sync({ alter: process.env.NODE_ENV === "development" });
-    console.log("✅ Models synchronized");
+    // Use { alter: true } in dev, avoid on production
+    const alter = process.env.NODE_ENV === "development";
+    await sequelize.sync({ alter });
+    console.log(`✅ Models synchronized (${alter ? "altered" : "safe mode"})`);
 
     app.listen(PORT, () =>
-      console.log(`🚀 EverBloom API running at http://localhost:${PORT}`)
+      console.log(`🚀 EverBloom API live at: http://localhost:${PORT}`)
     );
   } catch (err) {
     console.error("❌ Database connection error:", err.message);
