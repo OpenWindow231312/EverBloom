@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "cross-env PORT=5001 nodemon index.js",
+    "dev": "cross-env NODE_ENV=development PORT=5001 nodemon index.js",
+    "build": "echo 'No build step required for backend'",
     "render-build": "cd ../client && npm install && npm run build"
   },
   "dependencies": {
@@ -29,5 +30,5 @@
   },
   "license": "MIT",
   "keywords": [],
-  "author": ""
+  "author": "EverBloom Development Team"
 }
