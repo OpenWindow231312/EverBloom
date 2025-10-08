@@ -20,6 +20,9 @@ const sequelize = new Sequelize(
     port: process.env.DB_PORT || config.port || 3306,
     dialect: "mysql",
     logging: false,
+    dialectOptions: {
+      connectTimeout: 60000, // avoids Render timeout errors
+    },
   }
 );
 
@@ -50,6 +53,7 @@ const {
   OrderItem,
   ColdroomReservation,
   Discard,
+  Review, // include Review if you plan to use it in dashboard stats
 } = db;
 
 // Users & Roles (many-to-many through UserRole)
@@ -126,23 +130,22 @@ if (HarvestBatch && Discard && User) {
 }
 
 // ===============================
-// 🔹 Sync (Auto-Rebuild)
+// 🔹 Sync / Test Connection
 // ===============================
-// 🌼 ADDED FOR SYNC
-async function initializeDatabase() {
+(async () => {
   try {
     await sequelize.authenticate();
-    console.log("✅ DB connection established.");
+    console.log("✅ Database connection established.");
 
-    // 🚨 Use force: true ONCE to rebuild broken tables
-    await sequelize.sync({ alter: true });
-    console.log("✅ Tables successfully recreated from models.");
-  } catch (err) {
-    console.error("❌ Database initialization error:", err);
+    // Only use { alter: true } in dev. Remove in production.
+    if (process.env.NODE_ENV === "development") {
+      await sequelize.sync({ alter: true });
+      console.log("✅ Models synchronized with database.");
+    }
+  } catch (error) {
+    console.error("❌ Database connection failed:", error);
   }
-}
-initializeDatabase();
-// 🌼 END OF ADDED CODE
+})();
 
 // ===============================
 db.sequelize = sequelize;
