@@ -13,7 +13,18 @@ const app = express();
 // ========================
 // 🔧 Middleware
 // ========================
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://www.everbloomshop.co.za",
+      "https://everbloomshop.co.za",
+      "http://localhost:5173", // optional: for local React dev
+    ],
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -27,6 +38,8 @@ app.use("/api/discards", require("./routes/discardRoutes"));
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/deliveries", require("./routes/deliveryRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
+
+// 🌼 Admin Dashboard Routes
 app.use("/api/dashboard", require("./routes/dashboardRoutes"));
 
 // ========================
@@ -56,28 +69,34 @@ if (process.env.NODE_ENV === "production") {
 // ========================
 const PORT = process.env.PORT || 5001;
 
-sequelize
-  .authenticate()
-  .then(async () => {
+(async () => {
+  try {
+    console.log("⏳ Connecting to database...");
+    await sequelize.authenticate();
     console.log("✅ Database connected successfully");
 
-    // Optional: sync models without dropping tables
-    await sequelize.sync({ alter: false });
+    // ⚙️ Sync models (safe mode)
+    // Use { alter: true } only in DEV to match small model changes without dropping data
+    await sequelize.sync({ alter: process.env.NODE_ENV === "development" });
+    console.log("✅ Models synchronized");
 
-    app.listen(PORT, () =>
-      console.log(`🚀 EverBloom API running on http://localhost:${PORT}`)
-    );
-  })
-  .catch((err) => {
+    // 🚀 Start server
+    app.listen(PORT, () => {
+      console.log(`🚀 EverBloom API live at: http://localhost:${PORT}`);
+    });
+  } catch (err) {
     console.error("❌ Database connection error:", err.message);
-  });
+    process.exit(1);
+  }
+})();
 
 // ========================
 // ⚠️ Global Error Handling
 // ========================
 app.use((err, req, res, next) => {
   console.error("🔥 Server Error:", err);
-  res
-    .status(500)
-    .json({ error: "Internal server error", details: err.message });
+  res.status(500).json({
+    error: "Internal server error",
+    details: err.message,
+  });
 });
