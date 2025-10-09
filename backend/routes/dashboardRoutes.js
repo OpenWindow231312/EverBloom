@@ -39,15 +39,13 @@ router.get("/overview", async (req, res) => {
       User.count({ where: { isActive: true } }),
       Order.count(),
       Order.count({ where: { status: "Pending" } }),
-      Order.count({ where: { status: "Delivered" } }), // ✅ match your DB enum
+      Order.count({ where: { status: "Delivered" } }),
       Flower.count(),
       Store.count(),
       HarvestBatch.count(),
-      Review?.count?.() || Promise.resolve(0), // fallback if missing model
+      Review?.count?.() || Promise.resolve(0),
       Inventory.sum("stemsInColdroom"),
-      Inventory.count({
-        where: { stemsInColdroom: { [Op.lt]: 50 } },
-      }),
+      Inventory.count({ where: { stemsInColdroom: { [Op.lt]: 50 } } }),
     ]);
 
     res.json({
@@ -97,7 +95,6 @@ router.put("/users/:id/role", async (req, res) => {
   try {
     const { role_id } = req.body;
     const user_id = req.params.id;
-
     const user = await User.findByPk(user_id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -118,7 +115,6 @@ router.put("/users/:id/status", async (req, res) => {
 
     user.isActive = !user.isActive;
     await user.save();
-
     res.json({ message: "User status updated", isActive: user.isActive });
   } catch (err) {
     console.error(err);
@@ -168,12 +164,34 @@ router.put("/orders/:id/status", async (req, res) => {
 router.get("/flowers", async (req, res) => {
   try {
     const flowers = await Flower.findAll({
-      include: [{ model: FlowerType, attributes: ["type_name"] }],
+      include: [
+        {
+          model: FlowerType,
+          attributes: ["type_name"],
+        },
+      ],
       order: [["flower_id", "ASC"]],
     });
+
+    console.log(`🌺 Loaded ${flowers.length} flowers from DB`);
     res.json(flowers);
   } catch (err) {
+    console.error("Error fetching flowers:", err);
     res.status(500).json({ message: "Error fetching flowers" });
+  }
+});
+
+// ✅ Fetch all flower types (for dropdowns)
+router.get("/flower-types", async (req, res) => {
+  try {
+    const flowerTypes = await FlowerType.findAll({
+      attributes: ["type_id", "type_name", "default_shelf_life"],
+      order: [["type_name", "ASC"]],
+    });
+    res.json(flowerTypes);
+  } catch (err) {
+    console.error("Error fetching flower types:", err);
+    res.status(500).json({ message: "Error fetching flower types" });
   }
 });
 
@@ -182,6 +200,7 @@ router.post("/flowers", async (req, res) => {
     const flower = await Flower.create(req.body);
     res.json(flower);
   } catch (err) {
+    console.error("Error creating flower:", err);
     res.status(500).json({ message: "Error creating flower" });
   }
 });
@@ -249,6 +268,29 @@ router.get("/discards", async (req, res) => {
     res.json(discards);
   } catch (err) {
     res.status(500).json({ message: "Error fetching discards" });
+  }
+});
+
+// ===============================
+// 🌾 Update Harvest Batch (for editing in dashboard)
+// ===============================
+router.put("/harvests/:id", async (req, res) => {
+  try {
+    const harvest = await HarvestBatch.findByPk(req.params.id);
+    if (!harvest) return res.status(404).json({ message: "Harvest not found" });
+
+    const { totalStemsHarvested, harvestDateTime, notes, status } = req.body;
+    harvest.totalStemsHarvested =
+      totalStemsHarvested ?? harvest.totalStemsHarvested;
+    harvest.harvestDateTime = harvestDateTime ?? harvest.harvestDateTime;
+    harvest.notes = notes ?? harvest.notes;
+    harvest.status = status ?? harvest.status;
+
+    await harvest.save();
+    res.json({ message: "✅ Harvest batch updated successfully", harvest });
+  } catch (err) {
+    console.error("Error updating harvest:", err);
+    res.status(500).json({ message: "Error updating harvest batch" });
   }
 });
 

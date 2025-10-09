@@ -1,16 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { getAllUsers, updateUserRole } from "../../api/api";
+import axios from "axios";
 import "../dashboard/Dashboard.css";
 
 export default function DashboardUsers() {
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
 
-  // ✅ Fetch users
+  const [users, setUsers] = useState([]);
+  const [roles, setRoles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [newUser, setNewUser] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    role_id: "",
+  });
+
+  // ✅ Fetch users & roles
   const loadUsers = async () => {
     try {
-      const res = await getAllUsers();
-      setUsers(res.data);
+      const [userRes, roleRes] = await Promise.all([
+        axios.get(`${API_URL}/api/dashboard/users`),
+        axios.get(`${API_URL}/api/auth/roles`).catch(() => ({ data: [] })),
+      ]);
+
+      setUsers(userRes.data || []);
+      setRoles(
+        roleRes.data.length > 0
+          ? roleRes.data
+          : [
+              { role_id: 1, roleName: "Admin" },
+              { role_id: 2, roleName: "Employee" },
+              { role_id: 3, roleName: "Florist" },
+              { role_id: 4, roleName: "Customer" },
+            ]
+      );
     } catch (error) {
       console.error("Error loading users:", error);
     } finally {
@@ -22,36 +45,89 @@ export default function DashboardUsers() {
     loadUsers();
   }, []);
 
-  // ✅ Toggle user active/inactive
+  // ✅ Toggle active/inactive
   const toggleStatus = async (userId) => {
     try {
-      const res = await fetch(
-        `${process.env.REACT_APP_API_URL}/dashboard/users/${userId}/status`,
-        {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-        }
-      );
-      if (res.ok) {
-        alert("✅ User status updated");
-        loadUsers();
-      } else {
-        alert("❌ Failed to update user status");
-      }
+      await axios.put(`${API_URL}/api/dashboard/users/${userId}/status`);
+      alert("✅ User status updated!");
+      loadUsers();
     } catch (error) {
       console.error("Toggle status error:", error);
+      alert("❌ Failed to update user status.");
     }
   };
 
   // ✅ Change user role
   const handleRoleChange = async (userId, roleId) => {
     try {
-      await updateUserRole(userId, roleId);
-      alert("✅ User role updated");
-      loadUsers();
+      await axios.put(`${API_URL}/api/dashboard/users/${userId}/role`, {
+        role_id: roleId,
+      });
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.user_id === userId
+            ? {
+                ...u,
+                Roles: [
+                  {
+                    roleName: roles.find((r) => r.role_id == roleId)?.roleName,
+                  },
+                ],
+              }
+            : u
+        )
+      );
     } catch (error) {
       console.error("Update role error:", error);
-      alert("❌ Failed to update user role");
+      alert("❌ Failed to update user role.");
+    }
+  };
+
+  // ✅ Add new user
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(`${API_URL}/api/auth/register`, {
+        fullName: newUser.fullName,
+        email: newUser.email,
+        password: newUser.password,
+      });
+
+      alert("✅ User added successfully!");
+      setNewUser({ fullName: "", email: "", password: "", role_id: "" });
+      loadUsers();
+    } catch (error) {
+      console.error("Add user error:", error);
+      alert("❌ Failed to add user.");
+    }
+  };
+
+  // ✅ Delete user
+  const handleDeleteUser = async (userId) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+    try {
+      await axios.delete(`${API_URL}/api/auth/users/${userId}`);
+      alert("🗑️ User deleted successfully!");
+      loadUsers();
+    } catch (error) {
+      console.error("Delete user error:", error);
+      alert("❌ Failed to delete user.");
+    }
+  };
+
+  // ✅ Helper for color-coded roles
+  const getRoleClass = (roleName) => {
+    switch (roleName?.toLowerCase()) {
+      case "admin":
+        return "role-admin";
+      case "employee":
+        return "role-employee";
+      case "florist":
+        return "role-florist";
+      case "customer":
+        return "role-customer";
+      default:
+        return "role-generic";
     }
   };
 
@@ -59,67 +135,152 @@ export default function DashboardUsers() {
 
   return (
     <div className="dashboard-users">
-      <h2>Users Management</h2>
-      <table className="inventory-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Full Name</th>
-            <th>Email</th>
-            <th>Role</th>
-            <th>Active</th>
-            <th>Change Role</th>
-            <th>Toggle Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {users.length > 0 ? (
-            users.map((user) => {
-              const userRole =
-                user.Roles && user.Roles.length > 0
-                  ? user.Roles[0].roleName
-                  : "No Role";
-              return (
-                <tr key={user.user_id}>
-                  <td>{user.user_id}</td>
-                  <td>{user.fullName}</td>
-                  <td>{user.email}</td>
-                  <td>{userRole}</td>
-                  <td>{user.isActive ? "✅ Active" : "❌ Inactive"}</td>
-                  <td>
-                    <select
-                      onChange={(e) =>
-                        handleRoleChange(user.user_id, e.target.value)
-                      }
-                      defaultValue={userRole}
-                      className="status-dropdown"
-                    >
-                      <option value="1">Admin</option>
-                      <option value="2">Employee</option>
-                      <option value="3">Florist</option>
-                      <option value="4">Customer</option>
-                    </select>
-                  </td>
-                  <td>
-                    <button
-                      onClick={() => toggleStatus(user.user_id)}
-                      className={`toggle-btn ${
-                        user.isActive ? "deactivate" : "activate"
-                      }`}
-                    >
-                      {user.isActive ? "Deactivate" : "Activate"}
-                    </button>
-                  </td>
-                </tr>
-              );
-            })
-          ) : (
+      <h2 className="overview-heading">👥 User Management</h2>
+
+      {/* ============================ */}
+      {/* ADD NEW USER FORM */}
+      {/* ============================ */}
+      <section className="dashboard-section">
+        <h3>Add New User</h3>
+        <form className="dashboard-form" onSubmit={handleAddUser}>
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={newUser.fullName}
+            onChange={(e) =>
+              setNewUser({ ...newUser, fullName: e.target.value })
+            }
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={newUser.email}
+            onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={newUser.password}
+            onChange={(e) =>
+              setNewUser({ ...newUser, password: e.target.value })
+            }
+            required
+          />
+          <select
+            value={newUser.role_id}
+            onChange={(e) =>
+              setNewUser({ ...newUser, role_id: e.target.value })
+            }
+            required
+          >
+            <option value="">Select Role</option>
+            {roles.map((r) => (
+              <option key={r.role_id} value={r.role_id}>
+                {r.roleName}
+              </option>
+            ))}
+          </select>
+          <button type="submit" className="btn-primary">
+            ➕ Add User
+          </button>
+        </form>
+      </section>
+
+      <hr />
+
+      {/* ============================ */}
+      {/* USERS TABLE */}
+      {/* ============================ */}
+      <section className="dashboard-section">
+        <h3>All Users</h3>
+        <table className="dashboard-table">
+          <thead>
             <tr>
-              <td colSpan="7">No users found</td>
+              <th>ID</th>
+              <th>Full Name</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {users.length > 0 ? (
+              users.map((user) => {
+                const currentRole =
+                  user.Roles && user.Roles.length > 0
+                    ? user.Roles[0].roleName
+                    : "No Role";
+                return (
+                  <tr key={user.user_id}>
+                    <td>{user.user_id}</td>
+                    <td>{user.fullName}</td>
+                    <td>{user.email}</td>
+                    <td>
+                      <div
+                        className={`status-dropdown-wrapper ${getRoleClass(
+                          currentRole
+                        )}`}
+                      >
+                        <select
+                          onChange={(e) =>
+                            handleRoleChange(user.user_id, e.target.value)
+                          }
+                          className={`status-dropdown ${getRoleClass(
+                            currentRole
+                          )}`}
+                          value={
+                            roles.find(
+                              (r) =>
+                                r.roleName.toLowerCase() ===
+                                currentRole.toLowerCase()
+                            )?.role_id || ""
+                          }
+                        >
+                          {roles.map((r) => (
+                            <option key={r.role_id} value={r.role_id}>
+                              {r.roleName}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </td>
+                    <td>
+                      {user.isActive ? (
+                        <span className="status-active">Active</span>
+                      ) : (
+                        <span className="status-inactive">Inactive</span>
+                      )}
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => toggleStatus(user.user_id)}
+                        className={`toggle-btn ${
+                          user.isActive ? "deactivate" : "activate"
+                        }`}
+                      >
+                        {user.isActive ? "Deactivate" : "Activate"}
+                      </button>
+                      <button
+                        onClick={() => handleDeleteUser(user.user_id)}
+                        className="delete-btn"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            ) : (
+              <tr>
+                <td colSpan="6">No users found</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </section>
     </div>
   );
 }

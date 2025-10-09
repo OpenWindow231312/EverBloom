@@ -8,6 +8,8 @@ export default function DashboardStock() {
   const [flowers, setFlowers] = useState([]);
   const [types, setTypes] = useState([]);
   const [harvests, setHarvests] = useState([]);
+  const [editingHarvest, setEditingHarvest] = useState(null);
+
   const [flowerForm, setFlowerForm] = useState({
     type_id: "",
     variety: "",
@@ -15,27 +17,30 @@ export default function DashboardStock() {
     stem_length: "",
     shelf_life: "",
   });
+
   const [harvestForm, setHarvestForm] = useState({
     flower_id: "",
     totalStemsHarvested: "",
     notes: "",
+    harvestDateTime: "",
   });
+
   const [loading, setLoading] = useState(true);
 
   // ===========================
-  // 🧭 Fetch all stock-related data
+  // 🧭 Fetch stock-related data
   // ===========================
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [typeRes, flowerRes, harvestRes] = await Promise.all([
-          axios.get(`${API_URL}/api/flowers/types`),
+          axios.get(`${API_URL}/api/dashboard/flower-types`),
           axios.get(`${API_URL}/api/dashboard/flowers`),
           axios.get(`${API_URL}/api/dashboard/harvests`),
         ]);
         setTypes(typeRes.data || []);
         setFlowers(flowerRes.data || []);
-        setHarvests(harvestRes.data || []);
+        setHarvests(updateHarvestLifespans(harvestRes.data || []));
       } catch (err) {
         console.error("Error fetching stock data:", err);
       } finally {
@@ -45,9 +50,7 @@ export default function DashboardStock() {
     fetchData();
   }, [API_URL]);
 
-  // ===========================
-  // 🌸 ADD FLOWER FORM
-  // ===========================
+  // 🌸 Add Flower
   const handleFlowerChange = (e) => {
     setFlowerForm({ ...flowerForm, [e.target.name]: e.target.value });
   };
@@ -72,9 +75,21 @@ export default function DashboardStock() {
     }
   };
 
-  // ===========================
-  // 🌾 ADD HARVEST FORM
-  // ===========================
+  // 🗑️ Delete Flower
+  const handleDeleteFlower = async (flower_id) => {
+    if (!window.confirm("Are you sure you want to delete this flower?")) return;
+    try {
+      await axios.delete(`${API_URL}/api/stock/${flower_id}`);
+      alert("🗑️ Flower deleted successfully!");
+      const res = await axios.get(`${API_URL}/api/dashboard/flowers`);
+      setFlowers(res.data || []);
+    } catch (err) {
+      console.error("Error deleting flower:", err);
+      alert("❌ Failed to delete flower.");
+    }
+  };
+
+  // 🌾 Add Harvest
   const handleHarvestChange = (e) => {
     setHarvestForm({ ...harvestForm, [e.target.name]: e.target.value });
   };
@@ -82,26 +97,128 @@ export default function DashboardStock() {
   const handleAddHarvest = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/api/flowers/harvests`, harvestForm);
+      const payload = {
+        flower_id: harvestForm.flower_id,
+        totalStemsHarvested: harvestForm.totalStemsHarvested,
+        harvestDateTime: harvestForm.harvestDateTime || new Date(),
+        notes: harvestForm.notes || "",
+        status: "InColdroom",
+      };
+
+      await axios.post(`${API_URL}/api/flowers/harvests`, payload, {
+        headers: { "Content-Type": "application/json" },
+      });
+
       alert("✅ Harvest batch recorded!");
-      setHarvestForm({ flower_id: "", totalStemsHarvested: "", notes: "" });
+      setHarvestForm({
+        flower_id: "",
+        totalStemsHarvested: "",
+        notes: "",
+        harvestDateTime: "",
+      });
 
       const res = await axios.get(`${API_URL}/api/dashboard/harvests`);
-      setHarvests(res.data || []);
+      setHarvests(updateHarvestLifespans(res.data || []));
     } catch (err) {
       console.error("Error adding harvest:", err);
       alert("❌ Failed to record harvest batch.");
     }
   };
 
+  // 🧮 Lifespan Calculation
+  const updateHarvestLifespans = (harvestList) => {
+    const today = new Date();
+    return harvestList.map((h) => {
+      const harvestDate = new Date(h.harvestDateTime || h.createdAt);
+      const daysElapsed = Math.floor(
+        (today - harvestDate) / (1000 * 60 * 60 * 24)
+      );
+
+      const shelfLife =
+        h.Flower?.shelf_life || h.Flower?.FlowerType?.default_shelf_life || 7;
+      const daysLeft = shelfLife - daysElapsed;
+      const status =
+        daysLeft < 0
+          ? "Discarded"
+          : daysLeft <= 2
+          ? "Expiring Soon"
+          : "InColdroom";
+
+      return { ...h, daysLeft, status };
+    });
+  };
+
+  // ✏️ Edit Harvest (Modal)
+  const handleEditHarvest = (harvest) => {
+    setEditingHarvest({ ...harvest });
+  };
+
+  const handleEditChange = (e) => {
+    setEditingHarvest({ ...editingHarvest, [e.target.name]: e.target.value });
+  };
+
+  const handleSaveHarvest = async (e) => {
+    e.preventDefault();
+    try {
+      const {
+        harvestBatch_id,
+        totalStemsHarvested,
+        harvestDateTime,
+        notes,
+        status,
+      } = editingHarvest;
+
+      await axios.put(
+        `${API_URL}/api/dashboard/harvests/${harvestBatch_id}`,
+        {
+          totalStemsHarvested,
+          harvestDateTime,
+          notes,
+          status,
+        },
+        { headers: { "Content-Type": "application/json" } }
+      );
+
+      alert("✅ Harvest batch updated!");
+      setEditingHarvest(null);
+      const res = await axios.get(`${API_URL}/api/dashboard/harvests`);
+      setHarvests(updateHarvestLifespans(res.data || []));
+    } catch (err) {
+      console.error("Error updating harvest:", err);
+      alert("❌ Failed to update harvest.");
+    }
+  };
+
   if (loading) return <p>Loading stock data...</p>;
+
+  const StatusBadge = ({ status }) => {
+    let color = "#ccc";
+    if (status === "InColdroom") color = "#5cb85c";
+    else if (status === "Expiring Soon") color = "#f0ad4e";
+    else if (status === "Discarded") color = "#d9534f";
+
+    return (
+      <span
+        style={{
+          backgroundColor: color,
+          color: "white",
+          padding: "4px 8px",
+          borderRadius: "8px",
+          fontSize: "0.85rem",
+          fontWeight: 500,
+        }}
+      >
+        {status}
+      </span>
+    );
+  };
 
   return (
     <div className="dashboard-stock">
       <h2 className="overview-heading">Stock Management</h2>
 
       {/* ============================ */}
-      {/* 1️⃣ ADD FLOWER SECTION */}
+      {/* ADD FLOWER FORM */}
       {/* ============================ */}
       <section className="dashboard-section">
         <h3>Add New Flower</h3>
@@ -149,13 +266,13 @@ export default function DashboardStock() {
             onChange={handleFlowerChange}
           />
           <button type="submit" className="btn-primary">
-            ➕ Add Flower
+            Add Flower
           </button>
         </form>
       </section>
 
       {/* ============================ */}
-      {/* 2️⃣ HARVEST SECTION */}
+      {/* RECORD HARVEST */}
       {/* ============================ */}
       <section className="dashboard-section">
         <h3>Record Harvest Batch</h3>
@@ -169,7 +286,7 @@ export default function DashboardStock() {
             <option value="">Select Flower</option>
             {flowers.map((f) => (
               <option key={f.flower_id} value={f.flower_id}>
-                {f.variety} ({f.color})
+                {f.FlowerType?.type_name} — {f.variety} ({f.color})
               </option>
             ))}
           </select>
@@ -182,6 +299,12 @@ export default function DashboardStock() {
             required
           />
           <input
+            type="date"
+            name="harvestDateTime"
+            value={harvestForm.harvestDateTime}
+            onChange={handleHarvestChange}
+          />
+          <input
             type="text"
             name="notes"
             placeholder="Notes (optional)"
@@ -189,65 +312,116 @@ export default function DashboardStock() {
             onChange={handleHarvestChange}
           />
           <button type="submit" className="btn-primary">
-            🌾 Add Harvest Batch
+            Add Harvest Batch
           </button>
         </form>
       </section>
 
       {/* ============================ */}
-      {/* 3️⃣ CURRENT FLOWERS & HARVESTS */}
+      {/* RECENT HARVESTS */}
       {/* ============================ */}
       <section className="dashboard-section">
-        <h3>Current Flowers</h3>
-        <table className="dashboard-table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Type</th>
-              <th>Variety</th>
-              <th>Color</th>
-              <th>Stem</th>
-              <th>Life</th>
-            </tr>
-          </thead>
-          <tbody>
-            {flowers.map((f) => (
-              <tr key={f.flower_id}>
-                <td>{f.flower_id}</td>
-                <td>{f.FlowerType?.type_name}</td>
-                <td>{f.variety}</td>
-                <td>{f.color}</td>
-                <td>{f.stem_length} cm</td>
-                <td>{f.shelf_life} days</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-
         <h3>Recent Harvest Batches</h3>
         <table className="dashboard-table">
           <thead>
             <tr>
               <th>Batch ID</th>
               <th>Flower</th>
+              <th>Type</th>
               <th>Quantity</th>
               <th>Status</th>
-              <th>Date</th>
+              <th>Days Left</th>
+              <th>Harvest Date</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
             {harvests.map((h) => (
               <tr key={h.harvestBatch_id}>
                 <td>{h.harvestBatch_id}</td>
-                <td>{h.Flower?.variety}</td>
+                <td>{h.Flower?.variety || "-"}</td>
+                <td>{h.Flower?.FlowerType?.type_name || "-"}</td>
                 <td>{h.totalStemsHarvested}</td>
-                <td>{h.status}</td>
-                <td>{new Date(h.createdAt).toLocaleDateString()}</td>
+                <td>
+                  <StatusBadge status={h.status} />
+                </td>
+                <td>{h.daysLeft >= 0 ? `${h.daysLeft} days` : "Expired"}</td>
+                <td>
+                  {new Date(
+                    h.harvestDateTime || h.createdAt
+                  ).toLocaleDateString()}
+                </td>
+                <td>
+                  <button
+                    onClick={() => handleEditHarvest(h)}
+                    className="edit-btn"
+                  >
+                    ✏️ Edit
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </section>
+
+      {/* ============================ */}
+      {/* EDIT HARVEST MODAL */}
+      {/* ============================ */}
+      {editingHarvest && (
+        <div className="modal-backdrop">
+          <div className="modal-content">
+            <h3>Edit Harvest Batch #{editingHarvest.harvestBatch_id}</h3>
+            <form onSubmit={handleSaveHarvest}>
+              <input
+                type="number"
+                name="totalStemsHarvested"
+                value={editingHarvest.totalStemsHarvested}
+                onChange={handleEditChange}
+                placeholder="Total stems harvested"
+              />
+              <input
+                type="date"
+                name="harvestDateTime"
+                value={
+                  editingHarvest.harvestDateTime
+                    ? editingHarvest.harvestDateTime.split("T")[0]
+                    : ""
+                }
+                onChange={handleEditChange}
+              />
+              <input
+                type="text"
+                name="notes"
+                value={editingHarvest.notes || ""}
+                onChange={handleEditChange}
+                placeholder="Notes"
+              />
+              <select
+                name="status"
+                value={editingHarvest.status || ""}
+                onChange={handleEditChange}
+              >
+                <option value="InColdroom">In Coldroom</option>
+                <option value="Expiring Soon">Expiring Soon</option>
+                <option value="Discarded">Discarded</option>
+              </select>
+              <div className="modal-actions">
+                <button type="submit" className="btn-primary">
+                  Save Changes
+                </button>
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => setEditingHarvest(null)}
+                >
+                  ✖ Close
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

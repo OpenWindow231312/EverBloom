@@ -449,6 +449,286 @@
     font-weight: 600;
 }
 
+.status-active {
+    color: green;
+    font-weight: 600;
+}
+
+.status-inactive {
+    color: red;
+    font-weight: 600;
+}
+
+.status-dropdown {
+    padding: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.toggle-btn,
+.delete-btn {
+    margin: 0 4px;
+    padding: 6px 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.toggle-btn.activate {
+    background-color: #4caf50;
+    color: white;
+}
+
+.toggle-btn.deactivate {
+    background-color: #e67e22;
+    color: white;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+}
+
+/* ========== STATUS BADGES & DROPDOWNS ========== */
+
+.status-dropdown-wrapper {
+    display: inline-block;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.status-dropdown {
+    border: none;
+    border-radius: 6px;
+    color: #fff;
+    font-weight: 600;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 13px;
+    text-align: center;
+    width: 160px;
+    appearance: none;
+}
+
+/* Individual status colors */
+.status-pending {
+    background-color: #f9d776;
+    color: #5c3c00;
+}
+
+.status-delivered {
+    background-color: #9be79b;
+    color: #0a3e0a;
+}
+
+.status-cancelled {
+    background-color: #f19c9c;
+    color: #600000;
+}
+
+.status-delivery {
+    background-color: #8ed6ff;
+    color: #003366;
+}
+
+.status-generic {
+    background-color: #d8d8d8;
+    color: #333;
+}
+
+/* Remove focus ring */
+.status-dropdown:focus {
+    outline: none;
+}
+
+/* ========== ROLE COLORS (Dropdowns styled like badges) ========== */
+
+.role-admin {
+    background-color: #8b5cf6;
+    /* violet */
+    color: #fff;
+}
+
+.role-employee {
+    background-color: #00a8ff;
+    /* blue */
+    color: #fff;
+}
+
+.role-florist {
+    background-color: #ff9f43;
+    /* orange */
+    color: #fff;
+}
+
+.role-customer {
+    background-color: #2ecc71;
+    /* green */
+    color: #fff;
+}
+
+.role-generic {
+    background-color: #b2bec3;
+    color: #333;
+}
+
+.status-dropdown-wrapper {
+    border-radius: 6px;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.status-dropdown {
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-weight: 600;
+    cursor: pointer;
+    font-size: 13px;
+    color: #fff;
+    appearance: none;
+    width: 140px;
+    text-align: center;
+}
+
+.status-dropdown:focus {
+    outline: none;
+}
+
+/* Inventory Management Buttons */
+.btn-primary {
+    background-color: #d84e55;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.delete-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 13px;
+}
+
+.delete-btn:hover {
+    background-color: #c0392b;
+}
+
+/* Dropdowns and tables */
+.dashboard-form select,
+.dashboard-form input {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 14px;
+    flex: 1;
+    min-width: 180px;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    text-align: center;
+    padding: 10px;
+}
+
+/* Stock page buttons */
+
+.row-discarded {
+    background-color: #ffd6d6;
+    color: #7a0000;
+}
+
+.edit-btn {
+    background-color: #f5c542;
+    border: none;
+    color: #222;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.edit-btn:hover {
+    background-color: #f3b62f;
+}
+
+.delete-btn {
+    background-color: #e64c4c;
+    border: none;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background-color: #d43939;
+}
+
+/* Edit harvest batch  */
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.45);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: #fff8f6;
+    border: 2px solid #c94b4b;
+    border-radius: 16px;
+    padding: 24px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.25s ease-in-out;
+}
+
+.modal-content h3 {
+    color: #a33333;
+    font-family: "Poppins", sans-serif;
+    margin-bottom: 16px;
+}
+
+.modal-content input,
+.modal-content select {
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
 /* ================================
    Responsive
 ================================= */
