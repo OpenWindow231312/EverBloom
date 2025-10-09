@@ -331,6 +331,80 @@
     padding: 30px;
 }
 
+/* ===============================
+   Dashboard Overview Styling
+================================= */
+.dashboard-overview {
+    padding: 20px;
+    color: #333;
+}
+
+.overview-heading {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.overview-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    transition: all 0.2s ease;
+}
+
+.overview-card:hover {
+    transform: translateY(-4px);
+}
+
+.overview-card h3 {
+    font-size: 28px;
+    margin: 10px 0;
+    color: var(--red);
+}
+
+.overview-summary {
+    background: #fff8f7;
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid #f0d6d3;
+}
+
+.overview-summary ul {
+    list-style: none;
+    padding: 0;
+}
+
+.overview-summary li {
+    padding: 6px 0;
+    font-size: 15px;
+}
+
+.loading-state {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #555;
+}
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 /* ================================
    Responsive
 ================================= */

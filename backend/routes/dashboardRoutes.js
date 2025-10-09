@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { Op } = require("sequelize");
 const {
   User,
   Role,
@@ -13,41 +14,67 @@ const {
   Store,
   ColdroomReservation,
   Discard,
+  Review,
   sequelize,
 } = require("../models");
 
 // ===============================
-// 🌸 DASHBOARD OVERVIEW
+// 🌸 DASHBOARD OVERVIEW (Enhanced)
 // ===============================
 router.get("/overview", async (req, res) => {
   try {
-    const [userCount, orderCount, flowerCount, storeCount, batchCount] =
-      await Promise.all([
-        User.count(),
-        Order.count(),
-        Flower.count(),
-        Store.count(),
-        HarvestBatch.count(),
-      ]);
+    const [
+      userCount,
+      activeUsers,
+      orderCount,
+      pendingOrders,
+      completedOrders,
+      flowerCount,
+      storeCount,
+      batchCount,
+      reviewCount,
+      totalColdroomStems,
+      lowStockCount,
+    ] = await Promise.all([
+      User.count(),
+      User.count({ where: { isActive: true } }),
+      Order.count(),
+      Order.count({ where: { status: "Pending" } }),
+      Order.count({ where: { status: "Completed" } }),
+      Flower.count(),
+      Store.count(),
+      HarvestBatch.count(),
+      Review?.count?.() || Promise.resolve(0), // handle missing model gracefully
+      Inventory.sum("stemsInColdroom"),
+      Inventory.count({
+        where: { stemsInColdroom: { [Op.lt]: 50 } },
+      }),
+    ]);
 
     res.json({
       users: userCount,
+      activeUsers,
       orders: orderCount,
+      pendingOrders,
+      completedOrders,
       flowers: flowerCount,
       stores: storeCount,
       harvestBatches: batchCount,
+      reviews: reviewCount || 0,
+      flowersInColdroom: totalColdroomStems || 0,
+      lowStock: lowStockCount || 0,
     });
   } catch (err) {
     console.error("Overview error:", err);
-    res.status(500).json({ message: "Server error fetching overview" });
+    res
+      .status(500)
+      .json({ message: "Server error fetching overview", error: err.message });
   }
 });
 
 // ===============================
 // 👥 USERS & ROLES MANAGEMENT
 // ===============================
-
-// Get all users with roles
 router.get("/users", async (req, res) => {
   try {
     const users = await User.findAll({
@@ -67,7 +94,6 @@ router.get("/users", async (req, res) => {
   }
 });
 
-// Update user role
 router.put("/users/:id/role", async (req, res) => {
   try {
     const { role_id } = req.body;
@@ -86,7 +112,6 @@ router.put("/users/:id/role", async (req, res) => {
   }
 });
 
-// Toggle user activation
 router.put("/users/:id/status", async (req, res) => {
   try {
     const user = await User.findByPk(req.params.id);
@@ -124,7 +149,6 @@ router.get("/orders", async (req, res) => {
   }
 });
 
-// Update order status
 router.put("/orders/:id/status", async (req, res) => {
   try {
     const order = await Order.findByPk(req.params.id);
@@ -154,7 +178,6 @@ router.get("/flowers", async (req, res) => {
   }
 });
 
-// Add new flower
 router.post("/flowers", async (req, res) => {
   try {
     const flower = await Flower.create(req.body);
