@@ -1,4 +1,4 @@
-// 🌸 EverBloom — Demo Data Seeder (Dashboard Example Data)
+// 🌸 EverBloom — Full Demo Data Seeder
 require("dotenv").config();
 const {
   sequelize,
@@ -15,194 +15,307 @@ const {
   Review,
 } = require("../models");
 
+const now = () => new Date();
+
 (async () => {
   try {
     await sequelize.authenticate();
     console.log("✅ Database connected successfully\n");
 
-    // 🧍 Create a test customer user
-    const [user] = await User.findOrCreate({
+    // =====================================================
+    // 👥 USERS & ROLES
+    // =====================================================
+    const [adminRole] = await Role.findOrCreate({
+      where: { roleName: "Admin" },
+    });
+    const [employeeRole] = await Role.findOrCreate({
+      where: { roleName: "Employee" },
+    });
+    const [customerRole] = await Role.findOrCreate({
+      where: { roleName: "Customer" },
+    });
+
+    const [admin] = await User.findOrCreate({
+      where: { email: "admin@everbloom.local" },
+      defaults: {
+        fullName: "Admin User",
+        passwordHash: "Passw0rd!",
+        isActive: true,
+        createdAt: now(),
+        updatedAt: now(),
+      },
+    });
+
+    const [employee] = await User.findOrCreate({
+      where: { email: "emma@everbloom.local" },
+      defaults: {
+        fullName: "Emma Employee",
+        passwordHash: "test1234",
+        isActive: true,
+        createdAt: now(),
+        updatedAt: now(),
+      },
+    });
+
+    const [customer1] = await User.findOrCreate({
       where: { email: "jess@everbloom.local" },
       defaults: {
         fullName: "Jess Bloom",
         passwordHash: "test1234",
         phone: "0825557777",
         isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: now(),
+        updatedAt: now(),
       },
     });
 
-    // 🏬 Create a test store
-    const [store] = await Store.findOrCreate({
+    const [customer2] = await User.findOrCreate({
+      where: { email: "luca@everbloom.local" },
+      defaults: {
+        fullName: "Luca Petal",
+        passwordHash: "petal123",
+        phone: "0831234567",
+        isActive: true,
+        createdAt: now(),
+        updatedAt: now(),
+      },
+    });
+
+    await UserRole.findOrCreate({
+      where: { user_id: admin.user_id, role_id: adminRole.role_id },
+    });
+    await UserRole.findOrCreate({
+      where: { user_id: employee.user_id, role_id: employeeRole.role_id },
+    });
+    await UserRole.findOrCreate({
+      where: { user_id: customer1.user_id, role_id: customerRole.role_id },
+    });
+    await UserRole.findOrCreate({
+      where: { user_id: customer2.user_id, role_id: customerRole.role_id },
+    });
+
+    console.log("👥 Users & Roles seeded\n");
+
+    // =====================================================
+    // 🏬 STORES
+    // =====================================================
+    const [store1] = await Store.findOrCreate({
+      where: { store_name: "EverBloom HQ" },
+      defaults: {
+        storeLocation: "Pretoria East",
+        address: "123 Flower Rd",
+        isOnline: true,
+        contact: "0123456789",
+        createdAt: now(),
+        updatedAt: now(),
+      },
+    });
+    const [store2] = await Store.findOrCreate({
       where: { store_name: "EverBloom Market" },
       defaults: {
         storeLocation: "Johannesburg",
         address: "22 Flower Street",
         isOnline: true,
         contact: "0219876543",
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: now(),
+        updatedAt: now(),
+      },
+    });
+    const [store3] = await Store.findOrCreate({
+      where: { store_name: "Cape Bloom Co" },
+      defaults: {
+        storeLocation: "Cape Town",
+        address: "10 Rose Avenue",
+        isOnline: true,
+        contact: "0211112222",
+        createdAt: now(),
+        updatedAt: now(),
       },
     });
 
-    // 🌼 Create flower types
+    console.log("🏬 Stores added\n");
+
+    // =====================================================
+    // 🌼 FLOWER TYPES & FLOWERS
+    // =====================================================
     const [roseType] = await FlowerType.findOrCreate({
       where: { type_name: "Rose" },
-      defaults: {
-        default_shelf_life: 7,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      transaction: null,
+      defaults: { default_shelf_life: 7, createdAt: now(), updatedAt: now() },
     });
-
     const [lilyType] = await FlowerType.findOrCreate({
       where: { type_name: "Lily" },
-      defaults: {
-        default_shelf_life: 5,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      transaction: null,
+      defaults: { default_shelf_life: 5, createdAt: now(), updatedAt: now() },
     });
-
     const [tulipType] = await FlowerType.findOrCreate({
       where: { type_name: "Tulip" },
-      defaults: {
-        default_shelf_life: 6,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-      transaction: null,
+      defaults: { default_shelf_life: 6, createdAt: now(), updatedAt: now() },
     });
 
-    console.log("🌿 Flower types ready");
-
-    // 🌷 Add example flowers
-    const [flower1] = await Flower.findOrCreate({
-      where: { variety: "Red Naomi" },
-      defaults: {
-        type_id: roseType.type_id,
-        color: "Red",
-        stem_length: 50,
-        shelf_life: 7,
-        unit: "stem",
-        createdAt: new Date(),
-        updatedAt: new Date(),
+    const flowers = [
+      { type: roseType, variety: "Red Naomi", color: "Red", stem: 50, life: 7 },
+      {
+        type: roseType,
+        variety: "Avalanche",
+        color: "White",
+        stem: 48,
+        life: 7,
       },
-    });
-
-    const [flower2] = await Flower.findOrCreate({
-      where: { variety: "Stargazer" },
-      defaults: {
-        type_id: lilyType.type_id,
+      {
+        type: lilyType,
+        variety: "Stargazer",
         color: "Pink",
-        stem_length: 45,
-        shelf_life: 5,
-        unit: "stem",
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        stem: 45,
+        life: 5,
       },
-    });
-
-    const [flower3] = await Flower.findOrCreate({
-      where: { variety: "Yellow Triumph" },
-      defaults: {
-        type_id: tulipType.type_id,
+      {
+        type: tulipType,
+        variety: "Yellow Triumph",
         color: "Yellow",
-        stem_length: 35,
-        shelf_life: 6,
-        unit: "stem",
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        stem: 35,
+        life: 6,
       },
-    });
-
-    console.log("💐 Flowers added");
-
-    // 🌾 Add harvest batches and inventories
-    const batches = [
-      { flower_id: flower1.flower_id, totalStemsHarvested: 120 },
-      { flower_id: flower2.flower_id, totalStemsHarvested: 80 },
-      { flower_id: flower3.flower_id, totalStemsHarvested: 150 },
+      {
+        type: tulipType,
+        variety: "Purple Dream",
+        color: "Purple",
+        stem: 38,
+        life: 6,
+      },
     ];
 
-    for (const data of batches) {
-      const [batch] = await HarvestBatch.findOrCreate({
-        where: { flower_id: data.flower_id },
+    const flowerModels = [];
+    for (const f of flowers) {
+      const [model] = await Flower.findOrCreate({
+        where: { variety: f.variety },
         defaults: {
-          harvestDateTime: new Date(),
-          totalStemsHarvested: data.totalStemsHarvested,
+          type_id: f.type.type_id,
+          color: f.color,
+          stem_length: f.stem,
+          shelf_life: f.life,
+          unit: "stem",
+          createdAt: now(),
+          updatedAt: now(),
+        },
+      });
+      flowerModels.push(model);
+    }
+    console.log("🌸 Flowers added\n");
+
+    // =====================================================
+    // 🌾 HARVEST & INVENTORY
+    // =====================================================
+    for (const fl of flowerModels) {
+      const stems = Math.floor(Math.random() * 100) + 60;
+      const [batch] = await HarvestBatch.findOrCreate({
+        where: { flower_id: fl.flower_id },
+        defaults: {
+          harvestDateTime: now(),
+          totalStemsHarvested: stems,
           status: "InColdroom",
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          createdAt: now(),
+          updatedAt: now(),
         },
       });
 
       await Inventory.findOrCreate({
         where: { harvestBatch_id: batch.harvestBatch_id },
         defaults: {
-          stemsInColdroom: data.totalStemsHarvested,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          stemsInColdroom: stems,
+          createdAt: now(),
+          updatedAt: now(),
         },
       });
     }
+    console.log("🧺 Harvest batches & inventories ready\n");
 
-    console.log("🧺 Harvest batches + inventories added");
-
-    // 🛒 Add a test order
-    const [order] = await Order.findOrCreate({
-      where: { user_id: user.user_id },
+    // =====================================================
+    // 🛒 ORDERS & ITEMS
+    // =====================================================
+    const [order1] = await Order.findOrCreate({
+      where: { user_id: customer1.user_id },
       defaults: {
         status: "Delivered",
-        orderDateTime: new Date(),
+        orderDateTime: now(),
         totalAmount: 1250.0,
         pickupOrDelivery: "Delivery",
-        pickupStoreID: store.store_id,
+        pickupStoreID: store1.store_id,
         shippingAddress: "22 Flower Street, Johannesburg",
-        createdAt: new Date(),
-        updatedAt: new Date(),
+        createdAt: now(),
+        updatedAt: now(),
+      },
+    });
+    const [order2] = await Order.findOrCreate({
+      where: { user_id: customer2.user_id },
+      defaults: {
+        status: "Delivered",
+        orderDateTime: now(),
+        totalAmount: 860.0,
+        pickupOrDelivery: "Pickup",
+        pickupStoreID: store2.store_id,
+        shippingAddress: "10 Rose Avenue, Cape Town",
+        createdAt: now(),
+        updatedAt: now(),
       },
     });
 
-    // 🛍️ Add items to the order
     const orderItems = [
-      { flower_id: flower1.flower_id, quantityOrdered: 10, unitPrice: 20 },
-      { flower_id: flower2.flower_id, quantityOrdered: 8, unitPrice: 30 },
-      { flower_id: flower3.flower_id, quantityOrdered: 12, unitPrice: 25 },
+      { order: order1, flower: flowerModels[0], qty: 10, price: 20 },
+      { order: order1, flower: flowerModels[2], qty: 8, price: 30 },
+      { order: order2, flower: flowerModels[3], qty: 12, price: 25 },
+      { order: order2, flower: flowerModels[4], qty: 6, price: 28 },
     ];
 
     for (const item of orderItems) {
       await OrderItem.findOrCreate({
-        where: { order_id: order.order_id, flower_id: item.flower_id },
+        where: {
+          order_id: item.order.order_id,
+          flower_id: item.flower.flower_id,
+        },
         defaults: {
-          quantityOrdered: item.quantityOrdered,
-          unitPrice: item.unitPrice,
+          quantityOrdered: item.qty,
+          unitPrice: item.price,
           discountApplied: 0,
-          reservedQuantity: item.quantityOrdered,
-          createdAt: new Date(),
-          updatedAt: new Date(),
+          reservedQuantity: item.qty,
+          createdAt: now(),
+          updatedAt: now(),
+        },
+      });
+    }
+    console.log("🛍️ Orders & items created\n");
+
+    // =====================================================
+    // 💬 REVIEWS
+    // =====================================================
+    const reviews = [
+      {
+        order: order1,
+        user: customer1,
+        rating: 5,
+        comment: "Loved my bouquet! Fresh and beautifully arranged 🌸",
+      },
+      {
+        order: order2,
+        user: customer2,
+        rating: 4,
+        comment:
+          "Gorgeous colors, a few stems were short-lived but still stunning 💐",
+      },
+    ];
+    for (const r of reviews) {
+      await Review.findOrCreate({
+        where: { order_id: r.order.order_id },
+        defaults: {
+          user_id: r.user.user_id,
+          rating: r.rating,
+          comment: r.comment,
+          createdAt: now(),
+          updatedAt: now(),
         },
       });
     }
 
-    console.log("🛒 Order + order items added");
-
-    // 💬 Add a review
-    await Review.findOrCreate({
-      where: { order_id: order.order_id },
-      defaults: {
-        user_id: user.user_id,
-        rating: 5,
-        comment: "Loved my bouquet! Fresh and beautifully arranged 🌸",
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
-
-    console.log("\n🌺 Demo data seeded successfully!");
+    console.log("💬 Reviews added\n");
+    console.log("🌺 Full demo data seeded successfully!");
     process.exit(0);
   } catch (err) {
     console.error("❌ Seeder failed:", err);

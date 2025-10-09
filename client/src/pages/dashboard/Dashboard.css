@@ -405,6 +405,50 @@
     }
 }
 
+.dashboard-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.dashboard-form input,
+.dashboard-form select {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    flex: 1;
+    min-width: 180px;
+}
+
+.btn-primary {
+    background-color: #d84e55;
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.dashboard-table th {
+    background-color: #f4f4f4;
+    font-weight: 600;
+}
+
 /* ================================
    Responsive
 ================================= */
