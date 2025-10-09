@@ -15,11 +15,10 @@ const {
   ColdroomReservation,
   Discard,
   Review,
-  sequelize,
 } = require("../models");
 
 // ===============================
-// 🌸 DASHBOARD OVERVIEW (Enhanced)
+// 🌸 DASHBOARD OVERVIEW
 // ===============================
 router.get("/overview", async (req, res) => {
   try {
@@ -40,11 +39,11 @@ router.get("/overview", async (req, res) => {
       User.count({ where: { isActive: true } }),
       Order.count(),
       Order.count({ where: { status: "Pending" } }),
-      Order.count({ where: { status: "Completed" } }),
+      Order.count({ where: { status: "Delivered" } }), // ✅ match your DB enum
       Flower.count(),
       Store.count(),
       HarvestBatch.count(),
-      Review?.count?.() || Promise.resolve(0), // handle missing model gracefully
+      Review?.count?.() || Promise.resolve(0), // fallback if missing model
       Inventory.sum("stemsInColdroom"),
       Inventory.count({
         where: { stemsInColdroom: { [Op.lt]: 50 } },

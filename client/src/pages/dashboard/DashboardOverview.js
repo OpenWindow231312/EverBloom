@@ -16,15 +16,20 @@ export default function DashboardOverview() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
+  // ✅ API base URL logic — supports both local + Render
+  const API_URL =
+    import.meta.env?.VITE_API_URL ||
+    process.env.REACT_APP_API_URL ||
+    "http://localhost:5001";
 
   useEffect(() => {
     const fetchOverview = async () => {
       try {
+        console.log("Fetching from:", `${API_URL}/api/dashboard/overview`);
         const res = await axios.get(`${API_URL}/api/dashboard/overview`);
         setStats(res.data);
       } catch (err) {
-        console.error("Overview fetch error:", err);
+        console.error("Overview fetch error:", err.response || err.message);
         setError("Could not load overview data. Please try again.");
       } finally {
         setLoading(false);
@@ -55,37 +60,37 @@ export default function DashboardOverview() {
       <div className="overview-grid">
         <div className="overview-card">
           <Users size={28} />
-          <h3>{stats.users}</h3>
+          <h3>{stats.users ?? 0}</h3>
           <p>Total Users</p>
         </div>
 
         <div className="overview-card">
           <ShoppingBag size={28} />
-          <h3>{stats.orders}</h3>
+          <h3>{stats.orders ?? 0}</h3>
           <p>Total Orders</p>
         </div>
 
         <div className="overview-card">
           <Flower size={28} />
-          <h3>{stats.flowers}</h3>
+          <h3>{stats.flowers ?? 0}</h3>
           <p>Total Flowers</p>
         </div>
 
         <div className="overview-card">
           <Store size={28} />
-          <h3>{stats.stores}</h3>
+          <h3>{stats.stores ?? 0}</h3>
           <p>Total Stores</p>
         </div>
 
         <div className="overview-card">
           <Sprout size={28} />
-          <h3>{stats.harvestBatches}</h3>
+          <h3>{stats.harvestBatches ?? 0}</h3>
           <p>Harvest Batches</p>
         </div>
 
         <div className="overview-card">
           <Star size={28} />
-          <h3>{stats.reviews}</h3>
+          <h3>{stats.reviews ?? 0}</h3>
           <p>Customer Reviews</p>
         </div>
       </div>
@@ -93,11 +98,11 @@ export default function DashboardOverview() {
       <div className="overview-summary">
         <h3>📈 Summary</h3>
         <ul>
-          <li>🧑‍💼 Active users: {stats.activeUsers}</li>
-          <li>🕒 Pending orders: {stats.pendingOrders}</li>
-          <li>✅ Completed orders: {stats.completedOrders}</li>
-          <li>💐 Flowers in coldroom: {stats.flowersInColdroom}</li>
-          <li>⚠️ Low-stock flowers: {stats.lowStock}</li>
+          <li>🧑‍💼 Active users: {stats.activeUsers ?? 0}</li>
+          <li>🕒 Pending orders: {stats.pendingOrders ?? 0}</li>
+          <li>✅ Completed orders: {stats.completedOrders ?? 0}</li>
+          <li>💐 Flowers in coldroom: {stats.flowersInColdroom ?? 0}</li>
+          <li>⚠️ Low-stock flowers: {stats.lowStock ?? 0}</li>
         </ul>
       </div>
     </div>

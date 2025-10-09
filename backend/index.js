@@ -21,7 +21,6 @@ const allowedOrigins = [
   "http://localhost:5173",
 ];
 
-// 🛡️ Set headers manually for all requests (Render friendly)
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
@@ -35,12 +34,11 @@ app.use((req, res, next) => {
   );
   res.header("Access-Control-Allow-Credentials", "true");
 
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-
+  if (req.method === "OPTIONS") return res.sendStatus(200);
   next();
 });
+
+app.use(express.json());
 
 // ========================
 // 🛣️ API Routes
@@ -117,16 +115,15 @@ const PORT = process.env.PORT || 5001;
   try {
     console.log("⏳ Connecting to database...");
     await sequelize.authenticate();
+    console.log("✅ Database connection established.");
     console.log("✅ Database connected successfully");
 
-    // Use { alter: true } in dev, avoid on production
-    const alter = process.env.NODE_ENV === "development";
-    await sequelize.sync({ alter });
-    console.log(`✅ Models synchronized (${alter ? "altered" : "safe mode"})`);
+    // 🔒 Skip auto-syncing for now (prevents constraint errors)
+    console.log("⚠️ Skipping sequelize.sync() — running in safe mode");
 
     app.listen(PORT, () => {
       console.log(`🚀 EverBloom API live at: http://localhost:${PORT}`);
-      listRoutes(app); // 👈 show all available API routes
+      listRoutes(app);
     });
   } catch (err) {
     console.error("❌ Database connection error:", err.message);
