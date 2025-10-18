@@ -1,15 +1,18 @@
-const {
-  sequelize,
-  Order,
-  OrderItem,
-  Flower,
-  HarvestBatch,
-  Inventory,
-  ColdroomReservation,
-} = require("../models");
+const sequelize = require("../db");
 const { Op } = require("sequelize");
 
-// Create order (customer)
+// ✅ Import models directly
+const Order = require("../models/Order");
+const User = require("../models/User");
+const Flower = require("../models/Flower");
+const OrderItem = require("../models/OrderItem");
+const HarvestBatch = require("../models/HarvestBatch");
+const Inventory = require("../models/Inventory");
+const ColdroomReservation = require("../models/ColdroomReservation");
+
+// ===============================
+// 🧾 Create New Order (Customer)
+// ===============================
 exports.createOrder = async (req, res) => {
   const t = await sequelize.transaction();
   try {
@@ -43,11 +46,14 @@ exports.createOrder = async (req, res) => {
     res.json(order);
   } catch (e) {
     await t.rollback();
+    console.error("❌ Error creating order:", e);
     res.status(400).json({ error: e.message });
   }
 };
 
-// Reserve stock against batches FIFO
+// ===============================
+// 🧊 Reserve Stock (FIFO)
+// ===============================
 exports.reserveOrder = async (req, res) => {
   const t = await sequelize.transaction();
   try {
@@ -88,7 +94,7 @@ exports.reserveOrder = async (req, res) => {
           { transaction: t }
         );
 
-        // decrement inventory immediately on reserve (simple approach)
+        // decrement inventory immediately
         b.Inventory.stemsInColdroom = available - take;
         await b.Inventory.save({ transaction: t });
 
@@ -98,7 +104,9 @@ exports.reserveOrder = async (req, res) => {
         qtyToReserve -= take;
         if (qtyToReserve === 0) break;
       }
-      if (qtyToReserve > 0) throw new Error("Insufficient stock to reserve");
+
+      if (qtyToReserve > 0)
+        throw new Error("Insufficient stock to reserve for order item");
     }
 
     order.status = "Reserved";
@@ -109,11 +117,14 @@ exports.reserveOrder = async (req, res) => {
     res.json({ ok: true, order_id: order.order_id });
   } catch (e) {
     await t.rollback();
+    console.error("❌ Error reserving order:", e);
     res.status(400).json({ error: e.message });
   }
 };
 
-// Fulfil: mark reservations fulfilled; items -> Fulfilled; order -> Shipped
+// ===============================
+// 🚚 Fulfil Order (Ship Out)
+// ===============================
 exports.fulfilOrder = async (req, res) => {
   const t = await sequelize.transaction();
   try {
@@ -139,11 +150,14 @@ exports.fulfilOrder = async (req, res) => {
     res.json({ ok: true });
   } catch (e) {
     await t.rollback();
+    console.error("❌ Error fulfilling order:", e);
     res.status(400).json({ error: e.message });
   }
 };
 
-// Cancel: release reservations back to inventory
+// ===============================
+// ❌ Cancel Order (Release Stock)
+// ===============================
 exports.cancelOrder = async (req, res) => {
   const t = await sequelize.transaction();
   try {
@@ -166,6 +180,7 @@ exports.cancelOrder = async (req, res) => {
           transaction: t,
           lock: t.LOCK.UPDATE,
         });
+
         inv.stemsInColdroom += r.quantityReserved;
         await inv.save({ transaction: t });
 
@@ -184,6 +199,7 @@ exports.cancelOrder = async (req, res) => {
     res.json({ ok: true });
   } catch (e) {
     await t.rollback();
+    console.error("❌ Error cancelling order:", e);
     res.status(400).json({ error: e.message });
   }
 };

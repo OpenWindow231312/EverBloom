@@ -1,29 +1,39 @@
+// ========================================
+// 🌸 EverBloom — User Model
+// ========================================
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define("User", {
-    user_id: {
-      type: DataTypes.INTEGER,
-      autoIncrement: true,
-      primaryKey: true,
+  const User = sequelize.define(
+    "User",
+    {
+      user_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      fullName: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      email: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        unique: true,
+        validate: { isEmail: true },
+      },
+      passwordHash: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+      },
     },
-    fullName: { type: DataTypes.STRING, allowNull: false },
-    email: { type: DataTypes.STRING, allowNull: false, unique: true },
-    passwordHash: { type: DataTypes.STRING, allowNull: false },
-    phone: { type: DataTypes.STRING },
-    isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
-  });
-
-  User.associate = (models) => {
-    // A user can have many roles
-    User.belongsToMany(models.Role, {
-      through: models.UserRole,
-      foreignKey: "user_id",
-    });
-
-    // Optional: if you want direct access to UserRoles
-    User.hasMany(models.UserRole, {
-      foreignKey: "user_id",
-    });
-  };
+    {
+      tableName: "Users",
+      timestamps: true,
+    }
+  );
 
   return User;
 };

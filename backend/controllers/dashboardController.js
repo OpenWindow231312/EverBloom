@@ -1,15 +1,25 @@
-const { sequelize } = require("../models");
+// ========================================
+// 🌸 EverBloom — Dashboard Controller
+// ========================================
 
+const sequelize = require("../db"); // ✅ use direct Sequelize connection
+
+// ===============================
+// 💰 Sales Summary
+// ===============================
 exports.getSalesSummary = async (req, res) => {
   try {
     const [results] = await sequelize.query("SELECT * FROM SalesSummary");
     res.json(results);
   } catch (err) {
-    console.error("Error fetching Sales Summary:", err);
+    console.error("❌ Error fetching Sales Summary:", err);
     res.status(500).json({ error: "Failed to load sales summary" });
   }
 };
 
+// ===============================
+// ⚠️ Low Stock Alerts
+// ===============================
 exports.getLowStockAlerts = async (req, res) => {
   try {
     const [results] = await sequelize.query(
@@ -17,11 +27,14 @@ exports.getLowStockAlerts = async (req, res) => {
     );
     res.json(results);
   } catch (err) {
-    console.error("Error fetching Low Stock Alerts:", err);
+    console.error("❌ Error fetching Low Stock Alerts:", err);
     res.status(500).json({ error: "Failed to load alerts" });
   }
 };
 
+// ===============================
+// 🕓 Activity Logs
+// ===============================
 exports.getActivityLogs = async (req, res) => {
   try {
     const [results] = await sequelize.query(
@@ -29,23 +42,28 @@ exports.getActivityLogs = async (req, res) => {
     );
     res.json(results);
   } catch (err) {
-    console.error("Error fetching Activity Logs:", err);
+    console.error("❌ Error fetching Activity Logs:", err);
     res.status(500).json({ error: "Failed to load logs" });
   }
 };
 
+// ===============================
+// 🌿 Inventory Overview
+// ===============================
 exports.getInventoryOverview = async (req, res) => {
   try {
     const [results] = await sequelize.query("SELECT * FROM FlowerStockView");
     res.json(results);
   } catch (err) {
-    console.error("Error fetching Inventory Overview:", err);
+    console.error("❌ Error fetching Inventory Overview:", err);
     res.status(500).json({ error: "Failed to load inventory" });
   }
 };
 
-// 🌸 Dashboard Overview Summary
-exports.getDashboardOverview = async (req, res) => {
+// ===============================
+// 🧭 Dashboard Overview Summary
+// ===============================
+exports.getDashboardOverview = async (_req, res) => {
   try {
     const [[users]] = await sequelize.query(
       "SELECT COUNT(*) AS total, SUM(isActive) AS active FROM Users"
@@ -68,8 +86,6 @@ exports.getDashboardOverview = async (req, res) => {
     const [[coldroom]] = await sequelize.query(
       "SELECT SUM(stemsInColdroom) AS total FROM Inventories"
     );
-
-    // Example: flowers with less than 10 stems = low stock
     const [[lowStock]] = await sequelize.query(
       "SELECT COUNT(*) AS count FROM Inventories WHERE stemsInColdroom < 10"
     );
@@ -88,7 +104,7 @@ exports.getDashboardOverview = async (req, res) => {
       lowStock: lowStock.count || 0,
     });
   } catch (err) {
-    console.error("Dashboard Overview Error:", err);
+    console.error("❌ Dashboard Overview Error:", err);
     res.status(500).json({ error: "Could not load overview data" });
   }
 };

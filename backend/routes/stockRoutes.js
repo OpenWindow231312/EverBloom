@@ -1,13 +1,25 @@
+// ========================================
+// 🌸 EverBloom — Stock Management Routes
+// ========================================
 const express = require("express");
 const router = express.Router();
-const { Flower, FlowerType, HarvestBatch, Inventory } = require("../models");
+
+// ✅ Direct Model Imports
+const Flower = require("../models/Flower");
+const FlowerType = require("../models/FlowerType");
+const HarvestBatch = require("../models/HarvestBatch");
+const Inventory = require("../models/Inventory");
 
 // ===============================
-// 🌸 Add new stock
+// ➕ Add new stock entry
 // ===============================
 router.post("/add", async (req, res) => {
   try {
     const { typeName, flowerName, harvestDate, quantity } = req.body;
+
+    if (!typeName || !flowerName || !quantity) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
 
     // ✅ 1. Find or create flower type
     const [type] = await FlowerType.findOrCreate({
@@ -35,7 +47,6 @@ router.post("/add", async (req, res) => {
       existingBatch.totalStemsHarvested += Number(quantity);
       await existingBatch.save();
 
-      // Update inventory too
       if (existingBatch.Inventory) {
         existingBatch.Inventory.stemsInColdroom += Number(quantity);
         await existingBatch.Inventory.save();
@@ -50,7 +61,7 @@ router.post("/add", async (req, res) => {
     // ✅ 4. Otherwise create new batch + inventory
     const harvest = await HarvestBatch.create({
       flower_id: flower.flower_id,
-      harvestDateTime: harvestDate,
+      harvestDateTime: harvestDate || new Date(),
       totalStemsHarvested: quantity,
       status: "InColdroom",
     });
@@ -66,17 +77,17 @@ router.post("/add", async (req, res) => {
       inventory,
     });
   } catch (err) {
-    console.error("Add stock error:", err);
+    console.error("❌ Add stock error:", err);
     res
       .status(500)
-      .json({ message: "❌ Failed to add stock", error: err.message });
+      .json({ message: "Failed to add stock", error: err.message });
   }
 });
 
 // ===============================
-// 🌿 Get full inventory
+// 🌿 Get full inventory list
 // ===============================
-router.get("/inventory", async (req, res) => {
+router.get("/inventory", async (_req, res) => {
   try {
     const inventory = await Inventory.findAll({
       include: [
@@ -87,10 +98,13 @@ router.get("/inventory", async (req, res) => {
       ],
       order: [["createdAt", "DESC"]],
     });
+
     res.json(inventory);
   } catch (err) {
-    console.error("Fetch inventory error:", err);
-    res.status(500).json({ message: "❌ Failed to fetch inventory" });
+    console.error("❌ Fetch inventory error:", err);
+    res
+      .status(500)
+      .json({ message: "Failed to fetch inventory", error: err.message });
   }
 });
 
@@ -100,8 +114,11 @@ router.get("/inventory", async (req, res) => {
 router.put("/:id", async (req, res) => {
   try {
     const { quantity } = req.body;
-    const inventory = await Inventory.findByPk(req.params.id);
+    if (quantity == null) {
+      return res.status(400).json({ message: "Quantity is required" });
+    }
 
+    const inventory = await Inventory.findByPk(req.params.id);
     if (!inventory) return res.status(404).json({ message: "Stock not found" });
 
     inventory.stemsInColdroom = quantity;
@@ -109,13 +126,15 @@ router.put("/:id", async (req, res) => {
 
     res.json({ message: "✅ Stock updated", inventory });
   } catch (err) {
-    console.error("Update stock error:", err);
-    res.status(500).json({ message: "❌ Failed to update stock" });
+    console.error("❌ Update stock error:", err);
+    res
+      .status(500)
+      .json({ message: "Failed to update stock", error: err.message });
   }
 });
 
 // ===============================
-// 🗑️ Delete stock
+// 🗑️ Delete stock entry
 // ===============================
 router.delete("/:id", async (req, res) => {
   try {
@@ -125,8 +144,10 @@ router.delete("/:id", async (req, res) => {
     await inventory.destroy();
     res.json({ message: "🗑️ Stock deleted successfully" });
   } catch (err) {
-    console.error("Delete stock error:", err);
-    res.status(500).json({ message: "❌ Failed to delete stock" });
+    console.error("❌ Delete stock error:", err);
+    res
+      .status(500)
+      .json({ message: "Failed to delete stock", error: err.message });
   }
 });
 
