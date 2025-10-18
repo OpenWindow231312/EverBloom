@@ -1,63 +1,122 @@
 // ========================================
-// 🌸 EverBloom — Sequelize Model Loader (Factory Pattern)
+// 🌸 EverBloom — Sequelize Model Index
 // ========================================
-const { DataTypes } = require("sequelize");
-const sequelize = require("../db");
+const { Sequelize, DataTypes } = require("sequelize");
+const fs = require("fs");
+const path = require("path");
 
-// ✅ Import model factory functions and call them
-const User = require("./User")(sequelize, DataTypes);
-const Role = require("./Role")(sequelize, DataTypes);
-const UserRole = require("./UserRole")(sequelize, DataTypes);
-const Flower = require("./Flower")(sequelize, DataTypes);
-const Order = require("./Order")(sequelize, DataTypes);
-const OrderItem = require("./OrderItem")(sequelize, DataTypes);
-const Discard = require("./Discard")(sequelize, DataTypes);
-const Review = require("./Review")(sequelize, DataTypes);
-const Delivery = require("./Delivery")(sequelize, DataTypes);
-const FlowerType = require("./FlowerType")(sequelize, DataTypes);
-const Inventory = require("./Inventory")(sequelize, DataTypes);
-const ColdroomReservation = require("./ColdroomReservation")(
-  sequelize,
-  DataTypes
+// ----------------------------
+// DB connection
+// ----------------------------
+const sequelize = new Sequelize(
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASS,
+  {
+    host: process.env.DB_HOST,
+    dialect: process.env.DB_DIALECT || "mysql",
+    logging: false,
+    // Optional: uncomment if your host requires SSL (Render/AlwaysData sometimes do)
+    // dialectOptions: { ssl: { require: true, rejectUnauthorized: false } },
+  }
 );
-const Store = require("./Store")(sequelize, DataTypes);
-const HarvestBatch = require("./HarvestBatch")(sequelize, DataTypes);
 
-// =========================
-// 🔗 Define Associations
-// =========================
-User.belongsToMany(Role, { through: UserRole, foreignKey: "user_id" });
-Role.belongsToMany(User, { through: UserRole, foreignKey: "role_id" });
+// ----------------------------
+// Load all model files
+// ----------------------------
+const db = {};
+const basename = path.basename(__filename);
 
-UserRole.belongsTo(User, { foreignKey: "user_id" });
-UserRole.belongsTo(Role, { foreignKey: "role_id" });
+fs.readdirSync(__dirname)
+  .filter((file) => file !== basename && file.endsWith(".js"))
+  .forEach((file) => {
+    const modelFactory = require(path.join(__dirname, file));
+    const model = modelFactory(sequelize, DataTypes);
+    db[model.name] = model;
+  });
 
-Order.belongsTo(User, { foreignKey: "user_id" });
-Review.belongsTo(User, { foreignKey: "user_id" });
-
-Inventory.belongsTo(HarvestBatch, { foreignKey: "harvestBatch_id" });
-HarvestBatch.belongsTo(Flower, { foreignKey: "flower_id" });
-
-Delivery.belongsTo(Order, { foreignKey: "order_id" });
-Store.belongsTo(User, { foreignKey: "user_id" });
-
-// =========================
-// ✅ Export everything
-// =========================
-module.exports = {
-  sequelize,
+// ----------------------------
+// Destructure models
+// ----------------------------
+const {
   User,
   Role,
   UserRole,
-  Flower,
   Order,
   OrderItem,
+  Flower,
+  FlowerType,
+  HarvestBatch,
+  Inventory,
+  Store,
+  ColdroomReservation,
   Discard,
   Review,
-  Delivery,
-  FlowerType,
-  Inventory,
-  ColdroomReservation,
-  Store,
-  HarvestBatch,
-};
+} = db;
+
+// ----------------------------
+// Associations
+// ----------------------------
+
+// ✅ Users ↔ Roles (Many-to-Many through UserRoles)
+User.belongsToMany(Role, {
+  through: UserRole,
+  foreignKey: "user_id",
+  otherKey: "role_id",
+});
+Role.belongsToMany(User, {
+  through: UserRole,
+  foreignKey: "role_id",
+  otherKey: "user_id",
+});
+
+// ✅ UserRoles belong to both sides (handy for includes)
+UserRole.belongsTo(User, { foreignKey: "user_id" });
+User.hasMany(UserRole, { foreignKey: "user_id" });
+
+UserRole.belongsTo(Role, { foreignKey: "role_id" });
+Role.hasMany(UserRole, { foreignKey: "role_id" });
+
+// ✅ User ↔ Order (1:M)
+User.hasMany(Order, { foreignKey: "user_id" });
+Order.belongsTo(User, { foreignKey: "user_id" });
+
+// ✅ Flower ↔ FlowerType (M:1)
+Flower.belongsTo(FlowerType, { foreignKey: "type_id" });
+FlowerType.hasMany(Flower, { foreignKey: "type_id" });
+
+// ✅ HarvestBatch ↔ Flower (M:1)
+HarvestBatch.belongsTo(Flower, { foreignKey: "flower_id" });
+Flower.hasMany(HarvestBatch, { foreignKey: "flower_id" });
+
+// ✅ Inventory ↔ HarvestBatch (1:1)
+Inventory.belongsTo(HarvestBatch, { foreignKey: "harvestBatch_id" });
+HarvestBatch.hasOne(Inventory, { foreignKey: "harvestBatch_id" });
+
+// ✅ Order ↔ OrderItem (1:M)
+Order.hasMany(OrderItem, { foreignKey: "order_id" });
+OrderItem.belongsTo(Order, { foreignKey: "order_id" });
+
+// ✅ OrderItem ↔ Flower (M:1)
+OrderItem.belongsTo(Flower, { foreignKey: "flower_id" });
+Flower.hasMany(OrderItem, { foreignKey: "flower_id" });
+
+// ✅ ColdroomReservation ↔ HarvestBatch + OrderItem (M:1 each)
+ColdroomReservation.belongsTo(HarvestBatch, { foreignKey: "harvestBatch_id" });
+ColdroomReservation.belongsTo(OrderItem, { foreignKey: "orderItem_id" });
+
+// ✅ Discard ↔ HarvestBatch + User (M:1 each)
+Discard.belongsTo(HarvestBatch, { foreignKey: "harvestBatch_id" });
+Discard.belongsTo(User, { as: "discardedBy", foreignKey: "discardedBy_id" });
+
+// ✅ Review ↔ User + Store (M:1 each)
+Review.belongsTo(User, { foreignKey: "user_id" });
+Review.belongsTo(Store, { foreignKey: "store_id" });
+
+// ----------------------------
+// Export
+// ----------------------------
+db.sequelize = sequelize;
+db.Sequelize = Sequelize;
+
+module.exports = db;

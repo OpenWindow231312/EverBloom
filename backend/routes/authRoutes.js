@@ -82,28 +82,34 @@ router.post("/register", async (req, res) => {
 });
 
 // ===============================
-// 🔹 LOGIN USER
+// 🔹 LOGIN USER (FIXED VERSION)
 // ===============================
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user by email
-    const user = await User.findOne({ where: { email } });
-    if (!user) return res.status(400).json({ error: "User not found" });
-
-    // Compare password
-    const match = await bcrypt.compare(password, user.passwordHash);
-    if (!match) return res.status(400).json({ error: "Invalid credentials" });
-
-    // Fetch user roles
-    const userRoles = await UserRole.findAll({
-      where: { user_id: user.user_id },
-      include: [{ model: Role }],
+    // Find user and include roles directly
+    const user = await User.findOne({
+      where: { email },
+      include: [
+        {
+          model: Role,
+          through: { attributes: [] },
+          attributes: ["roleName"],
+        },
+      ],
     });
-    const roles = userRoles.map((ur) => ur.Role.roleName);
 
-    // Generate token
+    if (!user)
+      return res.status(400).json({ error: "Invalid email or password" });
+
+    const match = await bcrypt.compare(password, user.passwordHash);
+    if (!match)
+      return res.status(400).json({ error: "Invalid email or password" });
+
+    const roles = user.Roles?.map((r) => r.roleName) || [];
+
+    // Sign JWT token
     const token = signToken({ user_id: user.user_id, roles });
 
     res.json({
@@ -118,9 +124,10 @@ router.post("/login", async (req, res) => {
     });
   } catch (err) {
     console.error("❌ Login error:", err);
-    res
-      .status(500)
-      .json({ error: "Server error during login", details: err.message });
+    res.status(500).json({
+      error: "Server error during login",
+      details: err.message,
+    });
   }
 });
 

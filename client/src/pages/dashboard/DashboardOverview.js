@@ -25,12 +25,31 @@ export default function DashboardOverview() {
   useEffect(() => {
     const fetchOverview = async () => {
       try {
-        console.log("Fetching from:", `${API_URL}/api/dashboard/overview`);
-        const res = await axios.get(`${API_URL}/api/dashboard/overview`);
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No token found. Please log in again.");
+
+        console.log(
+          "📡 Fetching overview from:",
+          `${API_URL}/api/dashboard/overview`
+        );
+
+        const res = await axios.get(`${API_URL}/api/dashboard/overview`, {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
         setStats(res.data);
       } catch (err) {
-        console.error("Overview fetch error:", err.response || err.message);
-        setError("Could not load overview data. Please try again.");
+        console.error("❌ Overview fetch error:", err.response || err.message);
+        if (err.response?.status === 401) {
+          setError("Session expired. Please log in again.");
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+        } else {
+          setError("Could not load overview data. Please try again.");
+        }
       } finally {
         setLoading(false);
       }

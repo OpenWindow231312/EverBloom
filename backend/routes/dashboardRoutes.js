@@ -1,24 +1,22 @@
-// ========================================
-// 🌸 EverBloom — Dashboard Routes
-// ========================================
 const express = require("express");
 const router = express.Router();
 const { Op } = require("sequelize");
 
-// ✅ Direct model imports
-const User = require("../models/User");
-const Role = require("../models/Role");
-const UserRole = require("../models/UserRole");
-const Order = require("../models/Order");
-const OrderItem = require("../models/OrderItem");
-const Flower = require("../models/Flower");
-const FlowerType = require("../models/FlowerType");
-const HarvestBatch = require("../models/HarvestBatch");
-const Inventory = require("../models/Inventory");
-const Store = require("../models/Store");
-const ColdroomReservation = require("../models/ColdroomReservation");
-const Discard = require("../models/Discard");
-const Review = require("../models/Review");
+const {
+  User,
+  Role,
+  UserRole,
+  Order,
+  OrderItem,
+  Flower,
+  FlowerType,
+  HarvestBatch,
+  Inventory,
+  Store,
+  ColdroomReservation,
+  Discard,
+  Review,
+} = require("../models");
 
 const { requireAuth, requireRole } = require("../middleware/authMiddleware");
 

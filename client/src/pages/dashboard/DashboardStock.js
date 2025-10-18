@@ -3,12 +3,17 @@ import axios from "axios";
 import "../dashboard/Dashboard.css";
 
 export default function DashboardStock() {
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
+  const API_URL =
+    import.meta.env?.VITE_API_URL ||
+    process.env.REACT_APP_API_URL ||
+    "http://localhost:5001";
 
   const [flowers, setFlowers] = useState([]);
   const [types, setTypes] = useState([]);
   const [harvests, setHarvests] = useState([]);
   const [editingHarvest, setEditingHarvest] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   const [flowerForm, setFlowerForm] = useState({
     type_id: "",
@@ -25,40 +30,63 @@ export default function DashboardStock() {
     harvestDateTime: "",
   });
 
-  const [loading, setLoading] = useState(true);
-
   // ===========================
-  // 🧭 Fetch stock-related data
+  // 🧭 Fetch Stock Data
   // ===========================
   useEffect(() => {
     const fetchData = async () => {
       try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No token found. Please log in again.");
+
+        const headers = {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        };
+
         const [typeRes, flowerRes, harvestRes] = await Promise.all([
-          axios.get(`${API_URL}/api/dashboard/flower-types`),
-          axios.get(`${API_URL}/api/dashboard/flowers`),
-          axios.get(`${API_URL}/api/dashboard/harvests`),
+          axios.get(`${API_URL}/api/dashboard/flower-types`, { headers }),
+          axios.get(`${API_URL}/api/dashboard/flowers`, { headers }),
+          axios.get(`${API_URL}/api/dashboard/harvests`, { headers }),
         ]);
+
         setTypes(typeRes.data || []);
         setFlowers(flowerRes.data || []);
         setHarvests(updateHarvestLifespans(harvestRes.data || []));
       } catch (err) {
-        console.error("Error fetching stock data:", err);
+        console.error("❌ Error fetching stock data:", err);
+        setError(
+          err.response?.status === 401
+            ? "Session expired or unauthorized access."
+            : "Failed to load stock data."
+        );
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
   }, [API_URL]);
 
+  // ===========================
   // 🌸 Add Flower
-  const handleFlowerChange = (e) => {
+  // ===========================
+  const handleFlowerChange = (e) =>
     setFlowerForm({ ...flowerForm, [e.target.name]: e.target.value });
-  };
 
   const handleAddFlower = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/api/dashboard/flowers`, flowerForm);
+      const token = localStorage.getItem("token");
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+
+      await axios.post(`${API_URL}/api/dashboard/flowers`, flowerForm, {
+        headers,
+      });
+
       alert("✅ Flower added successfully!");
       setFlowerForm({
         type_id: "",
@@ -67,36 +95,32 @@ export default function DashboardStock() {
         stem_length: "",
         shelf_life: "",
       });
-      const res = await axios.get(`${API_URL}/api/dashboard/flowers`);
+
+      const res = await axios.get(`${API_URL}/api/dashboard/flowers`, {
+        headers,
+      });
       setFlowers(res.data || []);
     } catch (err) {
-      console.error("Error adding flower:", err);
+      console.error("❌ Error adding flower:", err);
       alert("❌ Failed to add flower.");
     }
   };
 
-  // 🗑️ Delete Flower
-  const handleDeleteFlower = async (flower_id) => {
-    if (!window.confirm("Are you sure you want to delete this flower?")) return;
-    try {
-      await axios.delete(`${API_URL}/api/stock/${flower_id}`);
-      alert("🗑️ Flower deleted successfully!");
-      const res = await axios.get(`${API_URL}/api/dashboard/flowers`);
-      setFlowers(res.data || []);
-    } catch (err) {
-      console.error("Error deleting flower:", err);
-      alert("❌ Failed to delete flower.");
-    }
-  };
-
+  // ===========================
   // 🌾 Add Harvest
-  const handleHarvestChange = (e) => {
+  // ===========================
+  const handleHarvestChange = (e) =>
     setHarvestForm({ ...harvestForm, [e.target.name]: e.target.value });
-  };
 
   const handleAddHarvest = async (e) => {
     e.preventDefault();
     try {
+      const token = localStorage.getItem("token");
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+
       const payload = {
         flower_id: harvestForm.flower_id,
         totalStemsHarvested: harvestForm.totalStemsHarvested,
@@ -105,11 +129,9 @@ export default function DashboardStock() {
         status: "InColdroom",
       };
 
-      await axios.post(`${API_URL}/api/flowers/harvests`, payload, {
-        headers: { "Content-Type": "application/json" },
-      });
-
+      await axios.post(`${API_URL}/api/flowers/harvests`, payload, { headers });
       alert("✅ Harvest batch recorded!");
+
       setHarvestForm({
         flower_id: "",
         totalStemsHarvested: "",
@@ -117,15 +139,19 @@ export default function DashboardStock() {
         harvestDateTime: "",
       });
 
-      const res = await axios.get(`${API_URL}/api/dashboard/harvests`);
+      const res = await axios.get(`${API_URL}/api/dashboard/harvests`, {
+        headers,
+      });
       setHarvests(updateHarvestLifespans(res.data || []));
     } catch (err) {
-      console.error("Error adding harvest:", err);
+      console.error("❌ Error adding harvest:", err);
       alert("❌ Failed to record harvest batch.");
     }
   };
 
+  // ===========================
   // 🧮 Lifespan Calculation
+  // ===========================
   const updateHarvestLifespans = (harvestList) => {
     const today = new Date();
     return harvestList.map((h) => {
@@ -148,18 +174,23 @@ export default function DashboardStock() {
     });
   };
 
+  // ===========================
   // ✏️ Edit Harvest (Modal)
-  const handleEditHarvest = (harvest) => {
-    setEditingHarvest({ ...harvest });
-  };
+  // ===========================
+  const handleEditHarvest = (harvest) => setEditingHarvest({ ...harvest });
 
-  const handleEditChange = (e) => {
+  const handleEditChange = (e) =>
     setEditingHarvest({ ...editingHarvest, [e.target.name]: e.target.value });
-  };
 
   const handleSaveHarvest = async (e) => {
     e.preventDefault();
     try {
+      const token = localStorage.getItem("token");
+      const headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      };
+
       const {
         harvestBatch_id,
         totalStemsHarvested,
@@ -170,27 +201,26 @@ export default function DashboardStock() {
 
       await axios.put(
         `${API_URL}/api/dashboard/harvests/${harvestBatch_id}`,
-        {
-          totalStemsHarvested,
-          harvestDateTime,
-          notes,
-          status,
-        },
-        { headers: { "Content-Type": "application/json" } }
+        { totalStemsHarvested, harvestDateTime, notes, status },
+        { headers }
       );
 
       alert("✅ Harvest batch updated!");
       setEditingHarvest(null);
-      const res = await axios.get(`${API_URL}/api/dashboard/harvests`);
+
+      const res = await axios.get(`${API_URL}/api/dashboard/harvests`, {
+        headers,
+      });
       setHarvests(updateHarvestLifespans(res.data || []));
     } catch (err) {
-      console.error("Error updating harvest:", err);
+      console.error("❌ Error updating harvest:", err);
       alert("❌ Failed to update harvest.");
     }
   };
 
-  if (loading) return <p>Loading stock data...</p>;
-
+  // ===========================
+  // 🎨 UI Helpers
+  // ===========================
   const StatusBadge = ({ status }) => {
     let color = "#ccc";
     if (status === "InColdroom") color = "#5cb85c";
@@ -212,6 +242,12 @@ export default function DashboardStock() {
       </span>
     );
   };
+
+  // ===========================
+  // 🧭 RENDER
+  // ===========================
+  if (loading) return <p>Loading stock data...</p>;
+  if (error) return <p className="error-message">{error}</p>;
 
   return (
     <div className="dashboard-stock">

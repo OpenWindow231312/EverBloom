@@ -1,7 +1,8 @@
 // ==========================================
-// 🌸 EverBloom — Database Seeder
+// 🌸 EverBloom — Database Seeder (Unified)
 // ==========================================
 require("dotenv").config();
+const bcrypt = require("bcryptjs");
 const {
   sequelize,
   Role,
@@ -20,30 +21,44 @@ const {
     console.log("✅ Connected to DB");
 
     // 🌼 Seed Roles
-    const [adminRole] = await Role.findOrCreate({
-      where: { roleName: "Admin" },
-    });
-    const [employeeRole] = await Role.findOrCreate({
-      where: { roleName: "Employee" },
-    });
-    const [customerRole] = await Role.findOrCreate({
-      where: { roleName: "Customer" },
-    });
+    const roles = ["Admin", "Employee", "Florist", "Customer"];
+    for (const roleName of roles) {
+      await Role.findOrCreate({ where: { roleName } });
+    }
     console.log("✅ Roles ready");
 
-    // 👤 Find existing admin user
-    const adminUser = await User.findOne({
-      where: { email: "admin@everbloom.local" },
+    // 👤 Ensure Admin User Exists
+    const email = "admin@everbloom.com";
+    const password = "Admin123!";
+    const passwordHash = await bcrypt.hash(password, 10);
+
+    const [adminUser, createdAdmin] = await User.findOrCreate({
+      where: { email },
+      defaults: {
+        fullName: "Admin User",
+        email,
+        passwordHash,
+        isActive: true,
+      },
     });
-    if (adminUser) {
-      await UserRole.findOrCreate({
-        where: { user_id: adminUser.user_id, role_id: adminRole.role_id },
+
+    console.log(
+      createdAdmin
+        ? `🌱 Created Admin account (${email})`
+        : `ℹ️ Admin account already exists (${email})`
+    );
+
+    // 🔗 Link Admin user to Admin role
+    const adminRole = await Role.findOne({ where: { roleName: "Admin" } });
+    const existingLink = await UserRole.findOne({
+      where: { user_id: adminUser.user_id, role_id: adminRole.role_id },
+    });
+    if (!existingLink) {
+      await UserRole.create({
+        user_id: adminUser.user_id,
+        role_id: adminRole.role_id,
       });
-      console.log("✅ Linked Admin user to Admin role");
-    } else {
-      console.log(
-        "⚠️ No admin user found — register one first via /api/auth/register"
-      );
+      console.log("🔗 Linked Admin user to Admin role");
     }
 
     // 🌷 Seed Flower Types

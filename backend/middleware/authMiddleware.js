@@ -1,57 +1,49 @@
+// ========================================
+// 🌸 EverBloom — Auth Middleware
+// ========================================
 const jwt = require("jsonwebtoken");
+const { User, Role, UserRole } = require("../models");
 
-// ========================
-// 🧩 Authentication Middleware
-// ========================
-const requireAuth = (req, res, next) => {
-  const hdr = req.headers.authorization || "";
-  const token = hdr.replace("Bearer ", "");
-
-  // 🧪 Dev helper token
-  if (process.env.NODE_ENV !== "production" && token === "test") {
-    req.user = {
-      user_id: 0,
-      roles: ["Admin", "Employee", "Florist", "Customer"],
-    };
-    return next();
-  }
-
-  if (!token) {
-    return res.status(401).json({ error: "No token provided" });
-  }
-
+// ✅ Check if user is logged in
+const requireAuth = async (req, res, next) => {
   try {
-    // Verify and attach user data to req.user
-    req.user = jwt.verify(token, process.env.JWT_SECRET || "dev");
-    return next();
+    const authHeader = req.headers.authorization;
+    if (!authHeader || !authHeader.startsWith("Bearer "))
+      return res.status(401).json({ error: "Missing or invalid token" });
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || "dev_secret");
+
+    const user = await User.findByPk(decoded.user_id, {
+      include: { model: Role, through: { attributes: [] } },
+    });
+
+    if (!user) return res.status(401).json({ error: "User not found" });
+
+    req.user = {
+      user_id: user.user_id,
+      roles: user.Roles.map((r) => r.roleName),
+    };
+    next();
   } catch (err) {
-    return res.status(401).json({ error: "Invalid or expired token" });
+    console.error("❌ Auth error:", err.message);
+    return res.status(401).json({ error: "Unauthorized" });
   }
 };
 
-// ========================
-// 🧩 Role Authorization Middleware
-// ========================
-// ✅ Now expects an array: requireRole(["Admin","Employee"])
-// This ensures proper argument passing from Express
-const requireRole = (allowedRoles = []) => {
+// ✅ Restrict route by role(s)
+const requireRole = (...allowedRoles) => {
   return (req, res, next) => {
-    const userRoles = req.user?.roles || [];
+    if (!req.user || !req.user.roles)
+      return res.status(403).json({ error: "Access denied" });
 
-    // If the user has any of the allowed roles, continue
-    const hasPermission = allowedRoles.some((r) => userRoles.includes(r));
-    if (hasPermission) return next();
+    const hasAccess = req.user.roles.some((r) => allowedRoles.includes(r));
 
-    return res
-      .status(403)
-      .json({ error: "Forbidden: insufficient privileges" });
+    if (!hasAccess)
+      return res.status(403).json({ error: "Forbidden: insufficient role" });
+
+    next();
   };
 };
 
-// ========================
-// ✅ Exports
-// ========================
-module.exports = {
-  requireAuth,
-  requireRole,
-};
+module.exports = { requireAuth, requireRole };

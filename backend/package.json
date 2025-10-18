@@ -7,9 +7,11 @@
     "start": "node index.js",
     "dev": "cross-env NODE_ENV=development PORT=5001 nodemon index.js",
     "build": "echo 'No build step required for backend'",
-    "render-build": "cd ../client && npm install && npm run build"
+    "render-build": "cd ../client && npm install && npm run build",
+    "seed": "node seed.js"
   },
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.6.1",
