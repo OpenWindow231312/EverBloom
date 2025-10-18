@@ -765,3 +765,151 @@
         gap: 10px;
     }
 }
+
+/* 🌿 Dashboard General */
+.dashboard-orders {
+    padding: 20px;
+    font-family: "Poppins", sans-serif;
+}
+
+.card {
+    background-color: #fff5f2;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+h3,
+h4 {
+    margin-top: 10px;
+    color: #b03a48;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #b03a48;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-primary:hover {
+    background-color: #912f3d;
+}
+
+.btn-secondary {
+    background-color: #f2d4cf;
+    border: none;
+    color: #7b2c2f;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-right: 8px;
+    cursor: pointer;
+}
+
+.btn-secondary:hover {
+    background-color: #e8bcb4;
+}
+
+.add-order-btn {
+    margin-bottom: 12px;
+}
+
+/* Order Form */
+.order-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.order-form input,
+.order-form select {
+    padding: 8px 10px;
+    border: 1px solid #d6d6d6;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    width: 100%;
+}
+
+.flower-row {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    background-color: #fff9f8;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #f1e0de;
+    margin-bottom: 10px;
+}
+
+.stock-warning {
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.stock-warning.warning {
+    color: #d9534f;
+}
+
+.stock-warning.ok {
+    color: #5cb85c;
+}
+
+/* Table */
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+}
+
+.dashboard-table th {
+    background-color: #b03a48;
+    color: white;
+    padding: 10px;
+    text-align: left;
+    font-weight: 500;
+}
+
+.dashboard-table td {
+    padding: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.dashboard-table tr:hover {
+    background-color: #fef3f2;
+}
+
+/* Order Status Badges */
+.status-badge {
+    padding: 5px 10px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: white;
+}
+
+.status-badge.pending {
+    background-color: #f0ad4e;
+}
+
+.status-badge.delivered {
+    background-color: #5cb85c;
+}
+
+.status-badge.cancelled {
+    background-color: #d9534f;
+}
+
+.status-badge.default {
+    background-color: #bfbfbf;
+}
+
+.no-data {
+    text-align: center;
+    color: #666;
+    padding: 15px 0;
+}

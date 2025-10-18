@@ -188,6 +188,158 @@ router.put(
   }
 );
 
+// ===========================================
+// 🆕 CREATE NEW ORDER (Admin/Employee)
+// ===========================================
+router.post(
+  "/orders",
+  requireAuth,
+  requireRole("Admin", "Employee"),
+  async (req, res) => {
+    try {
+      const { user_id, flowers, pickupOrDelivery, shippingAddress } = req.body;
+
+      if (
+        !user_id ||
+        !flowers ||
+        !Array.isArray(flowers) ||
+        flowers.length === 0
+      ) {
+        return res.status(400).json({ message: "Missing order details" });
+      }
+
+      // ✅ Create the base order
+      const order = await Order.create({
+        user_id,
+        orderDateTime: new Date(),
+        status: "Pending",
+        totalAmount: 0,
+        pickupOrDelivery,
+        shippingAddress:
+          pickupOrDelivery === "Delivery" ? shippingAddress : null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      let totalAmount = 0;
+
+      for (const f of flowers) {
+        const { flower_id, quantity } = f;
+
+        // Find the flower and its batch
+        const flower = await Flower.findByPk(flower_id, {
+          include: [
+            { model: FlowerType },
+            { model: HarvestBatch, include: [Inventory] },
+          ],
+        });
+
+        if (!flower) continue;
+
+        const batch = flower.HarvestBatches?.[0];
+        const inv = batch?.Inventory;
+
+        if (!batch || !inv) continue;
+
+        // ✅ Check stock availability
+        if (inv.stemsInColdroom < quantity) {
+          return res.status(400).json({
+            message: `Not enough stock for ${flower.variety}. Available: ${inv.stemsInColdroom}`,
+          });
+        }
+
+        // ✅ Deduct stock
+        inv.stemsInColdroom -= quantity;
+        await inv.save();
+
+        // Example price logic (change later)
+        const pricePerStem = 10;
+        totalAmount += pricePerStem * quantity;
+
+        await OrderItem.create({
+          order_id: order.order_id,
+          flower_id,
+          quantity,
+          pricePerStem,
+          totalPrice: pricePerStem * quantity,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        });
+      }
+
+      order.totalAmount = totalAmount;
+      await order.save();
+
+      const fullOrder = await Order.findByPk(order.order_id, {
+        include: [User],
+      });
+
+      res.json({
+        message: "✅ Order created successfully",
+        order: fullOrder,
+      });
+    } catch (err) {
+      console.error("❌ Error creating order:", err);
+      res
+        .status(500)
+        .json({ message: "Internal server error", error: err.message });
+    }
+  }
+);
+
+// ===============================
+// 🌷 GET ALL FLOWERS (with type + harvests + inventory info)
+// ===============================
+router.get(
+  "/flowers",
+  requireAuth,
+  requireRole("Admin", "Employee"),
+  async (req, res) => {
+    try {
+      const flowers = await Flower.findAll({
+        include: [
+          { model: FlowerType, attributes: ["type_name"] },
+          {
+            model: HarvestBatch,
+            attributes: [
+              "harvestBatch_id",
+              "status",
+              "totalStemsHarvested",
+              "harvestDateTime",
+            ],
+            include: [
+              {
+                model: Inventory,
+                attributes: ["stemsInColdroom"],
+              },
+            ],
+          },
+        ],
+        order: [["flower_id", "ASC"]],
+      });
+
+      // Optional filtering (skip expired)
+      const today = new Date();
+      const validFlowers = flowers.filter((f) => {
+        const recentBatch = f.HarvestBatches?.[0];
+        if (!recentBatch) return false;
+
+        const isExpired = recentBatch.status === "Discarded";
+        const isEmpty = recentBatch.Inventory?.stemsInColdroom <= 0;
+
+        return !isExpired && !isEmpty;
+      });
+
+      res.json(validFlowers);
+    } catch (err) {
+      console.error("❌ Error fetching flowers:", err);
+      res
+        .status(500)
+        .json({ message: "Error fetching flowers", error: err.message });
+    }
+  }
+);
+
 // ===============================
 // 🌸 FLOWERS & TYPES
 // ===============================
