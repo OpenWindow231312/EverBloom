@@ -1,9 +1,16 @@
 /* ===================================
-   🌸 DASHBOARD — STOCK MANAGEMENT
+   🌸 DASHBOARD — STOCK MANAGEMENT (FIXED)
 =================================== */
 
 .dashboard-stock {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
     padding: 20px;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 /* Section Titles */
@@ -18,25 +25,29 @@
 }
 
 /* ==============================
+   🪻 Section Wrapper
+============================== */
+.dashboard-section {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* ==============================
    🪻 Add New Flower Form
 ============================== */
 .dashboard-form {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
-    background: var(--white);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    padding: 1.5rem;
-    margin-bottom: 1rem;
-    transition: 0.3s ease;
+    align-items: center;
+    width: 100%;
 }
 
-.dashboard-form:hover {
-    transform: translateY(-2px);
-}
-
-/* Inputs */
 .dashboard-form input,
 .dashboard-form select,
 .dashboard-form textarea {
@@ -47,6 +58,7 @@
     font-size: 0.95rem;
     font-family: "Poppins", sans-serif;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background: #fafafa;
 }
 
 .dashboard-form input:focus,
@@ -57,13 +69,11 @@
     outline: none;
 }
 
-/* Placeholder text */
 .dashboard-form input::placeholder {
     color: #999;
     font-size: 0.9rem;
 }
 
-/* Add Button */
 .dashboard-form button {
     background: var(--rose);
     color: var(--white);
@@ -85,46 +95,49 @@
 /* ==============================
    🌷 Current Flowers Table
 ============================== */
-
-/* Wrapper for table scroll */
 .table-container {
     width: 100%;
-    overflow-x: auto;
     background: var(--white);
     border-radius: 12px;
     box-shadow: var(--shadow);
-    margin-top: 1rem;
+    overflow-x: auto;
+    margin-top: 1.5rem;
+    box-sizing: border-box;
 }
 
-.dashboard-section table {
+/* Hide scrollbars for aesthetic */
+.table-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background-color: #e2e2e2;
+    border-radius: 10px;
+}
+
+/* Table */
+.dashboard-table {
     width: 100%;
     border-collapse: collapse;
     min-width: 800px;
-    /* ensures scroll for small devices */
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    padding: 12px 14px;
+    text-align: left;
+    border-bottom: 1px solid #f1f1f1;
+    white-space: nowrap;
 }
 
 .dashboard-table th {
     background: var(--rose-light);
     color: var(--rose);
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    font-weight: 600;
-    padding: 12px;
 }
 
-.dashboard-table td {
-    padding: 12px;
-    border-bottom: 1px solid #f1f1f1;
-    vertical-align: middle;
-    text-align: center;
-}
-
-/* Alternate row background */
-.dashboard-table tbody tr:nth-child(even) {
-    background: #fdf6f5;
-}
-
-/* Hover highlight */
 .dashboard-table tbody tr:hover {
     background: #fff3f3;
     transition: background 0.3s ease;
@@ -160,6 +173,13 @@
 /* ==============================
    ✏️ Action Buttons
 ============================== */
+.action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 .edit-btn,
 .delete-btn {
     border: none;
@@ -171,15 +191,6 @@
     transition: background 0.3s ease, transform 0.2s ease;
     margin-top: 7px;
     width: 90px;
-    /* consistent width for both */
-}
-
-/* space between buttons */
-.action-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    flex-wrap: wrap;
 }
 
 .edit-btn {
@@ -207,6 +218,31 @@
 /* ==============================
    🪻 Modal Enhancements
 ============================== */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+    padding: 20px;
+}
+
+.modal-content {
+    background: #fff8f6;
+    border: 2px solid var(--rose);
+    border-radius: 16px;
+    padding: 1.8rem;
+    width: 480px;
+    max-width: 95%;
+    max-height: 80vh;
+    box-shadow: var(--shadow);
+    overflow-y: auto;
+    animation: fadeIn 0.25s ease-in-out;
+    position: relative;
+}
+
 .modal-content h3 {
     font-size: 1.2rem;
     color: var(--rose);
@@ -234,117 +270,15 @@
     border-radius: 8px;
 }
 
-/* ===================================
-   🌹 Responsive Edit Modal Styling
-=================================== */
-
-/* Dimmed background */
-.modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-    padding: 20px;
-}
-
-/* Modal Container */
-.modal-content {
-    background: #fff8f6;
-    border: 2px solid var(--rose);
-    border-radius: 16px;
-    padding: 1.8rem;
-    width: 480px;
-    max-width: 95%;
-    max-height: 80vh;
-    box-shadow: var(--shadow);
-    overflow-y: auto;
-    animation: fadeIn 0.25s ease-in-out;
-    position: relative;
-}
-
-/* Smooth animation */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-15px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Scrollbar styling */
-.modal-content::-webkit-scrollbar {
-    width: 6px;
-}
-
-.modal-content::-webkit-scrollbar-thumb {
-    background-color: var(--rose);
-    border-radius: 4px;
-}
-
-/* Inner form layout */
-.edit-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 10px;
-}
-
-.edit-form label {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--rose);
-}
-
-.edit-form input,
-.edit-form select,
-.edit-form textarea {
-    width: 100%;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    font-size: 0.9rem;
-    font-family: "Poppins", sans-serif;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.edit-form input:focus,
-.edit-form select:focus,
-.edit-form textarea:focus {
-    border-color: var(--rose);
-    box-shadow: 0 0 0 2px rgba(176, 58, 72, 0.2);
-    outline: none;
-}
-
-.edit-form textarea {
-    resize: vertical;
-    min-height: 80px;
-}
-
-/* Modal action buttons */
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-}
-
 /* ==============================
    🌼 Filter Bar & Pagination
 ============================== */
 .filter-bar {
     display: flex;
+    align-items: center;
     gap: 12px;
     margin-bottom: 1rem;
     flex-wrap: wrap;
-    align-items: center;
 }
 
 .filter-bar input,
@@ -354,6 +288,7 @@
     border-radius: 8px;
     font-size: 0.9rem;
     font-family: "Poppins", sans-serif;
+    background: #fafafa;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -436,29 +371,15 @@
     }
 }
 
-/* ==============================
- Mobile Form Layout
-============================== */
-/* ===================================
-   🌸 Compact Form Inputs (Final Fix)
-=================================== */
 @media (max-width: 480px) {
 
     .dashboard-form input,
     .dashboard-form select,
     .dashboard-form textarea {
         padding: 6px 10px !important;
-        /* smaller internal spacing */
         font-size: 0.85rem !important;
-        line-height: 1.2 !important;
         border-radius: 6px !important;
-        min-height: 20px !important;
-        height: 24px !important;
-    }
-
-    .dashboard-form textarea {
-        min-height: 20px !important;
-        /* still comfortable for typing */
+        height: 28px !important;
     }
 
     .dashboard-form button {

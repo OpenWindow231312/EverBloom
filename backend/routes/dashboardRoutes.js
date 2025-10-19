@@ -1,3 +1,6 @@
+// ========================================
+// 🌸 EverBloom — Dashboard Routes (FIXED)
+// ========================================
 const express = require("express");
 const router = express.Router();
 const { Op } = require("sequelize");
@@ -88,12 +91,24 @@ router.get("/users", requireAuth, requireRole("Admin"), async (req, res) => {
         {
           model: Role,
           through: { attributes: [] },
-          attributes: ["roleName"],
+          attributes: ["role_id", "roleName"],
         },
       ],
       order: [["user_id", "ASC"]],
     });
-    res.json(users);
+
+    // ✅ Flatten structure for frontend
+    const formatted = users.map((u) => ({
+      user_id: u.user_id,
+      fullName: u.fullName,
+      email: u.email,
+      phone: u.phone,
+      isActive: u.isActive,
+      role_id: u.Roles?.[0]?.role_id || null,
+      roleName: u.Roles?.[0]?.roleName || "Customer",
+    }));
+
+    res.json(formatted);
   } catch (err) {
     console.error("❌ Error fetching users:", err);
     res.status(500).json({ message: "Error fetching users" });
@@ -140,6 +155,44 @@ router.put(
     }
   }
 );
+
+router.delete(
+  "/users/:id",
+  requireAuth,
+  requireRole("Admin"),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      await UserRole.destroy({ where: { user_id: id } });
+      const deleted = await User.destroy({ where: { user_id: id } });
+      if (!deleted)
+        return res
+          .status(404)
+          .json({ message: "User not found or already deleted" });
+
+      res.json({ message: "✅ User deleted successfully" });
+    } catch (err) {
+      console.error("❌ Error deleting user:", err);
+      res.status(500).json({ message: "Error deleting user" });
+    }
+  }
+);
+
+// ===============================
+// 📜 GET ALL ROLES
+// ===============================
+router.get("/roles", requireAuth, requireRole("Admin"), async (req, res) => {
+  try {
+    const roles = await Role.findAll({
+      attributes: ["role_id", "roleName"],
+      order: [["roleName", "ASC"]],
+    });
+    res.json(roles);
+  } catch (err) {
+    console.error("❌ Error fetching roles:", err);
+    res.status(500).json({ message: "Error fetching roles" });
+  }
+});
 
 // ===============================
 // 🛒 ORDERS MANAGEMENT
@@ -188,107 +241,8 @@ router.put(
   }
 );
 
-// ===========================================
-// 🆕 CREATE NEW ORDER (Admin/Employee)
-// ===========================================
-router.post(
-  "/orders",
-  requireAuth,
-  requireRole("Admin", "Employee"),
-  async (req, res) => {
-    try {
-      const { user_id, flowers, pickupOrDelivery, shippingAddress } = req.body;
-
-      if (
-        !user_id ||
-        !flowers ||
-        !Array.isArray(flowers) ||
-        flowers.length === 0
-      ) {
-        return res.status(400).json({ message: "Missing order details" });
-      }
-
-      // ✅ Create the base order
-      const order = await Order.create({
-        user_id,
-        orderDateTime: new Date(),
-        status: "Pending",
-        totalAmount: 0,
-        pickupOrDelivery,
-        shippingAddress:
-          pickupOrDelivery === "Delivery" ? shippingAddress : null,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      let totalAmount = 0;
-
-      for (const f of flowers) {
-        const { flower_id, quantity } = f;
-
-        // Find the flower and its batch
-        const flower = await Flower.findByPk(flower_id, {
-          include: [
-            { model: FlowerType },
-            { model: HarvestBatch, include: [Inventory] },
-          ],
-        });
-
-        if (!flower) continue;
-
-        const batch = flower.HarvestBatches?.[0];
-        const inv = batch?.Inventory;
-
-        if (!batch || !inv) continue;
-
-        // ✅ Check stock availability
-        if (inv.stemsInColdroom < quantity) {
-          return res.status(400).json({
-            message: `Not enough stock for ${flower.variety}. Available: ${inv.stemsInColdroom}`,
-          });
-        }
-
-        // ✅ Deduct stock
-        inv.stemsInColdroom -= quantity;
-        await inv.save();
-
-        // Example price logic (change later)
-        const pricePerStem = 10;
-        totalAmount += pricePerStem * quantity;
-
-        await OrderItem.create({
-          order_id: order.order_id,
-          flower_id,
-          quantity,
-          pricePerStem,
-          totalPrice: pricePerStem * quantity,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
-      }
-
-      order.totalAmount = totalAmount;
-      await order.save();
-
-      const fullOrder = await Order.findByPk(order.order_id, {
-        include: [User],
-      });
-
-      res.json({
-        message: "✅ Order created successfully",
-        order: fullOrder,
-      });
-    } catch (err) {
-      console.error("❌ Error creating order:", err);
-      res
-        .status(500)
-        .json({ message: "Internal server error", error: err.message });
-    }
-  }
-);
-
 // ===============================
-// 🌷 GET ALL FLOWERS (with type + harvests + inventory info)
+// 🌸 FLOWERS & TYPES (Cleaned)
 // ===============================
 router.get(
   "/flowers",
@@ -298,7 +252,10 @@ router.get(
     try {
       const flowers = await Flower.findAll({
         include: [
-          { model: FlowerType, attributes: ["type_name"] },
+          {
+            model: FlowerType,
+            attributes: ["type_id", "type_name", "default_shelf_life"],
+          },
           {
             model: HarvestBatch,
             attributes: [
@@ -307,26 +264,17 @@ router.get(
               "totalStemsHarvested",
               "harvestDateTime",
             ],
-            include: [
-              {
-                model: Inventory,
-                attributes: ["stemsInColdroom"],
-              },
-            ],
+            include: [{ model: Inventory, attributes: ["stemsInColdroom"] }],
           },
         ],
         order: [["flower_id", "ASC"]],
       });
 
-      // Optional filtering (skip expired)
-      const today = new Date();
       const validFlowers = flowers.filter((f) => {
         const recentBatch = f.HarvestBatches?.[0];
-        if (!recentBatch) return false;
-
+        if (!recentBatch) return true;
         const isExpired = recentBatch.status === "Discarded";
         const isEmpty = recentBatch.Inventory?.stemsInColdroom <= 0;
-
         return !isExpired && !isEmpty;
       });
 
@@ -336,27 +284,6 @@ router.get(
       res
         .status(500)
         .json({ message: "Error fetching flowers", error: err.message });
-    }
-  }
-);
-
-// ===============================
-// 🌸 FLOWERS & TYPES
-// ===============================
-router.get(
-  "/flowers",
-  requireAuth,
-  requireRole("Admin", "Employee"),
-  async (req, res) => {
-    try {
-      const flowers = await Flower.findAll({
-        include: [{ model: FlowerType, attributes: ["type_name"] }],
-        order: [["flower_id", "ASC"]],
-      });
-      res.json(flowers);
-    } catch (err) {
-      console.error("❌ Error fetching flowers:", err);
-      res.status(500).json({ message: "Error fetching flowers" });
     }
   }
 );
@@ -374,7 +301,9 @@ router.get(
       res.json(flowerTypes);
     } catch (err) {
       console.error("❌ Error fetching flower types:", err);
-      res.status(500).json({ message: "Error fetching flower types" });
+      res
+        .status(500)
+        .json({ message: "Error fetching flower types", error: err.message });
     }
   }
 );
@@ -386,10 +315,53 @@ router.post(
   async (req, res) => {
     try {
       const flower = await Flower.create(req.body);
-      res.json(flower);
+      res.json({ message: "✅ Flower created successfully", flower });
     } catch (err) {
       console.error("❌ Error creating flower:", err);
-      res.status(500).json({ message: "Error creating flower" });
+      res
+        .status(500)
+        .json({ message: "Error creating flower", error: err.message });
+    }
+  }
+);
+
+router.put(
+  "/flowers/:id",
+  requireAuth,
+  requireRole("Admin", "Employee"),
+  async (req, res) => {
+    try {
+      const flower = await Flower.findByPk(req.params.id);
+      if (!flower) return res.status(404).json({ message: "Flower not found" });
+
+      await flower.update(req.body);
+      res.json({ message: "✅ Flower updated successfully", flower });
+    } catch (err) {
+      console.error("❌ Error updating flower:", err);
+      res
+        .status(500)
+        .json({ message: "Error updating flower", error: err.message });
+    }
+  }
+);
+
+router.delete(
+  "/flowers/:id",
+  requireAuth,
+  requireRole("Admin", "Employee"),
+  async (req, res) => {
+    try {
+      const deleted = await Flower.destroy({
+        where: { flower_id: req.params.id },
+      });
+      if (!deleted)
+        return res.status(404).json({ message: "Flower not found" });
+      res.json({ message: "✅ Flower deleted successfully" });
+    } catch (err) {
+      console.error("❌ Error deleting flower:", err);
+      res
+        .status(500)
+        .json({ message: "Error deleting flower", error: err.message });
     }
   }
 );
@@ -413,7 +385,7 @@ router.get(
 );
 
 // ===============================
-// 📦 INVENTORY & HARVESTS
+// 📦 HARVESTS / INVENTORY
 // ===============================
 router.get(
   "/harvests",
