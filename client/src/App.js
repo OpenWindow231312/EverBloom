@@ -18,12 +18,12 @@ import Cart from "./pages/Cart";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 // 🌼 Dashboard pages
-import DashboardLayout from "./pages/dashboard/dashboardLayout";
-import DashboardOverview from "./pages/dashboard/dashboardOverview";
-import DashboardStock from "./pages/dashboard/dashboardStock";
-import DashboardOrders from "./pages/dashboard/dashboardOrders";
-import DashboardInventory from "./pages/dashboard/dashboardInventory";
-import DashboardUsers from "./pages/dashboard/dashboardUsers";
+import DashboardLayout from "./pages/dashboard/DashboardLayout";
+import DashboardOverview from "./pages/dashboard/DashboardOverview";
+import DashboardStock from "./pages/dashboard/DashboardStock";
+import DashboardOrders from "./pages/dashboard/DashboardOrders";
+import DashboardInventory from "./pages/dashboard/DashboardInventory";
+import DashboardUsers from "./pages/dashboard/DashboardUsers";
 import DashboardHarvest from "./pages/dashboard/dashboardHarvest";
 
 // ===============================
