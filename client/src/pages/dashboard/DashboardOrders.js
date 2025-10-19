@@ -1,11 +1,11 @@
 // ========================================
-// 🌸 EverBloom — Dashboard Orders Management (Crash-Proof)
+// 🌸 EverBloom — Dashboard Orders (Unified Layout)
 // ========================================
 import React, { useEffect, useState } from "react";
 import api from "../../api/api";
 import "../../styles/dashboard/_core.css";
-import "../../styles/dashboard/dashboardStock.css";
-import { FaTruck, FaSearch } from "react-icons/fa";
+import "../../styles/dashboard/dashboardInventory.css"; // ✅ reuse clean layout
+import { FaTruck } from "react-icons/fa";
 
 export default function DashboardOrders() {
   const [orders, setOrders] = useState([]);
@@ -14,20 +14,19 @@ export default function DashboardOrders() {
   const [error, setError] = useState("");
   const [showPast, setShowPast] = useState(false);
 
-  // 🌿 Filters
+  // Filters
   const [filterText, setFilterText] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterDelivery, setFilterDelivery] = useState("");
 
-  // 📄 Pagination
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
-  // ✅ Helper to safely display currency
+  // Currency helper
   const formatCurrency = (value) => {
     const num = parseFloat(value);
-    if (isNaN(num)) return "0.00";
-    return num.toFixed(2);
+    return isNaN(num) ? "0.00" : num.toFixed(2);
   };
 
   // ===========================
@@ -39,15 +38,16 @@ export default function DashboardOrders() {
         const res = await api.get("/orders");
         const data = res.data || [];
 
-        const active = data.filter(
-          (o) => o.status !== "Delivered" && o.status !== "Cancelled"
+        setOrders(
+          data.filter(
+            (o) => o.status !== "Delivered" && o.status !== "Cancelled"
+          )
         );
-        const past = data.filter(
-          (o) => o.status === "Delivered" || o.status === "Cancelled"
+        setPastOrders(
+          data.filter(
+            (o) => o.status === "Delivered" || o.status === "Cancelled"
+          )
         );
-
-        setOrders(active);
-        setPastOrders(past);
       } catch (err) {
         console.error("❌ Error fetching orders:", err);
         setError("Failed to load order data.");
@@ -123,16 +123,13 @@ export default function DashboardOrders() {
 
     const matchesStatus =
       !filterStatus || status === filterStatus.toLowerCase();
-
     const matchesDelivery =
       !filterDelivery || delivery === filterDelivery.toLowerCase();
 
     return matchesSearch && matchesStatus && matchesDelivery;
   });
 
-  // ===========================
-  // 📄 Pagination Logic
-  // ===========================
+  // Pagination logic
   const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentOrders = filteredOrders.slice(
@@ -161,15 +158,12 @@ export default function DashboardOrders() {
       {/* Filter Bar */}
       {/* ============================ */}
       <div className="filter-bar">
-        <div className="search-wrapper">
-          {/* <FaSearch className="search-icon" /> */}
-          <input
-            type="text"
-            placeholder="Search by customer, flower, or order ID..."
-            value={filterText}
-            onChange={(e) => setFilterText(e.target.value)}
-          />
-        </div>
+        <input
+          type="text"
+          placeholder="Search by customer, flower, or order ID..."
+          value={filterText}
+          onChange={(e) => setFilterText(e.target.value)}
+        />
 
         <select
           value={filterStatus}
@@ -193,29 +187,33 @@ export default function DashboardOrders() {
       </div>
 
       {/* ============================ */}
-      {/* Active Orders Table */}
+      {/* Active Orders Section */}
       {/* ============================ */}
+      <h3 className="section-subheading">Active Orders</h3>
       <section className="dashboard-section">
-        <h3>Active Orders</h3>
-        {currentOrders.length === 0 ? (
-          <p className="no-data">No matching orders found.</p>
-        ) : (
-          <div className="table-container">
-            <table className="dashboard-table">
-              <thead>
+        <div className="table-container">
+          <table className="dashboard-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total (R)</th>
+                <th>Delivery</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Update</th>
+              </tr>
+            </thead>
+            <tbody>
+              {currentOrders.length === 0 ? (
                 <tr>
-                  <th>Order ID</th>
-                  <th>Customer</th>
-                  <th>Items</th>
-                  <th>Total (R)</th>
-                  <th>Delivery</th>
-                  <th>Date</th>
-                  <th>Status</th>
-                  <th>Update</th>
+                  <td colSpan="8" className="no-data">
+                    No active orders found.
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {currentOrders.map((o) => (
+              ) : (
+                currentOrders.map((o) => (
                   <tr key={o.order_id}>
                     <td>{o.order_id}</td>
                     <td>{o.User?.fullName || "Guest"}</td>
@@ -249,11 +247,11 @@ export default function DashboardOrders() {
                       </select>
                     </td>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
         {/* Pagination */}
         {totalPages > 1 && (
@@ -278,64 +276,85 @@ export default function DashboardOrders() {
       </section>
 
       {/* ============================ */}
-      {/* Past Orders */}
+      {/* Past Orders Section */}
       {/* ============================ */}
-      <section className="dashboard-section">
+      <div className="archive-section">
+        {/* Toggle button OUTSIDE white container */}
         <button
-          className="btn-secondary"
+          className="btn-secondary archive-toggle-btn"
           onClick={() => setShowPast(!showPast)}
         >
           {showPast ? "▲ Hide Past Orders" : "▼ Show Past Orders"}
         </button>
 
         {showPast && (
-          <div className="archive-table-wrapper">
-            <h3>Past Orders</h3>
-            <div className="table-container">
-              <table className="dashboard-table">
-                <thead>
-                  <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Items</th>
-                    <th>Total (R)</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {pastOrders.length === 0 ? (
+          <>
+            <h3 className="section-subheading">Past Orders</h3>
+
+            <section className="dashboard-section">
+              <div className="table-container">
+                <table className="dashboard-table">
+                  <thead>
                     <tr>
-                      <td colSpan="6" className="no-data">
-                        No past orders found.
-                      </td>
+                      <th>Order ID</th>
+                      <th>Customer</th>
+                      <th>Items</th>
+                      <th>Total (R)</th>
+                      <th>Status</th>
+                      <th>Update</th>
+                      <th>Date</th>
                     </tr>
-                  ) : (
-                    pastOrders.map((o) => (
-                      <tr key={o.order_id}>
-                        <td>{o.order_id}</td>
-                        <td>{o.User?.fullName || "Guest"}</td>
-                        <td>
-                          {o.OrderItems?.map((i) => (
-                            <div key={i.orderItem_id}>
-                              {i.Flower?.variety} × {i.quantityOrdered}
-                            </div>
-                          ))}
+                  </thead>
+                  <tbody>
+                    {pastOrders.length === 0 ? (
+                      <tr>
+                        <td colSpan="7" className="no-data">
+                          No past orders found.
                         </td>
-                        <td>R {formatCurrency(o.totalAmount)}</td>
-                        <td>
-                          <StatusBadge status={o.status} />
-                        </td>
-                        <td>{new Date(o.createdAt).toLocaleDateString()}</td>
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                    ) : (
+                      pastOrders.map((o) => (
+                        <tr key={o.order_id}>
+                          <td>{o.order_id}</td>
+                          <td>{o.User?.fullName || "Guest"}</td>
+                          <td>
+                            {o.OrderItems?.map((i) => (
+                              <div key={i.orderItem_id}>
+                                {i.Flower?.variety} × {i.quantityOrdered}
+                              </div>
+                            ))}
+                          </td>
+                          <td>R {formatCurrency(o.totalAmount)}</td>
+                          <td>
+                            <StatusBadge status={o.status} />
+                          </td>
+                          <td>
+                            <select
+                              className="status-dropdown"
+                              value={o.status}
+                              onChange={(e) =>
+                                updateStatus(o.order_id, e.target.value)
+                              }
+                            >
+                              <option value="Delivered">Delivered</option>
+                              <option value="Cancelled">Cancelled</option>
+                              <option value="Pending">Pending</option>
+                              <option value="Out for Delivery">
+                                Out for Delivery
+                              </option>
+                            </select>
+                          </td>
+                          <td>{new Date(o.createdAt).toLocaleDateString()}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+          </>
         )}
-      </section>
+      </div>
     </div>
   );
 }

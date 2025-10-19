@@ -10,7 +10,7 @@ const API_URL =
 
 // 🪴 Create axios instance
 const api = axios.create({
-  baseURL: `${API_URL}/api`, // ✅ Add "/api" prefix
+  baseURL: `${API_URL}/api`, // ✅ Includes "/api" prefix
   headers: {
     "Content-Type": "application/json",
   },
@@ -36,5 +36,12 @@ export const updateUserRole = (userId, roleId) =>
   api.put(`/dashboard/users/${userId}/role`, { role_id: roleId });
 export const updateOrderStatus = (orderId, status) =>
   api.put(`/dashboard/orders/${orderId}/status`, { status });
+
+// ===============================
+// ❄️ Inventory & Discards
+// ===============================
+export const getAllInventory = () => api.get("/dashboard/inventory");
+export const getAllDiscards = () => api.get("/dashboard/discards");
+export const discardBatch = (data) => api.post("/dashboard/discards", data);
 
 export default api;

@@ -61,7 +61,8 @@ function App() {
         <Route path="orders" element={<DashboardOrders />} />
         <Route path="inventory" element={<DashboardInventory />} />
         <Route path="users" element={<DashboardUsers />} />
-        <Route path="harvests" element={<DashboardHarvest />} />{" "}
+        <Route path="harvest" element={<DashboardHarvest />} />
+
         {/* optional */}
       </Route>
 

@@ -1,6 +1,10 @@
+// ========================================
+// 🌸 EverBloom — Dashboard Layout (Fixed)
+// ========================================
 import React, { useEffect, useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { fetchCurrentUser, logoutUser } from "../../utils/auth";
+import Sidebar from "../../components/Sidebar"; // ✅ correct import
 import "../../styles/dashboard/_core.css";
 import "../../styles/dashboard/dashboardLayout.css";
 
@@ -13,12 +17,11 @@ export default function DashboardLayout() {
     process.env.REACT_APP_API_URL ||
     "http://localhost:5001";
 
-  // 🧭 Fetch current logged-in user on mount
+  // 🧭 Fetch current logged-in user
   useEffect(() => {
     const loadUser = async () => {
       const user = await fetchCurrentUser(API_URL);
       if (!user) {
-        // Not logged in — redirect to login
         navigate("/login");
       } else {
         setCurrentUser(user);
@@ -30,21 +33,9 @@ export default function DashboardLayout() {
   return (
     <div className="dashboard">
       {/* ============================
-          🌸 Sidebar
+          🌸 Sidebar (Component)
       ============================ */}
-      <aside className="dashboard-sidebar">
-        <h2 className="dashboard-logo">EverBloom</h2>
-
-        <nav className="dashboard-nav">
-          <NavLink to="/dashboard" end>
-            Overview
-          </NavLink>
-          <NavLink to="/dashboard/stock">Stock</NavLink>
-          <NavLink to="/dashboard/orders">Orders</NavLink>
-          <NavLink to="/dashboard/inventory">Inventory</NavLink>
-          <NavLink to="/dashboard/users">Users</NavLink>
-        </nav>
-      </aside>
+      <Sidebar />
 
       {/* ============================
           🌼 Main Section
@@ -73,7 +64,7 @@ export default function DashboardLayout() {
                   style={{
                     background: "none",
                     border: "none",
-                    color: "#d84e55",
+                    color: "#b91c1c",
                     cursor: "pointer",
                     fontWeight: "600",
                     marginLeft: "10px",
@@ -88,7 +79,7 @@ export default function DashboardLayout() {
           </div>
         </header>
 
-        {/* ---------- Dynamic Content ---------- */}
+        {/* ---------- Dynamic Page Content ---------- */}
         <main className="dashboard-content">
           <Outlet />
         </main>

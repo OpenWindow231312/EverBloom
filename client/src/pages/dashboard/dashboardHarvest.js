@@ -1,3 +1,6 @@
+// ========================================
+// 🌾 EverBloom — Dashboard Harvest Management (Final Layout Fix)
+// ========================================
 import React, { useEffect, useState, useMemo } from "react";
 import api from "../../api/api";
 import "../../styles/dashboard/_core.css";
@@ -17,7 +20,7 @@ export default function DashboardHarvest() {
   });
 
   // ===========================
-  // 🌿 Helpers: Freshness + Status
+  // 🌿 Helpers
   // ===========================
   const calcStatus = (batch) => {
     const harvestDate = new Date(batch.harvestDateTime || batch.createdAt);
@@ -74,11 +77,12 @@ export default function DashboardHarvest() {
           api.get("/flowers"),
           api.get("/harvests"),
         ]);
-        setFlowers(flowerRes.data || []);
-        setBatches(batchRes.data || []);
+        setFlowers(Array.isArray(flowerRes.data) ? flowerRes.data : []);
+        setBatches(Array.isArray(batchRes.data) ? batchRes.data : []);
       } catch (err) {
         console.error("❌ Error fetching harvests:", err);
         setError("Failed to load harvest data.");
+        setBatches([]);
       } finally {
         setLoading(false);
       }
@@ -86,17 +90,16 @@ export default function DashboardHarvest() {
     fetchData();
   }, []);
 
-  const computedBatches = useMemo(
-    () =>
-      (batches || []).map((b) => {
-        const { daysLeft, status } = calcStatus(b);
-        return { ...b, _daysLeft: daysLeft, _status: status };
-      }),
-    [batches]
-  );
+  const computedBatches = useMemo(() => {
+    const safeList = Array.isArray(batches) ? batches : [];
+    return safeList.map((b) => {
+      const { daysLeft, status } = calcStatus(b);
+      return { ...b, _daysLeft: daysLeft, _status: status };
+    });
+  }, [batches]);
 
   // ===========================
-  // 🌾 Record New Harvest
+  // 🌾 Record Harvest
   // ===========================
   const handleChange = (e) =>
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -122,16 +125,13 @@ export default function DashboardHarvest() {
       });
 
       const refresh = await api.get("/harvests");
-      setBatches(refresh.data || []);
+      setBatches(Array.isArray(refresh.data) ? refresh.data : []);
     } catch (err) {
       console.error("❌ Error recording harvest:", err);
       alert("❌ Failed to record harvest.");
     }
   };
 
-  // ===========================
-  // ❄️ Add Harvest to Coldroom
-  // ===========================
   const addToColdroom = async (batch) => {
     try {
       await api.post("/inventory", {
@@ -140,7 +140,7 @@ export default function DashboardHarvest() {
       });
 
       const refresh = await api.get("/harvests");
-      setBatches(refresh.data || []);
+      setBatches(Array.isArray(refresh.data) ? refresh.data : []);
       alert("❄️ Harvest added to coldroom!");
     } catch (err) {
       console.error("❌ Error adding to coldroom:", err);
@@ -156,13 +156,11 @@ export default function DashboardHarvest() {
 
   return (
     <div className="dashboard-stock">
-      <h2 className="overview-heading">🌾 Record & Manage Harvests</h2>
+      <h2 className="overview-heading">Record & Manage Harvests</h2>
 
-      {/* ============================ */}
-      {/* Add Harvest Form */}
-      {/* ============================ */}
+      {/* Add New Harvest Header */}
+      <h3 className="section-heading">Add New Harvest Batch</h3>
       <section className="dashboard-section">
-        <h3>Add New Harvest Batch</h3>
         <form className="dashboard-form" onSubmit={recordHarvest}>
           <select
             name="flower_id"
@@ -204,61 +202,65 @@ export default function DashboardHarvest() {
           />
 
           <button type="submit" className="btn-primary">
-            ➕ Record Harvest
+            Record Harvest
           </button>
         </form>
       </section>
 
-      {/* ============================ */}
-      {/* Recent Harvest Batches */}
-      {/* ============================ */}
+      {/* Recent Harvest Header */}
+      <h3 className="section-heading">Recent Harvests</h3>
       <section className="dashboard-section">
-        <h3>Recent Harvests</h3>
-        <table className="dashboard-table">
-          <thead>
-            <tr>
-              <th>Batch ID</th>
-              <th>Flower</th>
-              <th>Variety</th>
-              <th>Quantity</th>
-              <th>Days Left</th>
-              <th>Status</th>
-              <th>Harvest Date</th>
-              <th>Coldroom</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {computedBatches.map((b) => (
-              <tr key={b.harvestBatch_id}>
-                <td>{b.harvestBatch_id}</td>
-                <td>{b.Flower?.FlowerType?.type_name || "-"}</td>
-                <td>{b.Flower?.variety || "-"}</td>
-                <td>{b.totalStemsHarvested}</td>
-                <td>{b._daysLeft >= 0 ? `${b._daysLeft} days` : "Expired"}</td>
-                <td>
-                  <StatusBadge status={b._status} />
-                </td>
-                <td>
-                  {new Date(
-                    b.harvestDateTime || b.createdAt
-                  ).toLocaleDateString()}
-                </td>
-                <td>{b.Inventory ? b.Inventory.stemsInColdroom : "-"}</td>
-                <td>
-                  {!b.Inventory && (
-                    <button
-                      className="btn-primary"
-                      onClick={() => addToColdroom(b)}
-                    >
-                      ❄️ Add to Coldroom
-                    </button>
-                  )}
-                </td>
+        {computedBatches.length === 0 ? (
+          <p>No harvest batches recorded yet.</p>
+        ) : (
+          <table className="dashboard-table">
+            <thead>
+              <tr>
+                <th>Batch ID</th>
+                <th>Flower</th>
+                <th>Variety</th>
+                <th>Quantity</th>
+                <th>Days Left</th>
+                <th>Status</th>
+                <th>Harvest Date</th>
+                <th>Coldroom</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {computedBatches.map((b) => (
+                <tr key={b.harvestBatch_id}>
+                  <td>{b.harvestBatch_id}</td>
+                  <td>{b.Flower?.FlowerType?.type_name || "-"}</td>
+                  <td>{b.Flower?.variety || "-"}</td>
+                  <td>{b.totalStemsHarvested}</td>
+                  <td>
+                    {b._daysLeft >= 0 ? `${b._daysLeft} days` : "Expired"}
+                  </td>
+                  <td>
+                    <StatusBadge status={b._status} />
+                  </td>
+                  <td>
+                    {new Date(
+                      b.harvestDateTime || b.createdAt
+                    ).toLocaleDateString()}
+                  </td>
+                  <td>{b.Inventory ? b.Inventory.stemsInColdroom : "-"}</td>
+                  <td>
+                    {!b.Inventory && (
+                      <button
+                        className="btn-primary"
+                        onClick={() => addToColdroom(b)}
+                      >
+                        Add to Coldroom
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </section>
     </div>
   );

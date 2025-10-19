@@ -19,6 +19,7 @@ const {
   ColdroomReservation,
   Discard,
   Review,
+  DashboardHarvest,
 } = require("../models");
 
 const { requireAuth, requireRole } = require("../middleware/authMiddleware");
@@ -404,6 +405,60 @@ router.get(
     } catch (err) {
       console.error("❌ Error fetching harvests:", err);
       res.status(500).json({ message: "Error fetching harvests" });
+    }
+  }
+);
+
+// ===============================
+// 🧊 INVENTORY — Coldroom Stock
+// ===============================
+router.get(
+  "/inventory",
+  requireAuth,
+  requireRole("Admin", "Employee"),
+  async (req, res) => {
+    try {
+      const inventory = await Inventory.findAll({
+        include: [
+          {
+            model: HarvestBatch,
+            include: [
+              {
+                model: Flower,
+                include: [{ model: FlowerType }],
+              },
+            ],
+          },
+        ],
+        order: [["inventory_id", "ASC"]],
+      });
+
+      const today = new Date();
+
+      // Filter only non-expired, in-stock items
+      const validInventory = inventory.filter((inv) => {
+        const batch = inv.HarvestBatch;
+        if (!batch) return false;
+
+        const harvestDate = new Date(batch.harvestDateTime);
+        const flower = batch.Flower;
+        const shelfLife =
+          flower?.shelf_life || flower?.FlowerType?.default_shelf_life || 7;
+
+        const daysElapsed = Math.floor(
+          (today - harvestDate) / (1000 * 60 * 60 * 24)
+        );
+
+        const isExpired = daysElapsed >= shelfLife;
+        const hasStock = inv.stemsInColdroom > 0;
+
+        return !isExpired && hasStock;
+      });
+
+      res.json(validInventory);
+    } catch (err) {
+      console.error("❌ Error fetching inventory:", err);
+      res.status(500).json({ message: "Error fetching inventory" });
     }
   }
 );

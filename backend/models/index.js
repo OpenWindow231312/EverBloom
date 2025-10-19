@@ -1,12 +1,12 @@
 // ========================================
-// 🌸 EverBloom — Sequelize Model Index (FIXED)
+// 🌸 EverBloom — Sequelize Model Index (Render Ready)
 // ========================================
 const { Sequelize, DataTypes } = require("sequelize");
 const fs = require("fs");
 const path = require("path");
 
 // ----------------------------
-// DB Connection
+// DB Connection (Render / Cloud SQL compatible)
 // ----------------------------
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -16,8 +16,18 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT || "mysql",
     logging: false,
-    // Uncomment if Render / AlwaysData require SSL:
-    // dialectOptions: { ssl: { require: true, rejectUnauthorized: false } },
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
+    pool: {
+      max: 5,
+      min: 0,
+      acquire: 30000, // wait 30s before timeout
+      idle: 10000,
+    },
   }
 );
 
@@ -36,7 +46,7 @@ fs.readdirSync(__dirname)
   });
 
 // ----------------------------
-// Define Associations AFTER loading models
+// Initialize associations
 // ----------------------------
 const {
   User,
@@ -100,9 +110,12 @@ ColdroomReservation.belongsTo(OrderItem, { foreignKey: "orderItem_id" });
 HarvestBatch.hasMany(ColdroomReservation, { foreignKey: "harvestBatch_id" });
 OrderItem.hasMany(ColdroomReservation, { foreignKey: "orderItem_id" });
 
-// ✅ DISCARD ↔ HARVEST BATCH + USER
+// ✅ DISCARD ↔ HARVEST BATCH + USER (FIXED)
 Discard.belongsTo(HarvestBatch, { foreignKey: "harvestBatch_id" });
-Discard.belongsTo(User, { as: "discardedBy", foreignKey: "discardedBy_id" });
+Discard.belongsTo(User, {
+  as: "discardedBy",
+  foreignKey: "discardedByEmployeeID", // ✅ fixed name
+});
 HarvestBatch.hasMany(Discard, { foreignKey: "harvestBatch_id" });
 
 // ✅ REVIEW ↔ USER + STORE
@@ -110,6 +123,15 @@ Review.belongsTo(User, { foreignKey: "user_id" });
 Review.belongsTo(Store, { foreignKey: "store_id" });
 User.hasMany(Review, { foreignKey: "user_id" });
 Store.hasMany(Review, { foreignKey: "store_id" });
+
+// ----------------------------
+// Run associate() methods dynamically
+// ----------------------------
+Object.keys(db).forEach((modelName) => {
+  if (db[modelName].associate) {
+    db[modelName].associate(db);
+  }
+});
 
 // ----------------------------
 // Export Sequelize + Models

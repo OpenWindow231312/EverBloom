@@ -1,37 +1,127 @@
+/* ===================================
+   🌸 EverBloom — Sidebar (Collapsible)
+=================================== */
+
 .sidebar {
-    width: 230px;
-    background: #fef9fa;
-    border-right: 1px solid #eee;
-    height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    padding: 1.2rem;
+    height: 100vh;
+    width: 240px;
+    background-color: #b91c1c;
+    color: #fff;
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    justify-content: flex-start;
+    padding: 2rem 1rem;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    z-index: 1000;
 }
 
-.sidebar .logo {
-    font-family: "Losta Masta", serif;
-    font-size: 22px;
-    color: var(--rose);
-    margin-bottom: 20px;
+.logo {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.sidebar-logo-img {
+    width: 160px;
+    display: block;
+    margin: 0 auto;
+    margin-top: 50px;
+}
+
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
 .nav-item {
     display: flex;
     align-items: center;
-    gap: 8px;
-    color: #444;
-    padding: 0.6rem 1rem;
-    border-radius: 8px;
+    color: #f9f9f9;
     text-decoration: none;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    transition: all 0.25s ease;
 }
 
-.nav-item:hover,
+.nav-item:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
 .nav-item.active {
-    background: #fde8e8;
-    color: var(--rose);
-    font-weight: 600;
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+/* ===================================
+   📱 Mobile Responsive Behaviour
+=================================== */
+
+.mobile-topbar {
+    display: none;
+}
+
+.menu-toggle {
+    background: none;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+
+    /* Hide sidebar initially */
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    /* Mobile topbar visible */
+    .mobile-topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 60px;
+        background-color: #b91c1c;
+        /* ✅ same red tone */
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 1rem;
+        z-index: 1100;
+    }
+
+    .sidebar-nav {
+        margin-top: -5px;
+    }
+
+    .dashboard-main {
+        margin-left: 0;
+    }
+}
+
+/* ===================================
+   🌸 EverBloom — Sidebar Overlay Fix
+=================================== */
+
+.dashboard-main {
+    margin-left: 240px;
+    flex: 1;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 768px) {
+    .dashboard-main {
+        margin-left: 0;
+    }
 }

@@ -1,54 +1,59 @@
-// src/components/Sidebar.js
+// ========================================
+// 🌸 EverBloom — Collapsible Sidebar (with White Dashboard Logo)
+// ========================================
+import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import {
-  LayoutDashboard,
-  Package,
-  ShoppingCart,
-  Refrigerator,
-  Leaf,
-  Users,
-} from "lucide-react";
+import { Menu, X } from "lucide-react";
 import "../styles/sidebar.css";
+import WhiteLogoDashboard from "../assets/WhiteLogoDashboard.svg"; // ✅ Updated logo import
 
 export default function Sidebar() {
-  const links = [
-    {
-      name: "Overview",
-      path: "/dashboard/overview",
-      icon: <LayoutDashboard size={18} />,
-    },
-    { name: "Stock", path: "/dashboard/stock", icon: <Package size={18} /> },
-    {
-      name: "Orders",
-      path: "/dashboard/orders",
-      icon: <ShoppingCart size={18} />,
-    },
-    {
-      name: "Coldroom",
-      path: "/dashboard/inventory",
-      icon: <Refrigerator size={18} />,
-    },
-    { name: "Harvests", path: "/dashboard/harvest", icon: <Leaf size={18} /> },
-    { name: "Users", path: "/dashboard/users", icon: <Users size={18} /> },
-  ];
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <aside className="sidebar">
-      <div className="logo">🌸 EverBloom</div>
-      <nav>
-        {links.map((item) => (
-          <NavLink
-            key={item.path}
-            to={item.path}
-            className={({ isActive }) =>
-              isActive ? "active nav-item" : "nav-item"
-            }
-          >
-            {item.icon}
-            <span>{item.name}</span>
+    <>
+      {/* Mobile Topbar */}
+      <div className="mobile-topbar">
+        <button
+          className="menu-toggle"
+          onClick={() => setIsOpen(!isOpen)}
+          aria-label="Toggle menu"
+        >
+          {isOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* Sidebar Navigation */}
+      <aside className={`sidebar ${isOpen ? "open" : ""}`}>
+        <div className="logo">
+          <img
+            src={WhiteLogoDashboard}
+            alt="EverBloom Logo"
+            className="sidebar-logo-img"
+          />
+        </div>
+
+        <nav className="sidebar-nav">
+          <NavLink to="/dashboard" end className="nav-item">
+            <span>Overview</span>
           </NavLink>
-        ))}
-      </nav>
-    </aside>
+          <NavLink to="/dashboard/stock" className="nav-item">
+            <span>Stock</span>
+          </NavLink>
+          <NavLink to="/dashboard/harvest" className="nav-item">
+            <span>Harvests</span>
+          </NavLink>
+          <NavLink to="/dashboard/orders" className="nav-item">
+            <span>Orders</span>
+          </NavLink>
+          <NavLink to="/dashboard/inventory" className="nav-item">
+            <span>Inventory</span>
+          </NavLink>
+          <NavLink to="/dashboard/users" className="nav-item">
+            <span>Users</span>
+          </NavLink>
+        </nav>
+      </aside>
+    </>
   );
 }
