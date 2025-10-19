@@ -24,7 +24,7 @@ import DashboardStock from "./pages/dashboard/dashboardStock";
 import DashboardOrders from "./pages/dashboard/dashboardOrders";
 import DashboardInventory from "./pages/dashboard/dashboardInventory";
 import DashboardUsers from "./pages/dashboard/dashboardUsers";
-import DashboardHarvest from "./pages/dashboard/dashboardHarvest";
+import DashboardHarvest from "./pages/dashboard/dashboardHarvest"; // ✅ optional new page
 
 // ===============================
 // 🚀 Application Routes

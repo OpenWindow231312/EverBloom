@@ -69,6 +69,8 @@ app.use("/api/reviews", require("./routes/reviewRoutes"));
 // Dashboard + stock
 app.use("/api/stock", require("./routes/stockRoutes"));
 app.use("/api/dashboard", require("./routes/dashboardRoutes"));
+app.use("/api/dashboard/inventory", require("./routes/inventoryRoutes"));
+app.use("/api/dashboard/discards", require("./routes/discardRoutes"));
 
 // ========================
 // 💓 Health + Root
@@ -123,6 +125,21 @@ const PORT = process.env.PORT || 5001;
     }
 
     listRoutes(app);
+
+    // 🔍 Debug: print all Sequelize associations on startup
+    const db = require("./models");
+    console.log("\n🌿 Sequelize Associations:");
+    for (const [modelName, model] of Object.entries(db)) {
+      if (model?.associations) {
+        console.log(`\n${modelName}:`);
+        for (const [assocName, assoc] of Object.entries(model.associations)) {
+          console.log(
+            `  ${assoc.associationType} → ${assoc.target.name} (as: ${assoc.as})`
+          );
+        }
+      }
+    }
+    console.log("============================================\n");
 
     app.listen(PORT, () => {
       console.log(`🚀 EverBloom API running at http://localhost:${PORT}`);

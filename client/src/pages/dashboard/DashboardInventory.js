@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
-import api from "../../api/api";
+import React, { useEffect, useMemo, useState } from "react";
+import { getInventory, getDiscards, discardFromBatch } from "../../api/api";
 import "../../styles/dashboard/_core.css";
 import "../../styles/dashboard/dashboardInventory.css";
 
@@ -8,222 +8,347 @@ export default function DashboardInventory() {
   const [archive, setArchive] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
   const [showArchive, setShowArchive] = useState(false);
 
-  // ===========================
-  // 🌿 Helpers: calculate freshness
-  // ===========================
-  const calcStatus = (item) => {
-    const harvestDate = new Date(item.harvest_date || item.createdAt);
+  // Modal state
+  const [discardOpen, setDiscardOpen] = useState(false);
+  const [selectedRow, setSelectedRow] = useState(null);
+  const [discardForm, setDiscardForm] = useState({
+    quantityDiscarded: "",
+    reason: "",
+  });
+
+  // ============= Fetch =============
+  const fetchAll = async () => {
+    setLoading(true);
+    try {
+      const [invRes, discRes] = await Promise.all([
+        getInventory(),
+        getDiscards(),
+      ]);
+      setInventory(invRes.data || []);
+      setArchive(discRes.data || []);
+      setError("");
+    } catch (e) {
+      console.error(e);
+      setError("Failed to load inventory data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAll();
+  }, []);
+
+  // ============= Freshness =============
+  const calcFreshness = (row) => {
+    const hb = row?.HarvestBatch;
+    const flower = hb?.Flower;
+    const type = flower?.FlowerType;
+
+    const harvestDate = hb?.harvestDateTime
+      ? new Date(hb.harvestDateTime)
+      : new Date(row.createdAt);
+    const shelfLife = flower?.shelf_life ?? type?.default_shelf_life ?? 7;
+
     const today = new Date();
     const daysElapsed = Math.floor(
       (today - harvestDate) / (1000 * 60 * 60 * 24)
     );
-    const shelfLife =
-      item.Flower?.shelf_life ??
-      item.Flower?.FlowerType?.default_shelf_life ??
-      7;
-
     const daysLeft = shelfLife - daysElapsed;
+
     let status = "Fresh";
     if (daysLeft <= 2 && daysLeft > 0) status = "Expiring Soon";
     if (daysLeft <= 0) status = "Expired";
-    return { daysLeft, status };
-  };
 
-  const StatusBadge = ({ status }) => {
-    const map = {
-      Fresh: "#5cb85c",
-      "Expiring Soon": "#f0ad4e",
-      Expired: "#d9534f",
-    };
-    return (
-      <span
-        style={{
-          background: map[status] || "#ccc",
-          color: "#fff",
-          padding: "4px 8px",
-          borderRadius: "8px",
-          fontSize: ".85rem",
-          fontWeight: 600,
-        }}
-      >
-        {status}
-      </span>
+    const expiry = new Date(
+      harvestDate.getTime() + shelfLife * 24 * 60 * 60 * 1000
     );
+    return { status, daysLeft, expiry };
   };
 
-  // ===========================
-  // 🧭 Fetch Coldroom + Archive
-  // ===========================
-  useEffect(() => {
-    const run = async () => {
-      try {
-        const [activeRes, archiveRes] = await Promise.all([
-          api.get("/inventory"),
-          api.get("/discards"),
-        ]);
-        setInventory(activeRes.data || []);
-        setArchive(archiveRes.data || []);
-      } catch (err) {
-        console.error(err);
-        setError("Failed to load coldroom data.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    run();
-  }, []);
-
-  const computedInventory = useMemo(
+  const decoratedInventory = useMemo(
     () =>
-      inventory.map((i) => {
-        const { daysLeft, status } = calcStatus(i);
-        return { ...i, _daysLeft: daysLeft, _status: status };
+      (inventory || []).map((row) => {
+        const f = calcFreshness(row);
+        return { ...row, _fresh: f };
       }),
     [inventory]
   );
 
-  // ===========================
-  // ❌ Discard expired batch manually
-  // ===========================
-  const discardBatch = async (item) => {
-    if (!window.confirm("Move this batch to archive?")) return;
+  // ============= Modal handlers =============
+  const openDiscard = (row) => {
+    setSelectedRow(row);
+    setDiscardForm({
+      quantityDiscarded: Math.min(
+        row.stemsInColdroom,
+        Math.max(0, row._fresh.daysLeft <= 0 ? row.stemsInColdroom : 0)
+      ),
+      reason: row._fresh.status === "Expired" ? "Expired" : "",
+    });
+    setDiscardOpen(true);
+  };
+
+  const closeDiscard = () => {
+    setDiscardOpen(false);
+    setSelectedRow(null);
+    setDiscardForm({ quantityDiscarded: "", reason: "" });
+  };
+
+  const submitDiscard = async (e) => {
+    e.preventDefault();
+    if (!selectedRow) return;
+
+    const qty = Number(discardForm.quantityDiscarded || 0);
+    if (qty <= 0) {
+      alert("Quantity must be greater than 0.");
+      return;
+    }
+    if (qty > selectedRow.stemsInColdroom) {
+      alert("Quantity exceeds stems in coldroom.");
+      return;
+    }
+
     try {
-      await api.post("/discards", {
-        harvestBatch_id: item.harvestBatch_id,
-        quantityDiscarded: item.stemsInColdroom,
-        reason: "Manual discard",
+      await discardFromBatch(selectedRow.harvestBatch_id, {
+        quantityDiscarded: qty,
+        reason: discardForm.reason || null,
       });
-      const refresh = await api.get("/inventory");
-      setInventory(refresh.data || []);
-    } catch (err) {
-      console.error("❌ Error discarding batch:", err);
-      alert("Failed to archive batch.");
+      closeDiscard();
+      await fetchAll();
+    } catch (e) {
+      console.error("discard submit error:", e);
+      alert(e?.response?.data?.error || "Failed to discard stems.");
     }
   };
 
-  // ===========================
-  // 🧭 Render
-  // ===========================
-  if (loading) return <p>Loading coldroom inventory...</p>;
-  if (error) return <p className="error-message">{error}</p>;
+  // ============= UI helpers =============
+  const StatusBadge = ({ value }) => {
+    const map = {
+      Fresh: "badge badge--green",
+      "Expiring Soon": "badge badge--amber",
+      Expired: "badge badge--red",
+    };
+    return <span className={map[value] || "badge"}>{value}</span>;
+  };
+
+  if (loading) return <div className="loading">Loading inventory…</div>;
+  if (error) return <div className="error-message">{error}</div>;
 
   return (
-    <div className="dashboard-stock">
-      <h2 className="overview-heading">❄️ Coldroom Inventory</h2>
+    <div className="inventory-page">
+      <div className="page-header">
+        <h2>Coldroom Inventory</h2>
+        <div className="page-actions">
+          <button
+            className="btn btn-secondary"
+            onClick={() => setShowArchive((v) => !v)}
+          >
+            {showArchive ? "Hide Archive" : "Show Archive"}
+          </button>
+        </div>
+      </div>
 
-      {/* ============================ */}
-      {/* Active Inventory Table */}
-      {/* ============================ */}
-      <section className="dashboard-section">
+      {/* Active Inventory */}
+      <section className="card">
         <h3>Current Flowers in Coldroom</h3>
-        <table className="dashboard-table">
-          <thead>
-            <tr>
-              <th>Batch ID</th>
-              <th>Flower</th>
-              <th>Variety</th>
-              <th>Quantity</th>
-              <th>Days Left</th>
-              <th>Status</th>
-              <th>Harvest Date</th>
-              <th>Expiry Date</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {computedInventory.map((i) => (
-              <tr
-                key={i.inventory_id}
-                className={i._status === "Expired" ? "row-discarded" : ""}
-              >
-                <td>{i.harvestBatch_id}</td>
-                <td>{i.Flower?.FlowerType?.type_name || "-"}</td>
-                <td>{i.Flower?.variety || "-"}</td>
-                <td>{i.stemsInColdroom}</td>
-                <td>{i._daysLeft >= 0 ? `${i._daysLeft} days` : "Expired"}</td>
-                <td>
-                  <StatusBadge status={i._status} />
-                </td>
-                <td>
-                  {new Date(i.harvest_date || i.createdAt).toLocaleDateString()}
-                </td>
-                <td>
-                  {i.expiryDate
-                    ? new Date(i.expiryDate).toLocaleDateString()
-                    : "-"}
-                </td>
-                <td>
-                  {i._status === "Expired" && (
-                    <button
-                      onClick={() => discardBatch(i)}
-                      className="delete-btn"
-                    >
-                      🗑 Discard
-                    </button>
-                  )}
-                </td>
+
+        <div className="table-wrapper">
+          <table className="table table-sticky">
+            <thead>
+              <tr>
+                <th>Batch</th>
+                <th>Flower</th>
+                <th>Variety</th>
+                <th>Color</th>
+                <th>Stem Length</th>
+                <th>Qty</th>
+                <th>Days Left</th>
+                <th>Status</th>
+                <th>Harvested</th>
+                <th>Expiry</th>
+                <th>Last Updated</th>
+                <th>Action</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {decoratedInventory.length === 0 ? (
+                <tr>
+                  <td colSpan={12} className="no-data">
+                    No inventory found.
+                  </td>
+                </tr>
+              ) : (
+                decoratedInventory.map((row) => {
+                  const hb = row?.HarvestBatch;
+                  const flower = hb?.Flower;
+                  const type = flower?.FlowerType;
+                  return (
+                    <tr
+                      key={row.inventory_id}
+                      className={
+                        row._fresh.status === "Expired" ? "row-expired" : ""
+                      }
+                    >
+                      <td>{row.harvestBatch_id}</td>
+                      <td>{type?.type_name || "-"}</td>
+                      <td>{flower?.variety || "-"}</td>
+                      <td>{flower?.color || "-"}</td>
+                      <td>{flower?.stem_length || "-"}</td>
+                      <td>{row.stemsInColdroom}</td>
+                      <td>
+                        {row._fresh.daysLeft > 0
+                          ? `${row._fresh.daysLeft}d`
+                          : "Expired"}
+                      </td>
+                      <td>
+                        <StatusBadge value={row._fresh.status} />
+                      </td>
+                      <td>
+                        {hb?.harvestDateTime
+                          ? new Date(hb.harvestDateTime).toLocaleDateString()
+                          : "-"}
+                      </td>
+                      <td>
+                        {row._fresh.expiry
+                          ? new Date(row._fresh.expiry).toLocaleDateString()
+                          : "-"}
+                      </td>
+                      <td>
+                        {row.lastUpdated
+                          ? new Date(row.lastUpdated).toLocaleString()
+                          : "-"}
+                      </td>
+                      <td>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => openDiscard(row)}
+                          disabled={row.stemsInColdroom <= 0}
+                        >
+                          Discard
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
       </section>
 
-      {/* ============================ */}
-      {/* Archive Toggle */}
-      {/* ============================ */}
-      <section className="dashboard-section">
-        <button
-          className="btn-secondary"
-          onClick={() => setShowArchive(!showArchive)}
-        >
-          {showArchive ? "▲ Hide Archive" : "▼ Show Archived Batches"}
-        </button>
-
-        {showArchive && (
-          <div className="archive-table-wrapper">
-            <h3>Past / Discarded Batches</h3>
-            <table className="dashboard-table">
+      {/* Archive */}
+      {showArchive && (
+        <section className="card">
+          <h3>Past / Discarded Batches</h3>
+          <div className="table-wrapper">
+            <table className="table">
               <thead>
                 <tr>
-                  <th>Batch ID</th>
+                  <th>Batch</th>
                   <th>Flower</th>
                   <th>Variety</th>
-                  <th>Quantity</th>
-                  <th>Discard Reason</th>
+                  <th>Qty Discarded</th>
+                  <th>Reason</th>
                   <th>Discarded On</th>
                 </tr>
               </thead>
               <tbody>
-                {archive.length === 0 && (
+                {archive.length === 0 ? (
                   <tr>
-                    <td colSpan="6" className="no-data">
+                    <td colSpan={6} className="no-data">
                       No archived batches.
                     </td>
                   </tr>
+                ) : (
+                  archive.map((a) => {
+                    const hb = a?.HarvestBatch;
+                    const flower = hb?.Flower;
+                    const type = flower?.FlowerType;
+                    return (
+                      <tr key={a.discard_id}>
+                        <td>{a.harvestBatch_id}</td>
+                        <td>{type?.type_name || "-"}</td>
+                        <td>{flower?.variety || "-"}</td>
+                        <td>{a.quantityDiscarded}</td>
+                        <td>{a.reason || "-"}</td>
+                        <td>
+                          {a.discardDateTime
+                            ? new Date(a.discardDateTime).toLocaleString()
+                            : "-"}
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
-                {archive.map((a) => (
-                  <tr key={a.discard_id}>
-                    <td>{a.harvestBatch_id}</td>
-                    <td>
-                      {a.HarvestBatch?.Flower?.FlowerType?.type_name || "-"}
-                    </td>
-                    <td>{a.HarvestBatch?.Flower?.variety || "-"}</td>
-                    <td>{a.quantityDiscarded}</td>
-                    <td>{a.reason}</td>
-                    <td>
-                      {new Date(
-                        a.movedToArchiveDate || a.createdAt
-                      ).toLocaleDateString()}
-                    </td>
-                  </tr>
-                ))}
               </tbody>
             </table>
           </div>
-        )}
-      </section>
+        </section>
+      )}
+
+      {/* Discard Modal */}
+      {discardOpen && selectedRow && (
+        <div className="modal-backdrop" onClick={closeDiscard}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h4>Discard from Batch #{selectedRow.harvestBatch_id}</h4>
+              <button
+                className="icon-btn"
+                onClick={closeDiscard}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className="form-grid">
+                <div className="form-control">
+                  <label>Available</label>
+                  <input value={selectedRow.stemsInColdroom} disabled />
+                </div>
+                <div className="form-control">
+                  <label>Quantity to discard</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max={selectedRow.stemsInColdroom}
+                    value={discardForm.quantityDiscarded}
+                    onChange={(e) =>
+                      setDiscardForm((f) => ({
+                        ...f,
+                        quantityDiscarded: e.target.value,
+                      }))
+                    }
+                    placeholder="e.g. 10"
+                  />
+                </div>
+                <div className="form-control form-control--full">
+                  <label>Reason (optional)</label>
+                  <input
+                    type="text"
+                    value={discardForm.reason}
+                    onChange={(e) =>
+                      setDiscardForm((f) => ({ ...f, reason: e.target.value }))
+                    }
+                    placeholder="Expired / Damaged / Trim waste ..."
+                  />
+                </div>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-ghost" onClick={closeDiscard}>
+                Cancel
+              </button>
+              <button className="btn btn-danger" onClick={submitDiscard}>
+                Confirm Discard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

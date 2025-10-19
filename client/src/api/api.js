@@ -28,13 +28,29 @@ api.interceptors.request.use((config) => {
 // ===============================
 // 🔹 Dashboard API Endpoints
 // ===============================
+
+// 🌼 Overview
 export const getDashboardOverview = () => api.get("/dashboard/overview");
+
+// 👥 Users
 export const getAllUsers = () => api.get("/dashboard/users");
-export const getAllOrders = () => api.get("/dashboard/orders");
-export const getAllHarvests = () => api.get("/dashboard/harvests");
 export const updateUserRole = (userId, roleId) =>
   api.put(`/dashboard/users/${userId}/role`, { role_id: roleId });
+
+// 🛒 Orders
+export const getAllOrders = () => api.get("/dashboard/orders");
 export const updateOrderStatus = (orderId, status) =>
   api.put(`/dashboard/orders/${orderId}/status`, { status });
+
+// 🌿 Harvests
+export const getAllHarvests = () => api.get("/dashboard/harvests");
+
+// ❄️ Inventory
+export const getInventory = () => api.get("/dashboard/inventory");
+
+// 🗑️ Discards / Archive
+export const getDiscards = () => api.get("/dashboard/discards");
+export const discardFromBatch = (harvestBatchId, payload) =>
+  api.post(`/dashboard/discards/${harvestBatchId}`, payload);
 
 export default api;

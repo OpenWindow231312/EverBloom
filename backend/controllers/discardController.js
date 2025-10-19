@@ -1,14 +1,49 @@
 // ========================================
 // 🌸 EverBloom — Discard Controller
 // ========================================
-
-// ✅ Direct imports
-const sequelize = require("../db");
-const Discard = require("../models/Discard");
-const Inventory = require("../models/Inventory");
+const {
+  sequelize,
+  Discard,
+  HarvestBatch,
+  Flower,
+  FlowerType,
+  Inventory,
+} = require("../models");
 
 // ===============================
-// 🗑️ Discard Stems From a Batch
+// 🗑️ GET /dashboard/discards
+// ===============================
+exports.getAllDiscards = async (req, res) => {
+  try {
+    const data = await Discard.findAll({
+      include: [
+        {
+          model: HarvestBatch,
+          as: "HarvestBatch",
+          include: [
+            {
+              model: Flower,
+              as: "Flower",
+              include: [{ model: FlowerType, as: "FlowerType" }],
+            },
+          ],
+        },
+      ],
+      order: [["discardDateTime", "DESC"]],
+    });
+
+    res.json(data);
+  } catch (err) {
+    console.error("❌ Discard Controller Error:", err);
+    res.status(500).json({
+      error: "Failed to load discard data",
+      details: err.message,
+    });
+  }
+};
+
+// ===============================
+// 🗑️ POST /dashboard/discards/:harvestBatch_id
 // ===============================
 exports.discardFromBatch = async (req, res) => {
   const t = await sequelize.transaction();
@@ -16,7 +51,6 @@ exports.discardFromBatch = async (req, res) => {
     const { harvestBatch_id } = req.params;
     const { quantityDiscarded, reason, discardedByEmployeeID } = req.body;
 
-    // 🔍 Find inventory entry for this batch
     const inv = await Inventory.findOne({
       where: { harvestBatch_id },
       transaction: t,
@@ -24,33 +58,39 @@ exports.discardFromBatch = async (req, res) => {
     });
 
     if (!inv) {
-      return res.status(404).json({ error: "Inventory row not found" });
+      await t.rollback();
+      return res.status(404).json({ error: "Inventory not found" });
     }
 
     if (inv.stemsInColdroom < quantityDiscarded) {
-      return res.status(400).json({ error: "Not enough stock available" });
+      await t.rollback();
+      return res.status(400).json({ error: "Not enough stems in coldroom" });
     }
 
-    // 🧮 Update inventory count
     inv.stemsInColdroom -= quantityDiscarded;
+    inv.lastUpdated = new Date();
+    if (inv.stemsInColdroom === 0) inv.archived = 1;
     await inv.save({ transaction: t });
 
-    // 🧾 Record discard
-    const row = await Discard.create(
+    const discard = await Discard.create(
       {
         harvestBatch_id,
         quantityDiscarded,
         reason,
         discardedByEmployeeID,
+        discardDateTime: new Date(),
       },
       { transaction: t }
     );
 
     await t.commit();
-    res.json({ message: "✅ Discard recorded successfully", data: row });
-  } catch (e) {
+    res.json({ message: "✅ Discard recorded successfully", data: discard });
+  } catch (err) {
     await t.rollback();
-    console.error("❌ Error discarding from batch:", e);
-    res.status(400).json({ error: e.message });
+    console.error("❌ Discard Controller Error:", err);
+    res.status(500).json({
+      error: "Discard operation failed",
+      details: err.message,
+    });
   }
 };

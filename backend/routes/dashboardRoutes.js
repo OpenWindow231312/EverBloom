@@ -461,7 +461,7 @@ router.get(
 );
 
 // ===============================
-// 🗑️ DISCARDS
+// 🗑️ DISCARDS (Archive Overview)
 // ===============================
 router.get(
   "/discards",
@@ -471,15 +471,33 @@ router.get(
     try {
       const discards = await Discard.findAll({
         include: [
-          { model: HarvestBatch, include: [{ model: Flower }] },
-          { association: "discardedBy", attributes: ["fullName"] },
+          {
+            model: HarvestBatch,
+            as: "HarvestBatch",
+            include: [
+              {
+                model: Flower,
+                as: "Flower",
+                include: [{ model: FlowerType, as: "FlowerType" }],
+              },
+            ],
+          },
+          {
+            model: User,
+            as: "DiscardedBy", // ✅ must match association in models/index.js
+            attributes: ["user_id", "first_name", "last_name", "email"],
+          },
         ],
-        order: [["discard_id", "DESC"]],
+        order: [["discardDateTime", "DESC"]],
       });
+
       res.json(discards);
     } catch (err) {
       console.error("❌ Error fetching discards:", err);
-      res.status(500).json({ message: "Error fetching discards" });
+      res.status(500).json({
+        error: "Failed to fetch discards",
+        details: err.message,
+      });
     }
   }
 );
