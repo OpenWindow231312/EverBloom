@@ -1,0 +1,134 @@
+/* ===================================
+   🌸 DASHBOARD CORE LAYOUT + THEME
+=================================== */
+
+:root {
+    --rose: #b03a48;
+    --rose-light: #f8e8e6;
+    --green: #5cb85c;
+    --orange: #f0ad4e;
+    --red: #d9534f;
+    --grey: #555;
+    --white: #fff;
+    --beige: #faf7f9;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+/* Global Page Layout */
+.dashboard-page {
+    padding: 2rem;
+    color: var(--grey);
+    background: var(--beige);
+    font-family: "Poppins", sans-serif;
+}
+
+.overview-heading {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: var(--rose);
+    margin-bottom: 1rem;
+}
+
+/* Section Wrappers */
+.dashboard-section {
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+/* Tables */
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    padding: 0.8rem;
+    border-bottom: 1px solid #eee;
+    text-align: center;
+}
+
+.dashboard-table th {
+    background: var(--rose-light);
+    color: var(--rose);
+    font-weight: 600;
+}
+
+/* Buttons */
+.btn-primary {
+    background: var(--rose);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.2s ease;
+}
+
+.btn-primary:hover {
+    background: #912f3d;
+}
+
+.btn-secondary {
+    background: var(--rose-light);
+    color: var(--rose);
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+/* Toggles */
+.toggle-btn.activate {
+    background: var(--green);
+    color: #fff;
+}
+
+.toggle-btn.deactivate {
+    background: var(--orange);
+    color: #fff;
+}
+
+/* Status dropdowns */
+.status-dropdown {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 0.9rem;
+}
+
+/* Modals */
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.modal-content {
+    background: #fff8f6;
+    border: 2px solid var(--rose);
+    border-radius: 12px;
+    padding: 1.5rem;
+    width: 420px;
+    max-width: 95%;
+    box-shadow: var(--shadow);
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}

@@ -1,0 +1,11 @@
+.archive-table-wrapper {
+    margin-top: 1rem;
+    background: var(--white);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: var(--shadow);
+}
+
+.row-discarded {
+    background: #ffd6d6 !important;
+}

@@ -48,18 +48,25 @@ if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
 
-app.use(express.json({ limit: "1mb" }));
-app.set("trust proxy", true); // safe for Render
+app.use(express.json({ limit: "2mb" }));
+app.set("trust proxy", true); // safe for Render, Vercel, etc.
 
 // ========================
 // 🛣️ API Routes
 // ========================
+
+// Core functional routes
+app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/flowers", require("./routes/flowerRoutes"));
+app.use("/api/harvests", require("./routes/harvestRoutes"));
+app.use("/api/inventory", require("./routes/inventoryRoutes"));
 app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/discards", require("./routes/discardRoutes"));
-app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/deliveries", require("./routes/deliveryRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
+
+// Dashboard + stock
 app.use("/api/stock", require("./routes/stockRoutes"));
 app.use("/api/dashboard", require("./routes/dashboardRoutes"));
 
@@ -71,7 +78,11 @@ app.get("/health", (_req, res) =>
 );
 
 app.get("/", (_req, res) =>
-  res.json({ message: "🌸 EverBloom API is live on Render", status: "OK" })
+  res.json({
+    message: "🌸 EverBloom API is live and blooming 🌷",
+    environment: process.env.NODE_ENV || "development",
+    status: "OK",
+  })
 );
 
 // ========================
@@ -87,7 +98,7 @@ function listRoutes(app) {
           `  ➜ ${Object.keys(r.route.methods)[0].toUpperCase()} ${r.route.path}`
         )
       );
-  } catch (e) {
+  } catch {
     // no-op
   }
 }
@@ -131,9 +142,10 @@ app.use((req, res) =>
 
 app.use((err, req, res, _next) => {
   console.error("🔥 Server Error:", err);
-  res
-    .status(err.status || 500)
-    .json({ error: "Internal server error", details: err.message });
+  res.status(err.status || 500).json({
+    error: "Internal server error",
+    details: err.message,
+  });
 });
 
 module.exports = app;

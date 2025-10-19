@@ -1,0 +1,37 @@
+.sidebar {
+    width: 230px;
+    background: #fef9fa;
+    border-right: 1px solid #eee;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.sidebar .logo {
+    font-family: "Losta Masta", serif;
+    font-size: 22px;
+    color: var(--rose);
+    margin-bottom: 20px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #444;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    background: #fde8e8;
+    color: var(--rose);
+    font-weight: 600;
+}

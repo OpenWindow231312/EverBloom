@@ -1,250 +1,228 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "../dashboard/Dashboard.css";
+import React, { useEffect, useState, useMemo } from "react";
+import api from "../../api/api";
+import "../../styles/dashboard/_core.css";
+import "../../styles/dashboard/dashboardInventory.css";
 
 export default function DashboardInventory() {
-  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
-
   const [inventory, setInventory] = useState([]);
-  const [flowers, setFlowers] = useState([]);
-  const [inventoryForm, setInventoryForm] = useState({
-    harvestBatch_id: "",
-    stemsInColdroom: "",
-  });
-  const [addForm, setAddForm] = useState({
-    flower_id: "",
-    stemsInColdroom: "",
-    status: "InColdroom",
-  });
+  const [archive, setArchive] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [showArchive, setShowArchive] = useState(false);
 
   // ===========================
-  // 🧭 Fetch flowers & inventory
+  // 🌿 Helpers: calculate freshness
   // ===========================
-  const loadInventory = async () => {
-    try {
-      const [inventoryRes, flowerRes] = await Promise.all([
-        axios.get(`${API_URL}/api/flowers/inventory`),
-        axios.get(`${API_URL}/api/dashboard/flower-types`),
-      ]);
-      setInventory(inventoryRes.data || []);
-      setFlowers(flowerRes.data || []);
-    } catch (error) {
-      console.error("Error loading inventory:", error);
-    } finally {
-      setLoading(false);
-    }
+  const calcStatus = (item) => {
+    const harvestDate = new Date(item.harvest_date || item.createdAt);
+    const today = new Date();
+    const daysElapsed = Math.floor(
+      (today - harvestDate) / (1000 * 60 * 60 * 24)
+    );
+    const shelfLife =
+      item.Flower?.shelf_life ??
+      item.Flower?.FlowerType?.default_shelf_life ??
+      7;
+
+    const daysLeft = shelfLife - daysElapsed;
+    let status = "Fresh";
+    if (daysLeft <= 2 && daysLeft > 0) status = "Expiring Soon";
+    if (daysLeft <= 0) status = "Expired";
+    return { daysLeft, status };
   };
 
+  const StatusBadge = ({ status }) => {
+    const map = {
+      Fresh: "#5cb85c",
+      "Expiring Soon": "#f0ad4e",
+      Expired: "#d9534f",
+    };
+    return (
+      <span
+        style={{
+          background: map[status] || "#ccc",
+          color: "#fff",
+          padding: "4px 8px",
+          borderRadius: "8px",
+          fontSize: ".85rem",
+          fontWeight: 600,
+        }}
+      >
+        {status}
+      </span>
+    );
+  };
+
+  // ===========================
+  // 🧭 Fetch Coldroom + Archive
+  // ===========================
   useEffect(() => {
-    loadInventory();
-  }, [API_URL]);
+    const run = async () => {
+      try {
+        const [activeRes, archiveRes] = await Promise.all([
+          api.get("/inventory"),
+          api.get("/discards"),
+        ]);
+        setInventory(activeRes.data || []);
+        setArchive(archiveRes.data || []);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load coldroom data.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    run();
+  }, []);
+
+  const computedInventory = useMemo(
+    () =>
+      inventory.map((i) => {
+        const { daysLeft, status } = calcStatus(i);
+        return { ...i, _daysLeft: daysLeft, _status: status };
+      }),
+    [inventory]
+  );
 
   // ===========================
-  // 🧩 Handle Inputs
+  // ❌ Discard expired batch manually
   // ===========================
-  const handleChange = (e) => {
-    setInventoryForm({ ...inventoryForm, [e.target.name]: e.target.value });
-  };
-
-  const handleAddChange = (e) => {
-    setAddForm({ ...addForm, [e.target.name]: e.target.value });
-  };
-
-  // ===========================
-  // ➕ Add Inventory
-  // ===========================
-  const handleAddInventory = async (e) => {
-    e.preventDefault();
+  const discardBatch = async (item) => {
+    if (!window.confirm("Move this batch to archive?")) return;
     try {
-      await axios.post(`${API_URL}/api/stock/add`, addForm);
-      alert("✅ Inventory added successfully!");
-      setAddForm({ flower_id: "", stemsInColdroom: "", status: "InColdroom" });
-      loadInventory();
+      await api.post("/discards", {
+        harvestBatch_id: item.harvestBatch_id,
+        quantityDiscarded: item.stemsInColdroom,
+        reason: "Manual discard",
+      });
+      const refresh = await api.get("/inventory");
+      setInventory(refresh.data || []);
     } catch (err) {
-      console.error("Error adding inventory:", err);
-      alert("❌ Failed to add inventory.");
+      console.error("❌ Error discarding batch:", err);
+      alert("Failed to archive batch.");
     }
   };
 
   // ===========================
-  // ❄️ Update Coldroom Inventory
+  // 🧭 Render
   // ===========================
-  const handleUpdate = async (e) => {
-    e.preventDefault();
-    try {
-      await axios.patch(
-        `${API_URL}/api/flowers/inventory/${inventoryForm.harvestBatch_id}`,
-        { stemsInColdroom: inventoryForm.stemsInColdroom }
-      );
-      alert("✅ Coldroom inventory updated!");
-      setInventoryForm({ harvestBatch_id: "", stemsInColdroom: "" });
-      loadInventory();
-    } catch (err) {
-      console.error("Error updating inventory:", err);
-      alert("❌ Failed to update inventory.");
-    }
-  };
-
-  // ===========================
-  // 🗑️ Delete Inventory Entry
-  // ===========================
-  const handleDelete = async (harvestBatch_id) => {
-    if (!window.confirm("Are you sure you want to delete this inventory item?"))
-      return;
-    try {
-      await axios.delete(`${API_URL}/api/stock/${harvestBatch_id}`);
-      alert("🗑️ Inventory item deleted!");
-      loadInventory();
-    } catch (err) {
-      console.error("Error deleting inventory:", err);
-      alert("❌ Failed to delete inventory item.");
-    }
-  };
-
-  if (loading) return <p className="loading">Loading inventory...</p>;
+  if (loading) return <p>Loading coldroom inventory...</p>;
+  if (error) return <p className="error-message">{error}</p>;
 
   return (
-    <div className="dashboard-inventory">
-      <h2 className="overview-heading">Coldroom Inventory</h2>
+    <div className="dashboard-stock">
+      <h2 className="overview-heading">❄️ Coldroom Inventory</h2>
 
       {/* ============================ */}
-      {/* 1️⃣ ADD INVENTORY FORM */}
+      {/* Active Inventory Table */}
       {/* ============================ */}
       <section className="dashboard-section">
-        <h3>Add New Inventory Batch</h3>
-        <form className="dashboard-form" onSubmit={handleAddInventory}>
-          <select
-            name="flower_id"
-            value={addForm.flower_id}
-            onChange={handleAddChange}
-            required
-          >
-            <option value="">Select Flower</option>
-            {flowers.map((f) => (
-              <option key={f.flower_id} value={f.flower_id}>
-                {f.variety} ({f.color})
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            name="stemsInColdroom"
-            placeholder="Stems in coldroom"
-            value={addForm.stemsInColdroom}
-            onChange={handleAddChange}
-            required
-          />
-          <select
-            name="status"
-            value={addForm.status}
-            onChange={handleAddChange}
-            required
-          >
-            <option value="InColdroom">In Coldroom</option>
-            <option value="Reserved">Reserved</option>
-            <option value="Sold">Sold</option>
-            <option value="Discarded">Discarded</option>
-          </select>
-          <button type="submit" className="btn-primary">
-            Add Inventory
-          </button>
-        </form>
-      </section>
-
-      <hr />
-
-      {/* ============================ */}
-      {/* 2️⃣ UPDATE INVENTORY FORM */}
-      {/* ============================ */}
-      <section className="dashboard-section">
-        <h3>Update Existing Inventory</h3>
-        <form className="dashboard-form" onSubmit={handleUpdate}>
-          <select
-            name="harvestBatch_id"
-            value={inventoryForm.harvestBatch_id}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Select Batch</option>
-            {inventory.map((i) => (
-              <option key={i.harvestBatch_id} value={i.harvestBatch_id}>
-                Batch #{i.harvestBatch_id} —{" "}
-                {i.HarvestBatch?.Flower?.variety || "-"}
-              </option>
-            ))}
-          </select>
-          <input
-            type="number"
-            name="stemsInColdroom"
-            placeholder="New stem count"
-            value={inventoryForm.stemsInColdroom}
-            onChange={handleChange}
-            required
-          />
-          <button type="submit" className="btn-primary">
-            Update Inventory
-          </button>
-        </form>
-      </section>
-
-      <hr />
-
-      {/* ============================ */}
-      {/* 3️⃣ CURRENT INVENTORY TABLE */}
-      {/* ============================ */}
-      <section className="dashboard-section">
-        <h3>Current Inventory Overview</h3>
+        <h3>Current Flowers in Coldroom</h3>
         <table className="dashboard-table">
           <thead>
             <tr>
               <th>Batch ID</th>
               <th>Flower</th>
-              <th>Color</th>
-              <th>Stems in Coldroom</th>
+              <th>Variety</th>
+              <th>Quantity</th>
+              <th>Days Left</th>
               <th>Status</th>
               <th>Harvest Date</th>
-              <th>Last Updated</th>
+              <th>Expiry Date</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
-            {inventory.length > 0 ? (
-              inventory.map((inv) => (
-                <tr key={inv.harvestBatch_id}>
-                  <td>{inv.harvestBatch_id}</td>
-                  <td>{inv.HarvestBatch?.Flower?.variety || "-"}</td>
-                  <td>{inv.HarvestBatch?.Flower?.color || "-"}</td>
-                  <td>{inv.stemsInColdroom}</td>
-                  <td>{inv.HarvestBatch?.status || "InColdroom"}</td>
-                  <td>
-                    {inv.HarvestBatch?.harvestDateTime
-                      ? new Date(
-                          inv.HarvestBatch.harvestDateTime
-                        ).toLocaleDateString()
-                      : "-"}
-                  </td>
-                  <td>
-                    {new Date(inv.updatedAt).toLocaleDateString()}{" "}
-                    {new Date(inv.updatedAt).toLocaleTimeString()}
-                  </td>
-                  <td>
+            {computedInventory.map((i) => (
+              <tr
+                key={i.inventory_id}
+                className={i._status === "Expired" ? "row-discarded" : ""}
+              >
+                <td>{i.harvestBatch_id}</td>
+                <td>{i.Flower?.FlowerType?.type_name || "-"}</td>
+                <td>{i.Flower?.variety || "-"}</td>
+                <td>{i.stemsInColdroom}</td>
+                <td>{i._daysLeft >= 0 ? `${i._daysLeft} days` : "Expired"}</td>
+                <td>
+                  <StatusBadge status={i._status} />
+                </td>
+                <td>
+                  {new Date(i.harvest_date || i.createdAt).toLocaleDateString()}
+                </td>
+                <td>
+                  {i.expiryDate
+                    ? new Date(i.expiryDate).toLocaleDateString()
+                    : "-"}
+                </td>
+                <td>
+                  {i._status === "Expired" && (
                     <button
-                      onClick={() => handleDelete(inv.harvestBatch_id)}
+                      onClick={() => discardBatch(i)}
                       className="delete-btn"
                     >
-                      Delete
+                      🗑 Discard
                     </button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="8">No inventory data available</td>
+                  )}
+                </td>
               </tr>
-            )}
+            ))}
           </tbody>
         </table>
+      </section>
+
+      {/* ============================ */}
+      {/* Archive Toggle */}
+      {/* ============================ */}
+      <section className="dashboard-section">
+        <button
+          className="btn-secondary"
+          onClick={() => setShowArchive(!showArchive)}
+        >
+          {showArchive ? "▲ Hide Archive" : "▼ Show Archived Batches"}
+        </button>
+
+        {showArchive && (
+          <div className="archive-table-wrapper">
+            <h3>Past / Discarded Batches</h3>
+            <table className="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Batch ID</th>
+                  <th>Flower</th>
+                  <th>Variety</th>
+                  <th>Quantity</th>
+                  <th>Discard Reason</th>
+                  <th>Discarded On</th>
+                </tr>
+              </thead>
+              <tbody>
+                {archive.length === 0 && (
+                  <tr>
+                    <td colSpan="6" className="no-data">
+                      No archived batches.
+                    </td>
+                  </tr>
+                )}
+                {archive.map((a) => (
+                  <tr key={a.discard_id}>
+                    <td>{a.harvestBatch_id}</td>
+                    <td>
+                      {a.HarvestBatch?.Flower?.FlowerType?.type_name || "-"}
+                    </td>
+                    <td>{a.HarvestBatch?.Flower?.variety || "-"}</td>
+                    <td>{a.quantityDiscarded}</td>
+                    <td>{a.reason}</td>
+                    <td>
+                      {new Date(
+                        a.movedToArchiveDate || a.createdAt
+                      ).toLocaleDateString()}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </section>
     </div>
   );

@@ -2,12 +2,12 @@
 // 🌸 EverBloom — Flower Controller
 // ========================================
 
-// ✅ Direct model imports (no autoloader)
+// ✅ Direct model imports
 const FlowerType = require("../models/FlowerType");
 const Flower = require("../models/Flower");
 const HarvestBatch = require("../models/HarvestBatch");
 const Inventory = require("../models/Inventory");
-const sequelize = require("../db"); // ✅ DB connection for transactions
+const sequelize = require("../db");
 const { Sequelize } = require("sequelize");
 
 // ===============================
@@ -53,10 +53,80 @@ exports.listFlowers = async (_req, res) => {
 };
 
 // ===============================
+// 🌼 Update Flower Details (Prices, Info, Status)
+// ===============================
+exports.updateFlower = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const flower = await Flower.findByPk(id);
+    if (!flower) {
+      return res.status(404).json({ error: "Flower not found" });
+    }
+
+    // 🪴 Extract editable fields only
+    const {
+      type_id,
+      variety,
+      color,
+      stem_length,
+      shelf_life,
+      price_per_stem,
+      sale_price_per_stem,
+      description,
+      image_url,
+      is_listed_for_sale,
+      is_on_sale,
+    } = req.body;
+
+    // 🧠 Parse numeric fields safely
+    const updates = {
+      type_id: type_id ? Number(type_id) : flower.type_id,
+      variety: variety ?? flower.variety,
+      color: color ?? flower.color,
+      stem_length:
+        stem_length !== undefined && stem_length !== ""
+          ? Number(stem_length)
+          : flower.stem_length,
+      shelf_life:
+        shelf_life !== undefined && shelf_life !== ""
+          ? Number(shelf_life)
+          : flower.shelf_life,
+      price_per_stem:
+        price_per_stem !== undefined && price_per_stem !== ""
+          ? Number(price_per_stem)
+          : flower.price_per_stem,
+      sale_price_per_stem:
+        sale_price_per_stem !== undefined && sale_price_per_stem !== ""
+          ? Number(sale_price_per_stem)
+          : null,
+      description: description ?? flower.description,
+      image_url: image_url ?? flower.image_url,
+      is_listed_for_sale:
+        typeof is_listed_for_sale === "boolean"
+          ? is_listed_for_sale
+          : flower.is_listed_for_sale,
+      is_on_sale:
+        typeof is_on_sale === "boolean" ? is_on_sale : flower.is_on_sale,
+    };
+
+    await flower.update(updates);
+
+    res.json({
+      message: "✅ Flower updated successfully",
+      flower,
+    });
+  } catch (e) {
+    console.error("❌ Error updating flower:", e);
+    res.status(400).json({ error: e.message });
+  }
+};
+
+// ===============================
 // 🌾 Create Harvest Batch + Inventory
 // ===============================
 exports.createHarvestBatch = async (req, res) => {
-  const t = await sequelize.transaction(); // ✅ use sequelize, not HarvestBatch.sequelize
+  const t = await sequelize.transaction();
   try {
     const hb = await HarvestBatch.create(req.body, { transaction: t });
 

@@ -1,0 +1,196 @@
+/* ===================================
+   🌸 EverBloom — Dashboard Overview
+   Clean Responsive UI + Animations
+=================================== */
+
+.dashboard-page {
+    background-color: var(--beige);
+    min-height: 100vh;
+    padding: 2rem 3rem 3rem 3rem;
+    color: var(--grey);
+    transition: all 0.3s ease;
+}
+
+/* Fix spacing for left sidebar */
+@media (min-width: 901px) {
+    .dashboard-page {
+        padding-left: 3.5rem;
+    }
+}
+
+/* -----------------------------------
+   🌼 Heading
+----------------------------------- */
+.overview-heading {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.overview-heading .overview-title-icon {
+    font-size: 1.8rem;
+    color: var(--red);
+}
+
+/* -----------------------------------
+   🌸 Overview Grid
+----------------------------------- */
+.overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 24px;
+    margin-bottom: 2.5rem;
+}
+
+/* -----------------------------------
+   🌿 Overview Card (Widget Style)
+----------------------------------- */
+.overview-card {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    padding: 30px 20px;
+    transition: all 0.25s ease;
+    position: relative;
+    border-left: 6px solid var(--red);
+    cursor: pointer;
+}
+
+.overview-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Animated glow effect */
+.overview-card::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 16px;
+    background: radial-gradient(circle at top left,
+            rgba(255, 154, 159, 0.1),
+            transparent 70%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.overview-card:hover::after {
+    opacity: 1;
+}
+
+/* Icon */
+.overview-card-icon {
+    font-size: 2.4rem;
+    margin-bottom: 0.5rem;
+}
+
+/* Force EverBloom red for all overview icons */
+.overview-card-icon .icon {
+    color: var(--red) !important;
+}
+
+.icon {
+    transition: transform 0.25s ease;
+}
+
+.overview-card:hover .icon {
+    transform: scale(1.1);
+}
+
+/* Text */
+.overview-value {
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--red);
+    margin-bottom: 6px;
+}
+
+.overview-card h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--grey);
+    margin: 0;
+}
+
+/* -----------------------------------
+   🪴 Summary Section
+----------------------------------- */
+.overview-summary {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 24px 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.overview-summary:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+}
+
+.overview-summary h3 {
+    color: var(--red);
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.overview-summary ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.overview-summary li {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    font-size: 1rem;
+    border-bottom: 1px solid #f4f4f4;
+}
+
+.overview-summary li:last-child {
+    border-bottom: none;
+}
+
+/* -----------------------------------
+   📱 Responsive
+----------------------------------- */
+@media (max-width: 900px) {
+    .dashboard-page {
+        padding: 1.5rem;
+    }
+
+    .overview-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
+    }
+
+    .overview-card {
+        padding: 20px 15px;
+    }
+
+    .overview-value {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .overview-heading {
+        font-size: 1.5rem;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .overview-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .overview-summary {
+        margin-top: 2rem;
+    }
+}

@@ -1,23 +1,40 @@
+// ========================================
+// 🌸 EverBloom — API Configuration
+// ========================================
 import axios from "axios";
 
-// 🪴 Base configuration for all API calls
-const API = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+const API_URL =
+  import.meta.env?.VITE_API_URL ||
+  process.env.REACT_APP_API_URL ||
+  "http://localhost:5001";
+
+// 🪴 Create axios instance
+const api = axios.create({
+  baseURL: `${API_URL}/api`, // ✅ Add "/api" prefix
   headers: {
     "Content-Type": "application/json",
   },
 });
 
+// 🧠 Automatically attach JWT token
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 // ===============================
 // 🔹 Dashboard API Endpoints
 // ===============================
-export const getDashboardOverview = () => API.get("/dashboard/overview");
-export const getAllUsers = () => API.get("/dashboard/users");
-export const getAllOrders = () => API.get("/dashboard/orders");
-export const getAllHarvests = () => API.get("/dashboard/harvests");
+export const getDashboardOverview = () => api.get("/dashboard/overview");
+export const getAllUsers = () => api.get("/dashboard/users");
+export const getAllOrders = () => api.get("/dashboard/orders");
+export const getAllHarvests = () => api.get("/dashboard/harvests");
 export const updateUserRole = (userId, roleId) =>
-  API.put(`/dashboard/users/${userId}/role`, { role_id: roleId });
+  api.put(`/dashboard/users/${userId}/role`, { role_id: roleId });
 export const updateOrderStatus = (orderId, status) =>
-  API.put(`/dashboard/orders/${orderId}/status`, { status });
+  api.put(`/dashboard/orders/${orderId}/status`, { status });
 
-export default API;
+export default api;

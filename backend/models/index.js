@@ -22,7 +22,7 @@ const sequelize = new Sequelize(
 );
 
 // ----------------------------
-// Load all model files
+// Load all model files dynamically
 // ----------------------------
 const db = {};
 const basename = path.basename(__filename);
@@ -36,7 +36,7 @@ fs.readdirSync(__dirname)
   });
 
 // ----------------------------
-// Destructure models
+// Destructure loaded models
 // ----------------------------
 const {
   User,
@@ -58,7 +58,7 @@ const {
 // Associations
 // ----------------------------
 
-// ✅ Users ↔ Roles (Many-to-Many through UserRoles)
+// ✅ Users ↔ Roles (Many-to-Many)
 User.belongsToMany(Role, {
   through: UserRole,
   foreignKey: "user_id",
@@ -69,12 +69,9 @@ Role.belongsToMany(User, {
   foreignKey: "role_id",
   otherKey: "user_id",
 });
-
-// ✅ UserRoles belong to both sides (handy for includes)
 UserRole.belongsTo(User, { foreignKey: "user_id" });
-User.hasMany(UserRole, { foreignKey: "user_id" });
-
 UserRole.belongsTo(Role, { foreignKey: "role_id" });
+User.hasMany(UserRole, { foreignKey: "user_id" });
 Role.hasMany(UserRole, { foreignKey: "role_id" });
 
 // ✅ User ↔ Order (1:M)
@@ -105,13 +102,20 @@ Flower.hasMany(OrderItem, { foreignKey: "flower_id" });
 ColdroomReservation.belongsTo(HarvestBatch, { foreignKey: "harvestBatch_id" });
 ColdroomReservation.belongsTo(OrderItem, { foreignKey: "orderItem_id" });
 
+// Optional: enable reverse relation for easier includes
+OrderItem.hasMany(ColdroomReservation, { foreignKey: "orderItem_id" });
+HarvestBatch.hasMany(ColdroomReservation, { foreignKey: "harvestBatch_id" });
+
 // ✅ Discard ↔ HarvestBatch + User (M:1 each)
 Discard.belongsTo(HarvestBatch, { foreignKey: "harvestBatch_id" });
 Discard.belongsTo(User, { as: "discardedBy", foreignKey: "discardedBy_id" });
+HarvestBatch.hasMany(Discard, { foreignKey: "harvestBatch_id" });
 
 // ✅ Review ↔ User + Store (M:1 each)
 Review.belongsTo(User, { foreignKey: "user_id" });
 Review.belongsTo(Store, { foreignKey: "store_id" });
+User.hasMany(Review, { foreignKey: "user_id" });
+Store.hasMany(Review, { foreignKey: "store_id" });
 
 // ----------------------------
 // Export

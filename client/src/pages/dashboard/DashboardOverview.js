@@ -1,22 +1,22 @@
+// ========================================
+// 🌸 EverBloom — Dashboard Overview (with Icons)
+// ========================================
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import {
-  Loader2,
-  Users,
-  ShoppingBag,
-  Flower,
-  Store,
-  Sprout,
-  Star,
-} from "lucide-react";
-import "./Dashboard.css";
+import "../../styles/dashboard/_core.css";
+import "../../styles/dashboard/dashboardOverview.css";
+
+// ✅ React Icons
+import { FaShoppingBag, FaTruck, FaUsers, FaWarehouse } from "react-icons/fa";
+import { GiFlowerPot } from "react-icons/gi";
+import { MdOutlineLowPriority, MdRateReview } from "react-icons/md";
+import { RiInboxArchiveFill } from "react-icons/ri";
 
 export default function DashboardOverview() {
-  const [stats, setStats] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [overview, setOverview] = useState(null);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
-  // ✅ API base URL logic — supports both local + Render
   const API_URL =
     import.meta.env?.VITE_API_URL ||
     process.env.REACT_APP_API_URL ||
@@ -28,102 +28,125 @@ export default function DashboardOverview() {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No token found. Please log in again.");
 
-        console.log(
-          "📡 Fetching overview from:",
-          `${API_URL}/api/dashboard/overview`
-        );
-
+        const headers = { Authorization: `Bearer ${token}` };
         const res = await axios.get(`${API_URL}/api/dashboard/overview`, {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
+          headers,
         });
-
-        setStats(res.data);
+        setOverview(res.data);
       } catch (err) {
-        console.error("❌ Overview fetch error:", err.response || err.message);
-        if (err.response?.status === 401) {
-          setError("Session expired. Please log in again.");
-          localStorage.removeItem("token");
-          localStorage.removeItem("user");
-        } else {
-          setError("Could not load overview data. Please try again.");
-        }
+        console.error("❌ Overview error:", err);
+        setError("Failed to load overview stats.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchOverview();
   }, [API_URL]);
 
   if (loading)
     return (
-      <div className="loading-state">
-        <Loader2 className="spinner" /> Loading dashboard overview...
+      <div className="dashboard-page">
+        <p>Loading dashboard overview...</p>
       </div>
     );
 
-  if (error) return <p className="error-message">{error}</p>;
-
-  if (!stats)
+  if (error)
     return (
-      <p className="error-message">No data available for the dashboard.</p>
+      <div className="dashboard-page">
+        <p>{error}</p>
+      </div>
     );
+
+  if (!overview) return null;
+
+  // =========================================
+  // 🧭 Dashboard Summary Cards
+  // =========================================
+  const cards = [
+    {
+      title: "Total Orders",
+      value: overview.orders,
+      icon: <FaShoppingBag className="icon orders" />,
+    },
+    {
+      title: "Pending Orders",
+      value: overview.pendingOrders,
+      icon: <RiInboxArchiveFill className="icon pending" />,
+    },
+    {
+      title: "Delivered Orders",
+      value: overview.completedOrders,
+      icon: <FaTruck className="icon delivered" />,
+    },
+    {
+      title: "Flower Varieties",
+      value: overview.flowers,
+      icon: <GiFlowerPot className="icon flowers" />,
+    },
+    {
+      title: "Stems in Coldroom",
+      value: overview.flowersInColdroom,
+      icon: <FaWarehouse className="icon coldroom" />,
+    },
+    {
+      title: "Low Stock Alerts",
+      value: overview.lowStock,
+      icon: <MdOutlineLowPriority className="icon alert" />,
+    },
+    {
+      title: "Total Users",
+      value: overview.users,
+      icon: <FaUsers className="icon users" />,
+    },
+    {
+      title: "Reviews",
+      value: overview.reviews,
+      icon: <MdRateReview className="icon reviews" />,
+    },
+  ];
 
   return (
-    <div className="dashboard-overview">
-      <h2 className="overview-heading">📊 Dashboard Overview</h2>
+    <div className="dashboard-page">
+      <h2 className="overview-heading">
+        <span className="overview-icon-title">
+          <GiFlowerPot className="overview-title-icon" />
+        </span>
+        Business Overview
+      </h2>
 
+      {/* ============================ */}
+      {/* Stats Grid */}
+      {/* ============================ */}
       <div className="overview-grid">
-        <div className="overview-card">
-          <Users size={28} />
-          <h3>{stats.users ?? 0}</h3>
-          <p>Total Users</p>
-        </div>
-
-        <div className="overview-card">
-          <ShoppingBag size={28} />
-          <h3>{stats.orders ?? 0}</h3>
-          <p>Total Orders</p>
-        </div>
-
-        <div className="overview-card">
-          <Flower size={28} />
-          <h3>{stats.flowers ?? 0}</h3>
-          <p>Total Flowers</p>
-        </div>
-
-        <div className="overview-card">
-          <Store size={28} />
-          <h3>{stats.stores ?? 0}</h3>
-          <p>Total Stores</p>
-        </div>
-
-        <div className="overview-card">
-          <Sprout size={28} />
-          <h3>{stats.harvestBatches ?? 0}</h3>
-          <p>Harvest Batches</p>
-        </div>
-
-        <div className="overview-card">
-          <Star size={28} />
-          <h3>{stats.reviews ?? 0}</h3>
-          <p>Customer Reviews</p>
-        </div>
+        {cards.map((card, index) => (
+          <div key={index} className="overview-card">
+            <div className="overview-card-icon">{card.icon}</div>
+            <p className="overview-value">{card.value ?? 0}</p>
+            <h3>{card.title}</h3>
+          </div>
+        ))}
       </div>
 
-      <div className="overview-summary">
-        <h3>📈 Summary</h3>
+      {/* ============================ */}
+      {/* Summary Section */}
+      {/* ============================ */}
+      <section className="overview-summary">
+        <h3>Quick Summary</h3>
         <ul>
-          <li>🧑‍💼 Active users: {stats.activeUsers ?? 0}</li>
-          <li>🕒 Pending orders: {stats.pendingOrders ?? 0}</li>
-          <li>✅ Completed orders: {stats.completedOrders ?? 0}</li>
-          <li>💐 Flowers in coldroom: {stats.flowersInColdroom ?? 0}</li>
-          <li>⚠️ Low-stock flowers: {stats.lowStock ?? 0}</li>
+          <li>
+            Active Users <strong>{overview.activeUsers ?? 0}</strong>
+          </li>
+          <li>
+            Harvest Batches <strong>{overview.harvestBatches ?? 0}</strong>
+          </li>
+          <li>
+            Completed Orders <strong>{overview.completedOrders ?? 0}</strong>
+          </li>
+          <li>
+            Stores Registered <strong>{overview.stores ?? 0}</strong>
+          </li>
         </ul>
-      </div>
+      </section>
     </div>
   );
 }

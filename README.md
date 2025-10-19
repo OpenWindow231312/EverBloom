@@ -262,3 +262,5 @@ The file automatically authenticates DB connection and logs results:
 | **Frontend (Vercel)**     | [https://everbloomshop.co.za](https://everbloomshop.co.za)       |
 | **Backend (Render)**      | [https://everbloom.onrender.com](https://everbloom.onrender.com) |
 | **Database (AlwaysData)** | [https://admin.alwaysdata.com](https://admin.alwaysdata.com)     |
+
+mention somewhere npm install react-icons

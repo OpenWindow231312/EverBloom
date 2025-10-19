@@ -1,14 +1,19 @@
+// ========================================
+// 🌸 EverBloom — Order Controller (Fixed)
+// ========================================
 const sequelize = require("../db");
 const { Op } = require("sequelize");
 
-// ✅ Import models directly
-const Order = require("../models/Order");
-const User = require("../models/User");
-const Flower = require("../models/Flower");
-const OrderItem = require("../models/OrderItem");
-const HarvestBatch = require("../models/HarvestBatch");
-const Inventory = require("../models/Inventory");
-const ColdroomReservation = require("../models/ColdroomReservation");
+// ✅ Import initialized models from index.js (not raw files)
+const {
+  Order,
+  User,
+  Flower,
+  OrderItem,
+  HarvestBatch,
+  Inventory,
+  ColdroomReservation,
+} = require("../models");
 
 // ===============================
 // 🧾 Create New Order (Customer)
@@ -66,7 +71,6 @@ exports.reserveOrder = async (req, res) => {
     for (const item of order.OrderItems) {
       let qtyToReserve = item.quantityOrdered;
 
-      // find batches of this flower with available stock
       const batches = await HarvestBatch.findAll({
         where: {
           flower_id: item.flower_id,
@@ -84,7 +88,6 @@ exports.reserveOrder = async (req, res) => {
 
         const take = Math.min(available, qtyToReserve);
 
-        // create reservation
         await ColdroomReservation.create(
           {
             orderItem_id: item.orderItem_id,
@@ -94,7 +97,6 @@ exports.reserveOrder = async (req, res) => {
           { transaction: t }
         );
 
-        // decrement inventory immediately
         b.Inventory.stemsInColdroom = available - take;
         await b.Inventory.save({ transaction: t });
 

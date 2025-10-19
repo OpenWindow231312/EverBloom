@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { fetchCurrentUser, logoutUser } from "../../utils/auth";
-import "./Dashboard.css";
+import "../../styles/dashboard/_core.css";
+import "../../styles/dashboard/dashboardLayout.css";
 
 export default function DashboardLayout() {
   const [currentUser, setCurrentUser] = useState(null);

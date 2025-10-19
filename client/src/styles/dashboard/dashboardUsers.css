@@ -1,0 +1,24 @@
+.role-admin {
+    background-color: #8b5cf6;
+    color: #fff;
+}
+
+.role-employee {
+    background-color: #00a8ff;
+    color: #fff;
+}
+
+.role-florist {
+    background-color: #ff9f43;
+    color: #fff;
+}
+
+.role-customer {
+    background-color: #2ecc71;
+    color: #fff;
+}
+
+.role-generic {
+    background-color: #b2bec3;
+    color: #333;
+}

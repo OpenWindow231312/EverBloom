@@ -1,0 +1,21 @@
+.harvest-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.harvest-form input,
+.harvest-form select {
+    flex: 1 1 200px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.row-expiring {
+    background: #fff4e0;
+}
+
+.row-expired {
+    background: #ffe0e0;
+}

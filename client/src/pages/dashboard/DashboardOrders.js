@@ -1,302 +1,341 @@
+// ========================================
+// 🌸 EverBloom — Dashboard Orders Management (Crash-Proof)
+// ========================================
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import "../dashboard/Dashboard.css";
+import api from "../../api/api";
+import "../../styles/dashboard/_core.css";
+import "../../styles/dashboard/dashboardStock.css";
+import { FaTruck, FaSearch } from "react-icons/fa";
 
 export default function DashboardOrders() {
-  const API_URL =
-    import.meta.env?.VITE_API_URL ||
-    process.env.REACT_APP_API_URL ||
-    "http://localhost:5001";
-  const token = localStorage.getItem("token");
-
   const [orders, setOrders] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [flowers, setFlowers] = useState([]);
+  const [pastOrders, setPastOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [stockWarnings, setStockWarnings] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const [showPast, setShowPast] = useState(false);
 
-  const [newOrder, setNewOrder] = useState({
-    user_id: "",
-    pickupOrDelivery: "Pickup",
-    shippingAddress: "",
-    flowers: [{ flower_id: "", quantity: "" }],
-  });
+  // 🌿 Filters
+  const [filterText, setFilterText] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [filterDelivery, setFilterDelivery] = useState("");
 
-  // 🧭 Fetch data
+  // 📄 Pagination
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 20;
+
+  // ✅ Helper to safely display currency
+  const formatCurrency = (value) => {
+    const num = parseFloat(value);
+    if (isNaN(num)) return "0.00";
+    return num.toFixed(2);
+  };
+
+  // ===========================
+  // 🧭 Fetch Orders
+  // ===========================
   useEffect(() => {
-    const fetchData = async () => {
+    const run = async () => {
       try {
-        if (!token) throw new Error("No token found.");
+        const res = await api.get("/orders");
+        const data = res.data || [];
 
-        const [ordersRes, usersRes, flowersRes] = await Promise.all([
-          axios.get(`${API_URL}/api/dashboard/orders`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${API_URL}/api/dashboard/users`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${API_URL}/api/dashboard/flowers`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
-        ]);
+        const active = data.filter(
+          (o) => o.status !== "Delivered" && o.status !== "Cancelled"
+        );
+        const past = data.filter(
+          (o) => o.status === "Delivered" || o.status === "Cancelled"
+        );
 
-        setOrders(ordersRes.data || []);
-        setUsers(usersRes.data || []);
-
-        const availableFlowers = flowersRes.data.map((f) => {
-          const batch = f.HarvestBatches?.[0];
-          const status = batch?.status || "Unknown";
-          const stock = batch?.Inventory?.stemsInColdroom ?? 0;
-
-          return {
-            flower_id: f.flower_id,
-            variety: f.variety,
-            color: f.color,
-            type_name: f.FlowerType?.type_name,
-            status,
-            stock,
-          };
-        });
-        setFlowers(availableFlowers);
+        setOrders(active);
+        setPastOrders(past);
       } catch (err) {
-        console.error("❌ Load error:", err);
+        console.error("❌ Error fetching orders:", err);
+        setError("Failed to load order data.");
       } finally {
         setLoading(false);
       }
     };
+    run();
+  }, []);
 
-    fetchData();
-  }, [API_URL]);
-
-  // ✅ Add order
-  const handleAddOrder = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  // ===========================
+  // 🔄 Update Order Status
+  // ===========================
+  const updateStatus = async (orderId, newStatus) => {
     try {
-      const res = await axios.post(
-        `${API_URL}/api/dashboard/orders`,
-        newOrder,
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
-          },
-        }
+      await api.put(`/orders/${orderId}`, { status: newStatus });
+      const res = await api.get("/orders");
+      const data = res.data || [];
+
+      setOrders(
+        data.filter((o) => o.status !== "Delivered" && o.status !== "Cancelled")
+      );
+      setPastOrders(
+        data.filter((o) => o.status === "Delivered" || o.status === "Cancelled")
+      );
+    } catch (err) {
+      console.error("❌ Error updating order:", err);
+      alert("Failed to update order status.");
+    }
+  };
+
+  // ===========================
+  // 🧾 Status Badge
+  // ===========================
+  const StatusBadge = ({ status }) => {
+    const map = {
+      Pending: "#f0ad4e",
+      "Out for Delivery": "#5bc0de",
+      Delivered: "#5cb85c",
+      Cancelled: "#d9534f",
+    };
+    return (
+      <span
+        style={{
+          backgroundColor: map[status] || "#ccc",
+          color: "#fff",
+          padding: "4px 10px",
+          borderRadius: "10px",
+          fontSize: "0.85rem",
+          fontWeight: 600,
+        }}
+      >
+        {status}
+      </span>
+    );
+  };
+
+  // ===========================
+  // 🌼 Filtering Logic
+  // ===========================
+  const filteredOrders = orders.filter((o) => {
+    const searchText = filterText.toLowerCase();
+    const customer = o.User?.fullName?.toLowerCase() || "guest";
+    const delivery = o.pickupOrDelivery?.toLowerCase() || "pickup";
+    const status = o.status?.toLowerCase();
+
+    const matchesSearch =
+      customer.includes(searchText) ||
+      o.order_id?.toString().includes(searchText) ||
+      o.OrderItems?.some((i) =>
+        i.Flower?.variety?.toLowerCase().includes(searchText)
       );
 
-      alert("✅ Order created successfully!");
-      setOrders((prev) => [...prev, res.data.order]);
-      setNewOrder({
-        user_id: "",
-        pickupOrDelivery: "Pickup",
-        shippingAddress: "",
-        flowers: [{ flower_id: "", quantity: "" }],
-      });
-      setStockWarnings({});
-      setShowAddForm(false);
-    } catch (err) {
-      console.error("❌ Error creating order:", err);
-      alert(err.response?.data?.message || "❌ Failed to create order.");
-    } finally {
-      setIsSubmitting(false);
-    }
+    const matchesStatus =
+      !filterStatus || status === filterStatus.toLowerCase();
+
+    const matchesDelivery =
+      !filterDelivery || delivery === filterDelivery.toLowerCase();
+
+    return matchesSearch && matchesStatus && matchesDelivery;
+  });
+
+  // ===========================
+  // 📄 Pagination Logic
+  // ===========================
+  const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const currentOrders = filteredOrders.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-  // 🧮 Handle flower selection & stock check
-  const handleFlowerChange = (index, field, value) => {
-    const updated = [...newOrder.flowers];
-    updated[index][field] = value;
-
-    if (field === "quantity" || field === "flower_id") {
-      const selectedFlower =
-        flowers.find(
-          (fl) => fl.flower_id === Number(updated[index].flower_id)
-        ) || {};
-      const maxStock = selectedFlower.stock || 0;
-      const qty = Number(updated[index].quantity) || 0;
-
-      setStockWarnings((prev) => ({
-        ...prev,
-        [index]:
-          qty > maxStock
-            ? `⚠️ Only ${maxStock} stems available`
-            : qty === maxStock && maxStock > 0
-            ? `✅ Using all available stock`
-            : "",
-      }));
-    }
-
-    setNewOrder({ ...newOrder, flowers: updated });
-  };
-
-  const addFlowerRow = () =>
-    setNewOrder({
-      ...newOrder,
-      flowers: [...newOrder.flowers, { flower_id: "", quantity: "" }],
-    });
-
-  if (loading) return <p className="loading">Loading orders...</p>;
+  // ===========================
+  // 🧭 Render
+  // ===========================
+  if (loading) return <p>Loading orders...</p>;
+  if (error) return <p className="error-message">{error}</p>;
 
   return (
-    <div className="dashboard-orders">
-      <h2 className="overview-heading">📦 Orders Management</h2>
+    <div className="dashboard-stock">
+      <h2 className="overview-heading">
+        <FaTruck style={{ marginRight: "8px", color: "#b80315" }} />
+        Orders Management
+      </h2>
 
-      <button
-        className="btn-primary add-order-btn"
-        onClick={() => setShowAddForm(!showAddForm)}
-      >
-        {showAddForm ? "✖ Close Form" : "➕ Add New Order"}
-      </button>
-
-      {showAddForm && (
-        <div className="order-form card">
-          <h3>Create New Order</h3>
-          <form onSubmit={handleAddOrder}>
-            <label>Customer</label>
-            <select
-              name="user_id"
-              value={newOrder.user_id}
-              onChange={(e) =>
-                setNewOrder({ ...newOrder, user_id: e.target.value })
-              }
-              required
-            >
-              <option value="">Select Customer</option>
-              {users.map((u) => (
-                <option key={u.user_id} value={u.user_id}>
-                  {u.fullName} ({u.email})
-                </option>
-              ))}
-            </select>
-
-            <label>Delivery Type</label>
-            <select
-              name="pickupOrDelivery"
-              value={newOrder.pickupOrDelivery}
-              onChange={(e) =>
-                setNewOrder({ ...newOrder, pickupOrDelivery: e.target.value })
-              }
-            >
-              <option value="Pickup">Pickup</option>
-              <option value="Delivery">Delivery</option>
-            </select>
-
-            {newOrder.pickupOrDelivery === "Delivery" && (
-              <>
-                <label>Shipping Address</label>
-                <input
-                  type="text"
-                  placeholder="Enter shipping address"
-                  value={newOrder.shippingAddress}
-                  onChange={(e) =>
-                    setNewOrder({
-                      ...newOrder,
-                      shippingAddress: e.target.value,
-                    })
-                  }
-                  required
-                />
-              </>
-            )}
-
-            <h4>🪷 Flower Selection</h4>
-            {newOrder.flowers.map((f, i) => (
-              <div key={i} className="flower-row">
-                <select
-                  value={f.flower_id}
-                  onChange={(e) =>
-                    handleFlowerChange(i, "flower_id", e.target.value)
-                  }
-                  required
-                >
-                  <option value="">Select Flower</option>
-                  {flowers.map((fl) => (
-                    <option key={fl.flower_id} value={fl.flower_id}>
-                      {fl.type_name} - {fl.variety} ({fl.color}) 🌿 {fl.status}{" "}
-                      ({fl.stock} stems)
-                    </option>
-                  ))}
-                </select>
-
-                <input
-                  type="number"
-                  min="1"
-                  placeholder="Quantity"
-                  value={f.quantity}
-                  onChange={(e) =>
-                    handleFlowerChange(i, "quantity", e.target.value)
-                  }
-                  required
-                />
-
-                {stockWarnings[i] && (
-                  <small
-                    className={`stock-warning ${
-                      stockWarnings[i].includes("⚠️") ? "warning" : "ok"
-                    }`}
-                  >
-                    {stockWarnings[i]}
-                  </small>
-                )}
-              </div>
-            ))}
-            <button
-              type="button"
-              className="btn-secondary"
-              onClick={addFlowerRow}
-            >
-              ➕ Add Another Flower
-            </button>
-
-            <button
-              type="submit"
-              className="btn-primary"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Saving..." : "Save Order"}
-            </button>
-          </form>
+      {/* ============================ */}
+      {/* Filter Bar */}
+      {/* ============================ */}
+      <div className="filter-bar">
+        <div className="search-wrapper">
+          {/* <FaSearch className="search-icon" /> */}
+          <input
+            type="text"
+            placeholder="Search by customer, flower, or order ID..."
+            value={filterText}
+            onChange={(e) => setFilterText(e.target.value)}
+          />
         </div>
-      )}
 
-      <table className="dashboard-table orders-table">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Customer</th>
-            <th>Status</th>
-            <th>Amount</th>
-            <th>Type</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          {orders.length > 0 ? (
-            orders.map((o) => (
-              <tr key={o.order_id}>
-                <td>{o.order_id}</td>
-                <td>{o.User?.fullName || "Unknown"}</td>
-                <td>
-                  <span className={`status-badge ${o.status.toLowerCase()}`}>
-                    {o.status}
-                  </span>
-                </td>
-                <td>R{Number(o.totalAmount).toFixed(2)}</td>
-                <td>{o.pickupOrDelivery}</td>
-                <td>{new Date(o.orderDateTime).toLocaleDateString("en-ZA")}</td>
-              </tr>
-            ))
-          ) : (
-            <tr>
-              <td colSpan="6" className="no-data">
-                No orders available
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+        <select
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="">All Statuses</option>
+          <option value="Pending">Pending</option>
+          <option value="Out for Delivery">Out for Delivery</option>
+          <option value="Delivered">Delivered</option>
+          <option value="Cancelled">Cancelled</option>
+        </select>
+
+        <select
+          value={filterDelivery}
+          onChange={(e) => setFilterDelivery(e.target.value)}
+        >
+          <option value="">All Delivery Types</option>
+          <option value="Delivery">Delivery</option>
+          <option value="Pickup">Pickup</option>
+        </select>
+      </div>
+
+      {/* ============================ */}
+      {/* Active Orders Table */}
+      {/* ============================ */}
+      <section className="dashboard-section">
+        <h3>Active Orders</h3>
+        {currentOrders.length === 0 ? (
+          <p className="no-data">No matching orders found.</p>
+        ) : (
+          <div className="table-container">
+            <table className="dashboard-table">
+              <thead>
+                <tr>
+                  <th>Order ID</th>
+                  <th>Customer</th>
+                  <th>Items</th>
+                  <th>Total (R)</th>
+                  <th>Delivery</th>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Update</th>
+                </tr>
+              </thead>
+              <tbody>
+                {currentOrders.map((o) => (
+                  <tr key={o.order_id}>
+                    <td>{o.order_id}</td>
+                    <td>{o.User?.fullName || "Guest"}</td>
+                    <td>
+                      {o.OrderItems?.map((i) => (
+                        <div key={i.orderItem_id}>
+                          {i.Flower?.variety} × {i.quantityOrdered}
+                        </div>
+                      ))}
+                    </td>
+                    <td>R {formatCurrency(o.totalAmount)}</td>
+                    <td>{o.pickupOrDelivery || "Pickup"}</td>
+                    <td>{new Date(o.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <StatusBadge status={o.status} />
+                    </td>
+                    <td>
+                      <select
+                        className="status-dropdown"
+                        value={o.status}
+                        onChange={(e) =>
+                          updateStatus(o.order_id, e.target.value)
+                        }
+                      >
+                        <option value="Pending">Pending</option>
+                        <option value="Out for Delivery">
+                          Out for Delivery
+                        </option>
+                        <option value="Delivered">Delivered</option>
+                        <option value="Cancelled">Cancelled</option>
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {totalPages > 1 && (
+          <div className="pagination">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <span>
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </section>
+
+      {/* ============================ */}
+      {/* Past Orders */}
+      {/* ============================ */}
+      <section className="dashboard-section">
+        <button
+          className="btn-secondary"
+          onClick={() => setShowPast(!showPast)}
+        >
+          {showPast ? "▲ Hide Past Orders" : "▼ Show Past Orders"}
+        </button>
+
+        {showPast && (
+          <div className="archive-table-wrapper">
+            <h3>Past Orders</h3>
+            <div className="table-container">
+              <table className="dashboard-table">
+                <thead>
+                  <tr>
+                    <th>Order ID</th>
+                    <th>Customer</th>
+                    <th>Items</th>
+                    <th>Total (R)</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {pastOrders.length === 0 ? (
+                    <tr>
+                      <td colSpan="6" className="no-data">
+                        No past orders found.
+                      </td>
+                    </tr>
+                  ) : (
+                    pastOrders.map((o) => (
+                      <tr key={o.order_id}>
+                        <td>{o.order_id}</td>
+                        <td>{o.User?.fullName || "Guest"}</td>
+                        <td>
+                          {o.OrderItems?.map((i) => (
+                            <div key={i.orderItem_id}>
+                              {i.Flower?.variety} × {i.quantityOrdered}
+                            </div>
+                          ))}
+                        </td>
+                        <td>R {formatCurrency(o.totalAmount)}</td>
+                        <td>
+                          <StatusBadge status={o.status} />
+                        </td>
+                        <td>{new Date(o.createdAt).toLocaleDateString()}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </section>
     </div>
   );
 }
