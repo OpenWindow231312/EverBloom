@@ -6,7 +6,7 @@ const fs = require("fs");
 const path = require("path");
 
 // ----------------------------
-// DB Connection
+// DB connection
 // ----------------------------
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -16,7 +16,7 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT || "mysql",
     logging: false,
-    // Optional: uncomment if Render/AlwaysData require SSL
+    // Optional: uncomment if your host requires SSL (Render/AlwaysData sometimes do)
     // dialectOptions: { ssl: { require: true, rejectUnauthorized: false } },
   }
 );
@@ -79,68 +79,43 @@ User.hasMany(Order, { foreignKey: "user_id" });
 Order.belongsTo(User, { foreignKey: "user_id" });
 
 // ✅ Flower ↔ FlowerType (M:1)
-Flower.belongsTo(FlowerType, { as: "FlowerType", foreignKey: "type_id" });
-FlowerType.hasMany(Flower, { as: "Flowers", foreignKey: "type_id" });
+Flower.belongsTo(FlowerType, { foreignKey: "type_id" });
+FlowerType.hasMany(Flower, { foreignKey: "type_id" });
 
 // ✅ HarvestBatch ↔ Flower (M:1)
-HarvestBatch.belongsTo(Flower, { as: "Flower", foreignKey: "flower_id" });
-Flower.hasMany(HarvestBatch, { as: "HarvestBatches", foreignKey: "flower_id" });
+HarvestBatch.belongsTo(Flower, { foreignKey: "flower_id" });
+Flower.hasMany(HarvestBatch, { foreignKey: "flower_id" });
 
 // ✅ Inventory ↔ HarvestBatch (1:1)
-Inventory.belongsTo(HarvestBatch, {
-  as: "HarvestBatch",
-  foreignKey: "harvestBatch_id",
-});
-HarvestBatch.hasOne(Inventory, {
-  as: "Inventory",
-  foreignKey: "harvestBatch_id",
-});
+Inventory.belongsTo(HarvestBatch, { foreignKey: "harvestBatch_id" });
+HarvestBatch.hasOne(Inventory, { foreignKey: "harvestBatch_id" });
 
 // ✅ Order ↔ OrderItem (1:M)
-Order.hasMany(OrderItem, { as: "OrderItems", foreignKey: "order_id" });
-OrderItem.belongsTo(Order, { as: "Order", foreignKey: "order_id" });
+Order.hasMany(OrderItem, { foreignKey: "order_id" });
+OrderItem.belongsTo(Order, { foreignKey: "order_id" });
 
 // ✅ OrderItem ↔ Flower (M:1)
-OrderItem.belongsTo(Flower, { as: "Flower", foreignKey: "flower_id" });
-Flower.hasMany(OrderItem, { as: "OrderItems", foreignKey: "flower_id" });
+OrderItem.belongsTo(Flower, { foreignKey: "flower_id" });
+Flower.hasMany(OrderItem, { foreignKey: "flower_id" });
 
 // ✅ ColdroomReservation ↔ HarvestBatch + OrderItem (M:1 each)
-ColdroomReservation.belongsTo(HarvestBatch, {
-  as: "HarvestBatch",
-  foreignKey: "harvestBatch_id",
-});
-ColdroomReservation.belongsTo(OrderItem, {
-  as: "OrderItem",
-  foreignKey: "orderItem_id",
-});
-OrderItem.hasMany(ColdroomReservation, {
-  as: "ColdroomReservations",
-  foreignKey: "orderItem_id",
-});
-HarvestBatch.hasMany(ColdroomReservation, {
-  as: "ColdroomReservations",
-  foreignKey: "harvestBatch_id",
-});
+ColdroomReservation.belongsTo(HarvestBatch, { foreignKey: "harvestBatch_id" });
+ColdroomReservation.belongsTo(OrderItem, { foreignKey: "orderItem_id" });
+
+// Optional: enable reverse relation for easier includes
+OrderItem.hasMany(ColdroomReservation, { foreignKey: "orderItem_id" });
+HarvestBatch.hasMany(ColdroomReservation, { foreignKey: "harvestBatch_id" });
 
 // ✅ Discard ↔ HarvestBatch + User (M:1 each)
-Discard.belongsTo(HarvestBatch, {
-  as: "HarvestBatch",
-  foreignKey: "harvestBatch_id",
-});
-Discard.belongsTo(User, {
-  as: "DiscardedBy",
-  foreignKey: "discardedByEmployeeID",
-});
-HarvestBatch.hasMany(Discard, {
-  as: "Discards",
-  foreignKey: "harvestBatch_id",
-});
+Discard.belongsTo(HarvestBatch, { foreignKey: "harvestBatch_id" });
+Discard.belongsTo(User, { as: "discardedBy", foreignKey: "discardedBy_id" });
+HarvestBatch.hasMany(Discard, { foreignKey: "harvestBatch_id" });
 
 // ✅ Review ↔ User + Store (M:1 each)
-Review.belongsTo(User, { as: "User", foreignKey: "user_id" });
-Review.belongsTo(Store, { as: "Store", foreignKey: "store_id" });
-User.hasMany(Review, { as: "Reviews", foreignKey: "user_id" });
-Store.hasMany(Review, { as: "Reviews", foreignKey: "store_id" });
+Review.belongsTo(User, { foreignKey: "user_id" });
+Review.belongsTo(Store, { foreignKey: "store_id" });
+User.hasMany(Review, { foreignKey: "user_id" });
+Store.hasMany(Review, { foreignKey: "store_id" });
 
 // ----------------------------
 // Export
