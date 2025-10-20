@@ -1,0 +1,401 @@
+/* 🌿 Layout + Typography */
+.shop-page {
+    padding: 40px;
+    text-align: center;
+}
+
+.shop-header {
+    text-align: center;
+    padding: 60px 20px 20px;
+}
+
+.shop-title {
+    font-family: "Poppins", sans-serif;
+    font-size: 2.2rem;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+.shop-subtitle {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 🌸 Product Grid */
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 2rem;
+    padding: 0 40px 60px;
+}
+
+/* 🌼 Product Card */
+.flower-card {
+    position: relative;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    text-decoration: none;
+    color: #333;
+    transition: all 0.25s ease;
+}
+
+.flower-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+/* 🌷 Product Image */
+.flower-img {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-bottom: 1px solid #eee;
+}
+
+/* 💐 Product Info */
+.flower-info {
+    padding: 1rem;
+    text-align: center;
+}
+
+.flower-name {
+    font-weight: 600;
+    font-size: 1.1rem;
+    margin-bottom: 0.3rem;
+}
+
+.flower-type {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 0.5rem;
+}
+
+/* 💸 Price Styling */
+.flower-price {
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+.sale-price {
+    color: #DE0D22;
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+.original-price {
+    color: #777;
+    text-decoration: line-through;
+    font-size: 0.9rem;
+}
+
+/* 🌺 Sale Badge */
+.sale-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: #DE0D22;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+}
+
+/* 🛒 View Button */
+.btn-view {
+    background-color: #7bae7f;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-top: 10px;
+    transition: background-color 0.2s ease;
+}
+
+.btn-view:hover {
+    background-color: #5f9363;
+}
+
+/* 🌸 States */
+.shop-loading,
+.shop-error,
+.shop-empty {
+    text-align: center;
+    padding: 100px 0;
+    font-family: "Poppins", sans-serif;
+    color: #555;
+}
+
+/* 🌿 Filter Bar */
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
+    padding: 16px 30px;
+    background-color: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+/* Unified height + width for filter controls */
+.filter-input,
+.filter-select,
+.filter-checkbox,
+.favourites-btn {
+    flex: 1 1 220px;
+    min-width: 200px;
+    max-height: 48px;
+    height: 48px;
+    box-sizing: border-box;
+}
+
+/* 🔍 Search Input */
+.filter-input {
+    padding: 0 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background-color: #fff;
+    color: #333;
+    width: 100%;
+}
+
+.filter-input::placeholder {
+    color: #999;
+    opacity: 0.8;
+}
+
+/* ⬇️ Dropdowns */
+.filter-select {
+    padding: 0 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    background-color: #fff;
+    cursor: pointer;
+    appearance: none;
+    width: 100%;
+    color: #333;
+}
+
+/* ☑️ Checkbox */
+.filter-checkbox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 0.95rem;
+    color: #DE0D22;
+    cursor: pointer;
+}
+
+.filter-checkbox input {
+    accent-color: #DE0D22;
+    width: 18px;
+    height: 18px;
+}
+
+/* ❤️ Heart Button on Product Cards */
+.heart-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3rem;
+    color: #bbb;
+    transition: color 0.2s ease;
+    z-index: 2;
+}
+
+.heart-btn:hover {
+    color: #DE0D22;
+}
+
+.heart-btn.active {
+    color: #DE0D22;
+}
+
+/* ❤️ Favourites Button */
+.favourites-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: #DE0D22;
+    color: white;
+    border: none;
+    height: 48px;
+    padding: 0 18px;
+    border-radius: 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: all 0.2s ease;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.favourites-btn:hover {
+    background-color: #b40b1d;
+    transform: translateY(-1px);
+}
+
+.favourites-btn svg {
+    font-size: 1.1rem;
+}
+
+/* 📄 Pagination Controls */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    margin-top: 1rem;
+}
+
+.page-btn {
+    background-color: #7bae7f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.page-btn:hover {
+    background-color: #5f9363;
+}
+
+.page-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.page-info {
+    font-family: "Poppins", sans-serif;
+    color: #555;
+    font-size: 0.95rem;
+}
+
+/* 🌻 Responsive */
+@media (max-width: 768px) {
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 20px;
+        gap: 0.8rem;
+    }
+
+    .filter-input,
+    .filter-select,
+    .filter-checkbox,
+    .favourites-btn {
+        width: 100%;
+        min-width: unset;
+        max-height: 48px;
+    }
+
+    /* ✅ Two cards side by side on mobile */
+    .shop-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        padding: 0 12px 40px;
+        overflow-x: hidden;
+    }
+
+    /* ✅ Make cards more compact */
+    .flower-card {
+        border-radius: 12px;
+        padding: 0.5rem;
+    }
+
+    .flower-img {
+        height: 160px;
+        border-radius: 10px;
+    }
+
+    .flower-info {
+        padding: 0.5rem;
+    }
+
+    .flower-name {
+        font-size: 0.95rem;
+    }
+
+    .flower-type {
+        font-size: 0.8rem;
+    }
+
+    .flower-price {
+        font-size: 0.9rem;
+    }
+
+    .btn-view {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+        border-radius: 8px;
+    }
+
+    /* ✅ Prevent unwanted horizontal scrolling */
+    body,
+    html {
+        overflow-x: hidden;
+    }
+
+    .shop-title {
+        font-size: 1.6rem;
+    }
+
+    .shop-subtitle {
+        font-size: 0.9rem;
+    }
+}
+
+/* 📱 For very small screens (like iPhone SE, <420px) */
+@media (max-width: 420px) {
+    .shop-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.8rem;
+    }
+
+    .flower-img {
+        height: 140px;
+    }
+
+    .flower-name {
+        font-size: 0.85rem;
+    }
+
+    .flower-type {
+        font-size: 0.75rem;
+    }
+
+    .btn-view {
+        font-size: 0.75rem;
+        padding: 5px 10px;
+    }
+}

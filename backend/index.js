@@ -70,6 +70,9 @@ app.use("/api/reviews", require("./routes/reviewRoutes"));
 app.use("/api/stock", require("./routes/stockRoutes"));
 app.use("/api/dashboard", require("./routes/dashboardRoutes"));
 
+// 🛍️ Public shop routes
+app.use("/api/shop", require("./routes/shopRoutes"));
+
 // ========================
 // 💓 Health + Root
 // ========================
