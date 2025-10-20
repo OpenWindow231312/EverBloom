@@ -1,5 +1,5 @@
 // ========================================
-// 🌸 EverBloom — Dashboard Stock Management
+// 🌸 EverBloom — Dashboard Stock Management (Clean Layout)
 // ========================================
 import React, { useEffect, useState } from "react";
 import api from "../../api/api";
@@ -15,16 +15,14 @@ export default function DashboardStock() {
   const [error, setError] = useState("");
   const [editingFlower, setEditingFlower] = useState(null);
 
-  // ===========================
-  // 🌿 Filter & Pagination State
-  // ===========================
+  // 🌿 Filters & Pagination
   const [filterText, setFilterText] = useState("");
   const [filterType, setFilterType] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
 
-  // 🌸 Add New Flower Form
+  // 🌸 Form State
   const [flowerForm, setFlowerForm] = useState({
     type_id: "",
     variety: "",
@@ -37,9 +35,7 @@ export default function DashboardStock() {
     image_url: "",
   });
 
-  // ===========================
-  // 🧭 Fetch Flowers + Types
-  // ===========================
+  // 🧭 Fetch Data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -51,11 +47,7 @@ export default function DashboardStock() {
         setFlowers(flowersRes.data || []);
       } catch (err) {
         console.error("❌ Error loading stock data:", err);
-        const msg =
-          err.response?.status === 401
-            ? "Unauthorized — please log in again."
-            : "Failed to load stock data.";
-        setError(msg);
+        setError("Failed to load stock data.");
       } finally {
         setLoading(false);
       }
@@ -63,9 +55,7 @@ export default function DashboardStock() {
     fetchData();
   }, []);
 
-  // ===========================
   // 🌸 Add Flower
-  // ===========================
   const handleFlowerChange = (e) => {
     setFlowerForm({ ...flowerForm, [e.target.name]: e.target.value });
   };
@@ -83,7 +73,6 @@ export default function DashboardStock() {
           ? Number(flowerForm.sale_price_per_stem)
           : null,
       };
-
       await api.post("/flowers", payload);
       alert("✅ Flower added successfully!");
       setFlowerForm({
@@ -105,9 +94,7 @@ export default function DashboardStock() {
     }
   };
 
-  // ===========================
   // ✏️ Edit Flower
-  // ===========================
   const handleEditFlower = (flower) => setEditingFlower({ ...flower });
   const handleEditChange = (e) =>
     setEditingFlower({ ...editingFlower, [e.target.name]: e.target.value });
@@ -122,7 +109,6 @@ export default function DashboardStock() {
           ? Number(editingFlower.sale_price_per_stem)
           : null,
       };
-
       await api.put(`/flowers/${editingFlower.flower_id}`, payload);
       alert("✅ Flower updated!");
       setEditingFlower(null);
@@ -134,9 +120,7 @@ export default function DashboardStock() {
     }
   };
 
-  // ===========================
   // 🧹 Delete Flower
-  // ===========================
   const handleDeleteFlower = async (id) => {
     if (!window.confirm("Delete this flower?")) return;
     try {
@@ -147,9 +131,7 @@ export default function DashboardStock() {
     }
   };
 
-  // ===========================
-  // 🟢 Toggle On Sale / Listed
-  // ===========================
+  // 🟢 Toggle Sale / Listed
   const handleToggle = async (flower, field) => {
     try {
       const updated = { ...flower, [field]: !flower[field] };
@@ -162,9 +144,7 @@ export default function DashboardStock() {
     }
   };
 
-  // ===========================
-  // 🌼 Filtering Logic
-  // ===========================
+  // 🌼 Filter Logic
   const filteredFlowers = flowers.filter((f) => {
     const text = filterText.toLowerCase();
     const flowerType = f.FlowerType?.type_name?.toLowerCase() || "";
@@ -177,7 +157,6 @@ export default function DashboardStock() {
       flowerType.includes(text);
 
     const matchesType = !filterType || flowerType === filterType.toLowerCase();
-
     const matchesStatus =
       !filterStatus ||
       (filterStatus === "listed" && f.is_listed_for_sale) ||
@@ -188,9 +167,7 @@ export default function DashboardStock() {
     return matchesText && matchesType && matchesStatus;
   });
 
-  // ===========================
-  // 📄 Pagination Logic
-  // ===========================
+  // 📄 Pagination
   const totalPages = Math.ceil(filteredFlowers.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentFlowers = filteredFlowers.slice(
@@ -202,9 +179,7 @@ export default function DashboardStock() {
     if (page >= 1 && page <= totalPages) setCurrentPage(page);
   };
 
-  // ===========================
   // 🧭 Render
-  // ===========================
   if (loading) return <p>Loading stock data...</p>;
   if (error) return <p className="error-message">{error}</p>;
 
@@ -221,9 +196,7 @@ export default function DashboardStock() {
         Flower Stock Management
       </h2>
 
-      {/* ================================= */}
-      {/* Add New Flower Form */}
-      {/* ================================= */}
+      {/* 🌸 Add New Flower */}
       <section className="dashboard-section">
         <h3>Add New Flower</h3>
         <form className="dashboard-form" onSubmit={handleAddFlower}>
@@ -305,13 +278,11 @@ export default function DashboardStock() {
         </form>
       </section>
 
-      {/* ================================= */}
-      {/* Current Stock Table + Filter Bar */}
-      {/* ================================= */}
-      <section className="dashboard-section">
+      {/* 🌸 Filter + Table */}
+      <div className="stock-overview">
         <h3>Current Flowers in Store</h3>
 
-        {/* 🌸 Filter Bar */}
+        {/* Filter Bar */}
         <div className="filter-bar">
           <input
             type="text"
@@ -344,8 +315,8 @@ export default function DashboardStock() {
           </select>
         </div>
 
-        {/* 🌼 Paginated & Filtered Table */}
-        <div className="table-container">
+        {/* Table */}
+        <section className="dashboard-section">
           <table className="dashboard-table">
             <thead>
               <tr>
@@ -417,9 +388,9 @@ export default function DashboardStock() {
               ))}
             </tbody>
           </table>
-        </div>
+        </section>
 
-        {/* 🌿 Pagination Controls */}
+        {/* Pagination */}
         {totalPages > 1 && (
           <div className="pagination">
             <button
@@ -439,115 +410,7 @@ export default function DashboardStock() {
             </button>
           </div>
         )}
-      </section>
-
-      {/* ================================= */}
-      {/* Edit Flower Modal */}
-      {/* ================================= */}
-      {editingFlower && (
-        <div className="modal-backdrop">
-          <div className="modal-content">
-            <h3>
-              Edit Flower —{" "}
-              <span style={{ color: "var(--rose)" }}>
-                {editingFlower.variety}
-              </span>
-            </h3>
-
-            <form onSubmit={handleSaveFlower} className="edit-form">
-              <label>Flower Type</label>
-              <select
-                name="type_id"
-                value={editingFlower.type_id || ""}
-                onChange={handleEditChange}
-              >
-                <option value="">Select Type</option>
-                {types.map((t) => (
-                  <option key={t.type_id} value={t.type_id}>
-                    {t.type_name}
-                  </option>
-                ))}
-              </select>
-
-              <label>Variety</label>
-              <input
-                type="text"
-                name="variety"
-                value={editingFlower.variety || ""}
-                onChange={handleEditChange}
-              />
-
-              <label>Color</label>
-              <input
-                type="text"
-                name="color"
-                value={editingFlower.color || ""}
-                onChange={handleEditChange}
-              />
-
-              <label>Stem Length (cm)</label>
-              <input
-                type="number"
-                name="stem_length"
-                value={editingFlower.stem_length || ""}
-                onChange={handleEditChange}
-              />
-
-              <label>Shelf Life (days)</label>
-              <input
-                type="number"
-                name="shelf_life"
-                value={editingFlower.shelf_life || ""}
-                onChange={handleEditChange}
-              />
-
-              <label>Price per Stem</label>
-              <input
-                type="number"
-                name="price_per_stem"
-                value={editingFlower.price_per_stem || ""}
-                onChange={handleEditChange}
-              />
-
-              <label>Sale Price per Stem</label>
-              <input
-                type="number"
-                name="sale_price_per_stem"
-                value={editingFlower.sale_price_per_stem || ""}
-                onChange={handleEditChange}
-              />
-
-              <label>Description</label>
-              <textarea
-                name="description"
-                value={editingFlower.description || ""}
-                onChange={handleEditChange}
-              />
-
-              <label>Image URL</label>
-              <input
-                type="text"
-                name="image_url"
-                value={editingFlower.image_url || ""}
-                onChange={handleEditChange}
-              />
-
-              <div className="modal-actions">
-                <button type="submit" className="btn-primary">
-                  Save
-                </button>
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => setEditingFlower(null)}
-                >
-                  <FaTimes style={{ marginRight: "4px" }} /> Close
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

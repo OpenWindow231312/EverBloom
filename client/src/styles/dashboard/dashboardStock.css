@@ -1,16 +1,27 @@
 /* ===================================
-   🌸 DASHBOARD — STOCK MANAGEMENT (FIXED)
+   🌸 EVERBLOOM DASHBOARD — STOCK MANAGEMENT (FIXED + RESPONSIVE)
 =================================== */
 
 .dashboard-stock {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    padding: 20px;
+    gap: 28px;
+    padding: 20px 30px;
     width: 100%;
-    max-width: 1100px;
-    margin: 0 auto;
     box-sizing: border-box;
+}
+
+/* ==============================
+   🪻 Section Wrapper
+============================== */
+.dashboard-section {
+    background: var(--white);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    padding: 1.5rem 1.8rem;
+    width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
 }
 
 /* Section Titles */
@@ -25,25 +36,12 @@
 }
 
 /* ==============================
-   🪻 Section Wrapper
-============================== */
-.dashboard-section {
-    background: var(--white);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    padding: 1.5rem;
-    width: 100%;
-    box-sizing: border-box;
-    overflow: hidden;
-}
-
-/* ==============================
-   🪻 Add New Flower Form
+   🌷 Add New Flower Form
 ============================== */
 .dashboard-form {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 14px;
     align-items: center;
     width: 100%;
 }
@@ -59,6 +57,13 @@
     font-family: "Poppins", sans-serif;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
     background: #fafafa;
+    height: 48px;
+    box-sizing: border-box;
+}
+
+.dashboard-form textarea {
+    height: auto;
+    min-height: 60px;
 }
 
 .dashboard-form input:focus,
@@ -67,11 +72,6 @@
     border-color: var(--rose);
     box-shadow: 0 0 0 2px rgba(176, 58, 72, 0.2);
     outline: none;
-}
-
-.dashboard-form input::placeholder {
-    color: #999;
-    font-size: 0.9rem;
 }
 
 .dashboard-form button {
@@ -85,6 +85,7 @@
     font-size: 0.95rem;
     transition: background 0.3s ease, transform 0.2s ease;
     box-shadow: 0 2px 6px rgba(176, 58, 72, 0.2);
+    height: 48px;
 }
 
 .dashboard-form button:hover {
@@ -93,19 +94,56 @@
 }
 
 /* ==============================
-   🌷 Current Flowers Table
+   🌼 Filter Bar (Full Width)
 ============================== */
-.table-container {
-    width: 100%;
-    background: var(--white);
-    border-radius: 12px;
+.filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    padding: 12px 16px;
+    background: #fff7f7;
+    border-radius: 10px;
     box-shadow: var(--shadow);
-    overflow-x: auto;
-    margin-top: 1.5rem;
+    width: 100%;
     box-sizing: border-box;
 }
 
-/* Hide scrollbars for aesthetic */
+.filter-bar input,
+.filter-bar select {
+    flex: 1 1 200px;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-family: "Poppins", sans-serif;
+    background: #fafafa;
+    height: 48px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filter-bar input:focus,
+.filter-bar select:focus {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 2px rgba(184, 3, 21, 0.15);
+    outline: none;
+}
+
+/* ==============================
+   🌺 Table Container — Full Width
+============================== */
+.table-container {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
+    margin-top: 1rem;
+    background: var(--white);
+}
+
+/* Scrollbar styling */
 .table-container::-webkit-scrollbar {
     height: 8px;
 }
@@ -115,11 +153,14 @@
     border-radius: 10px;
 }
 
-/* Table */
+/* ==============================
+   🌸 Table
+============================== */
 .dashboard-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 800px;
+    min-width: 900px;
+    background: #fff;
 }
 
 .dashboard-table th,
@@ -135,7 +176,7 @@
     color: var(--rose);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
 }
 
 .dashboard-table tbody tr:hover {
@@ -166,10 +207,6 @@
     color: var(--white);
 }
 
-.toggle-btn:hover {
-    opacity: 0.9;
-}
-
 /* ==============================
    ✏️ Action Buttons
 ============================== */
@@ -189,7 +226,7 @@
     font-size: 0.85rem;
     font-weight: 500;
     transition: background 0.3s ease, transform 0.2s ease;
-    margin-top: 7px;
+    margin-top: 4px;
     width: 90px;
 }
 
@@ -216,7 +253,43 @@
 }
 
 /* ==============================
-   🪻 Modal Enhancements
+   🌼 Pagination
+============================== */
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 1.2rem;
+}
+
+.pagination button {
+    background: var(--rose);
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.pagination button:hover:not(:disabled) {
+    background: #a30210;
+}
+
+.pagination button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.pagination span {
+    font-size: 0.9rem;
+    color: var(--text-dark);
+}
+
+/* ==============================
+   🪻 Modal
 ============================== */
 .modal-backdrop {
     position: fixed;
@@ -243,98 +316,14 @@
     position: relative;
 }
 
-.modal-content h3 {
-    font-size: 1.2rem;
-    color: var(--rose);
-    margin-bottom: 1rem;
-}
-
-.modal-content input,
-.modal-content textarea {
-    width: 100%;
-    margin-bottom: 0.8rem;
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    font-size: 0.9rem;
-}
-
-.modal-actions {
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
-
-.modal-actions button {
-    padding: 8px 14px;
-    border-radius: 8px;
-}
-
 /* ==============================
-   🌼 Filter Bar & Pagination
-============================== */
-.filter-bar {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 1rem;
-    flex-wrap: wrap;
-}
-
-.filter-bar input,
-.filter-bar select {
-    padding: 8px 12px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-family: "Poppins", sans-serif;
-    background: #fafafa;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.filter-bar input:focus,
-.filter-bar select:focus {
-    border-color: var(--rose);
-    box-shadow: 0 0 0 2px rgba(184, 3, 21, 0.15);
-    outline: none;
-}
-
-.pagination {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    gap: 10px;
-    margin-top: 1rem;
-}
-
-.pagination button {
-    background: var(--rose);
-    color: white;
-    border: none;
-    padding: 8px 14px;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.pagination button:hover:not(:disabled) {
-    background: #a30210;
-}
-
-.pagination button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.pagination span {
-    font-size: 0.9rem;
-    color: var(--text-dark);
-}
-
-/* ==============================
-   📱 Responsive Design
+   📱 Responsive Fixes
 ============================== */
 @media (max-width: 1024px) {
+    .dashboard-section {
+        padding: 1.2rem;
+    }
+
     .dashboard-section h3 {
         font-size: 1.2rem;
     }
@@ -348,10 +337,23 @@
     .dashboard-form input,
     .dashboard-form select {
         width: 100%;
+        height: 48px;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filter-bar input,
+    .filter-bar select {
+        width: 100%;
+        height: 48px;
     }
 
     .table-container {
-        border-radius: 8px;
+        width: 100%;
+        overflow-x: auto;
     }
 
     .dashboard-table th,
@@ -376,17 +378,23 @@
     .dashboard-form input,
     .dashboard-form select,
     .dashboard-form textarea {
-        padding: 6px 10px !important;
-        font-size: 0.85rem !important;
-        border-radius: 6px !important;
-        height: 28px !important;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+        border-radius: 6px;
+        height: 48px;
     }
 
     .dashboard-form button {
-        height: 38px;
-        padding: 8px 12px;
+        height: 48px;
+        padding: 10px 14px;
         font-size: 0.9rem;
         border-radius: 6px;
+    }
+
+    .filter-bar input,
+    .filter-bar select {
+        height: 48px;
+        font-size: 0.85rem;
     }
 
     .dashboard-section h3 {

@@ -1,3 +1,7 @@
+// ========================================
+// 🌸 EverBloom — Shop Page
+// ========================================
+
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
@@ -28,6 +32,7 @@ function Shop() {
 
   const navigate = useNavigate();
 
+  // 🪴 Fetch all flowers
   useEffect(() => {
     const fetchFlowers = async () => {
       try {
@@ -60,19 +65,29 @@ function Shop() {
     localStorage.setItem("favourites", JSON.stringify(updatedFavourites));
   };
 
+  // 🌸 Reset Filters
+  const resetFilters = () => {
+    setSearch("");
+    setTypeFilter("");
+    setShowSaleOnly(false);
+    setSortBy("");
+    setCurrentPage(1);
+  };
+
   // 🌼 Apply filters and search
   const filteredFlowers = flowers
     .filter((flower) => {
       const variety = flower.variety?.toLowerCase() || "";
-      const type = flower.FlowerType?.flowerTypeName?.toLowerCase() || "";
+      const type =
+        flower.FlowerType?.type_name?.toLowerCase() ||
+        flower.FlowerType?.flowerTypeName?.toLowerCase() ||
+        flower.type_name?.toLowerCase() ||
+        "";
       const searchTerm = search.toLowerCase();
 
       const matchesSearch =
         variety.includes(searchTerm) || type.includes(searchTerm);
-      const matchesType =
-        !typeFilter ||
-        flower.FlowerType?.flowerTypeName?.toLowerCase() ===
-          typeFilter.toLowerCase();
+      const matchesType = !typeFilter || type === typeFilter.toLowerCase();
       const matchesSale = !showSaleOnly || Number(flower.is_on_sale) === 1;
 
       return matchesSearch && matchesType && matchesSale;
@@ -80,7 +95,8 @@ function Shop() {
     .sort((a, b) => {
       if (sortBy === "low-high") return a.price_per_stem - b.price_per_stem;
       if (sortBy === "high-low") return b.price_per_stem - a.price_per_stem;
-      return 0;
+      // Default alphabetical order by variety
+      return a.variety.localeCompare(b.variety);
     });
 
   // 📄 Pagination logic
@@ -111,6 +127,7 @@ function Shop() {
 
       {/* 🌿 Filter Bar */}
       <div className="filter-bar">
+        {/* 🔍 Search */}
         <input
           type="text"
           placeholder="Search by flower or type..."
@@ -119,22 +136,32 @@ function Shop() {
           className="filter-input"
         />
 
+        {/* 🌸 Type Dropdown */}
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
           className="filter-select"
         >
           <option value="">All Types</option>
-          {[...new Set(flowers.map((f) => f.FlowerType?.flowerTypeName))].map(
-            (type, i) =>
-              type && (
-                <option key={i} value={type}>
-                  {type}
-                </option>
+          {[
+            ...new Set(
+              flowers.map(
+                (f) =>
+                  f.FlowerType?.type_name ||
+                  f.FlowerType?.flowerTypeName ||
+                  f.type_name
               )
-          )}
+            ),
+          ]
+            .filter(Boolean)
+            .map((type, i) => (
+              <option key={i} value={type}>
+                {type}
+              </option>
+            ))}
         </select>
 
+        {/* 💰 Sort */}
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
@@ -145,6 +172,7 @@ function Shop() {
           <option value="high-low">High to Low</option>
         </select>
 
+        {/* 🔖 Sale */}
         <label className="filter-checkbox">
           <input
             type="checkbox"
@@ -154,12 +182,17 @@ function Shop() {
           <span>Show On Sale</span>
         </label>
 
+        {/* ♻️ Reset Filters */}
+        <button className="reset-btn" onClick={resetFilters}>
+          Reset Filters
+        </button>
+
         {/* ❤️ Favourites Button */}
         <button
           className="favourites-btn"
           onClick={() => navigate("/favourites")}
         >
-          <FaHeart /> View Favourite Flowers
+          <FaHeart /> Favourite Flowers
         </button>
       </div>
 
@@ -221,7 +254,10 @@ function Shop() {
                 <div className="flower-info">
                   <h3 className="flower-name">{flower.variety}</h3>
                   <p className="flower-type">
-                    {flower.FlowerType?.flowerTypeName || "Unknown Type"}
+                    {flower.FlowerType?.type_name ||
+                      flower.FlowerType?.flowerTypeName ||
+                      flower.type_name ||
+                      "Unknown Type"}
                   </p>
 
                   {isOnSale ? (
@@ -249,7 +285,7 @@ function Shop() {
 
       {/* 📄 Pagination Controls */}
       {totalPages > 1 && (
-        <div className="pagination">
+        <div className="pagination1">
           <button
             onClick={prevPage}
             disabled={currentPage === 1}
