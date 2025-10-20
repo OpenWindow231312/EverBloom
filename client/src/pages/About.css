@@ -51,6 +51,7 @@
 .section-title {
     text-align: center;
     color: #fffff;
+    margin-top: -10px;
 }
 
 .timeline-container {
@@ -71,8 +72,10 @@
     color: #fff;
 }
 
-.section-title {
+
+.section-title2 {
     color: #de0d22;
+    text-align: center;
 }
 
 .timeline-item {
@@ -168,9 +171,10 @@
 
 /* Founders Section */
 .about-team {
-    padding: 60px 20px;
+    padding: 50px 20px;
     text-align: center;
     background-color: #ffe4e1;
+    margin-top: -20px;
 }
 
 .team-cards {
@@ -210,8 +214,9 @@
 
 /* Mission Split Section */
 .about-mission-split {
-    padding: 80px 20px;
+    padding: 20px 20px;
     background: #fff;
+    margin-top: 60px;
 }
 
 .about-mission-container {
@@ -247,14 +252,16 @@
 /* Values Section */
 .about-values {
     background-color: #fff;
-    padding: 80px 20px;
+    padding: 10px 20px;
     text-align: center;
+    margin-bottom: 20px;
+    margin-top: -10px;
 }
 
 .values-grid {
     display: flex;
     justify-content: center;
-    gap: 30px;
+    gap: 10px;
     flex-wrap: wrap;
     margin-top: 40px;
 }
@@ -294,7 +301,7 @@
 .testimonials {
     background-color: #de0d22;
     color: white;
-    padding: 80px 20px;
+    padding: 60px 20px;
     text-align: center;
     overflow: hidden;
 }

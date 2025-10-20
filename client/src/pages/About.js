@@ -42,14 +42,14 @@ function AboutPage() {
 
       {/* Timeline Section */}
       <section className="timeline">
-        <h2 className="section-title">The EverBloom Journey</h2>
+        <h2 className="section-title2">The EverBloom Journey</h2>
         <div className="timeline-container">
           <div className="timeline-item left">
             <div className="timeline-content">
               <h4>2019</h4>
               <p>
-                EverBloom was born in our tiny home studio with just one table
-                and endless passion for flowers.
+                EverBloom was born in our tiny home garden with just one packet
+                of seeds & many hours spent in the garden.
               </p>
             </div>
           </div>
@@ -57,7 +57,7 @@ function AboutPage() {
             <div className="timeline-content">
               <h4>2021</h4>
               <p>
-                We opened our first boutique store and partnered with local
+                We opened our first micro farm and partnered with other local
                 farmers to grow sustainably.
               </p>
             </div>
@@ -66,7 +66,7 @@ function AboutPage() {
             <div className="timeline-content">
               <h4>2023</h4>
               <p>
-                Expanded to weddings and large-scale events, crafting floral
+                We expanded to weddings and large-scale events, crafting floral
                 stories for every celebration.
               </p>
             </div>
@@ -75,7 +75,7 @@ function AboutPage() {
             <div className="timeline-content">
               <h4>2025</h4>
               <p>
-                Today, EverBloom delivers thousands of bouquets across the
+                Today, EverBloom delivers thousands of flowers across the
                 country — spreading joy daily.
               </p>
             </div>
@@ -85,7 +85,7 @@ function AboutPage() {
 
       {/* Founders Section */}
       <section className="about-team">
-        <h2 className="section-title">Meet the Founders</h2>
+        <h2 className="section-title2">Meet the Founders</h2>
         <div className="team-cards two-columns">
           <div className="team-card">
             <img
@@ -136,7 +136,7 @@ function AboutPage() {
 
       {/* Values Section */}
       <section className="about-values">
-        <h2 className="section-title">Our Values</h2>
+        <h2 className="section-title2">Our Values</h2>
         <div className="values-grid">
           <div className="value-card">
             <div className="value-icon-circle">
