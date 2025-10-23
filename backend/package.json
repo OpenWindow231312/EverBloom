@@ -7,7 +7,7 @@
     "start": "node index.js",
     "dev": "cross-env NODE_ENV=development PORT=5001 nodemon index.js",
     "build": "echo 'No build step required for backend'",
-    "render-build": "cd ../client && npm install && npm run build",
+    "render-build": "cd ../frontend && npm install && npm run build",
     "seed": "node seed.js"
   },
   "dependencies": {
@@ -29,9 +29,9 @@
     "nodemon": "^2.0.22"
   },
   "engines": {
-    "node": "22.x"
+    "node": ">=18.x"
   },
   "license": "MIT",
-  "keywords": [],
-  "author": "EverBloom Development Team"
+  "author": "EverBloom Development Team",
+  "keywords": []
 }
