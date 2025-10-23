@@ -22,6 +22,7 @@
     left: 0;
     z-index: 1000;
     box-shadow: 3px 0 10px rgba(0, 0, 0, 0.05);
+    transition: width 0.3s ease;
 }
 
 .dashboard-logo {
@@ -57,41 +58,49 @@
 }
 
 /* ================================
-   Main Section
-================================= */
-.dashboard-main {
-    margin-left: 240px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    background-color: var(--beige);
-    transition: margin-left 0.3s ease;
-}
-
-/* ================================
-   Floating Topbar
+   🌸 Floating Topbar — Full Width with Sidebar Margin Alignment
 ================================= */
 .dashboard-topbar {
+    position: fixed;
+    /* full-width header */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 80px;
     background: linear-gradient(180deg, #ffffff 0%, #fff8f8 100%);
-    padding: 20px 40px;
-    padding-left: 60px;
     border-bottom: 1px solid #f1f1f1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    backdrop-filter: blur(6px);
+    z-index: 900;
+    transition: all 0.3s ease;
+}
+
+/* ✅ Inner wrapper aligns with sidebar */
+.dashboard-topbar-content {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    backdrop-filter: blur(6px);
+    width: calc(100% - 80px);
+    margin-left: 80px;
+    padding: 0 40px;
+    transition: margin-left 0.3s ease, width 0.3s ease;
 }
 
+/* ✅ When sidebar expands */
+.sidebar.open~.dashboard-main .dashboard-topbar-content {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+}
+
+/* Heading */
 .dashboard-topbar h2 {
     font-size: 26px;
     font-weight: 600;
     color: #333;
-    margin-left: 10px;
+    margin: 0;
 }
 
 /* ================================
@@ -130,15 +139,55 @@
     color: #777;
 }
 
+/* Logout Button */
+.logout-btn {
+    background: #de0d22;
+    color: #fff;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+    background: #a30210;
+    transform: translateY(-1px);
+}
+
 /* ================================
-   Content Area
+   Main Section (auto-adjust with sidebar)
+================================= */
+.dashboard-main {
+    margin-left: 80px;
+    /* matches collapsed sidebar */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    background-color: var(--beige);
+    transition: margin-left 0.3s ease;
+    padding-top: 80px;
+    /* space for fixed topbar */
+}
+
+/* When sidebar expands */
+.sidebar.open~.dashboard-main {
+    margin-left: 240px;
+}
+
+/* ================================
+   Content Area (fills full beige width)
 ================================= */
 .dashboard-content {
     flex: 1;
-    padding: 40px 60px;
-    padding-left: 70px;
+    padding: 20px 10px;
     background-color: var(--beige);
-    transition: padding 0.3s ease;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    margin-top: 20px;
 }
 
 /* ================================
@@ -154,12 +203,14 @@
         margin-left: 200px;
     }
 
-    .dashboard-topbar {
-        padding-left: 40px;
+    .dashboard-topbar-content {
+        margin-left: 200px;
+        width: calc(100% - 200px);
     }
 
     .dashboard-content {
         padding-left: 50px;
+        padding-right: 50px;
     }
 }
 
@@ -180,11 +231,17 @@
 
     .dashboard-main {
         margin-left: 0;
+        padding-top: 60px;
     }
 
     .dashboard-topbar {
-        padding: 16px 24px;
-        padding-left: 30px;
+        height: 60px;
+    }
+
+    .dashboard-topbar-content {
+        margin-left: 0;
+        width: 100%;
+        padding: 0 24px;
     }
 
     .dashboard-content {

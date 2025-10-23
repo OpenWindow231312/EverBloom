@@ -29,7 +29,7 @@
 /* ---------------------------
    Filter Bar
 ----------------------------*/
-.dashboard-section {
+/* .dashboard-section {
     background: #ffffff;
     border: 1px solid #f3f3f3;
     border-radius: 12px;
@@ -40,7 +40,7 @@
     align-items: center;
     justify-content: flex-start;
     gap: 12px;
-}
+} */
 
 /* Filter label */
 .dashboard-section label {
@@ -74,14 +74,14 @@
 /* ---------------------------
    Table
 ----------------------------*/
-.dashboard-table {
+/* .dashboard-table {
     width: 100%;
     border-collapse: collapse;
     background: #ffffff;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-}
+} */
 
 .dashboard-table th,
 .dashboard-table td {
@@ -156,6 +156,7 @@
     cursor: pointer;
     font-weight: 500;
     transition: 0.2s ease;
+    border-radius: 20px;
 }
 
 .status-dropdown:hover {
@@ -178,24 +179,33 @@
 .toggle-btn {
     padding: 6px 10px;
     color: #333;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -ms-border-radius: 20px;
+    -o-border-radius: 20px;
 }
 
 .toggle-btn.activate {
     background-color: #c7f5d9;
+    border-radius: 20px;
 }
 
 .toggle-btn.deactivate {
     background-color: #ffd1d1;
+    border-radius: 20px;
 }
 
 .toggle-btn:hover {
     opacity: 0.8;
+
 }
 
 .delete-btn {
     background-color: #ff4d4d;
     color: white;
     padding: 6px 10px;
+    border-radius: 20px;
 }
 
 .delete-btn:hover {

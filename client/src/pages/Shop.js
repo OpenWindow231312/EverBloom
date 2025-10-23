@@ -126,7 +126,7 @@ function Shop() {
       </header>
 
       {/* 🌿 Filter Bar */}
-      <div className="filter-bar">
+      <div className="filter-barshop">
         {/* 🔍 Search */}
         <input
           type="text"

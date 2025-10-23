@@ -147,7 +147,7 @@
 }
 
 /* Filter Bar */
-.filter-bar {
+.filter-barshop {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -156,9 +156,13 @@
     margin: 0 auto 2.5rem auto;
     padding: 16px 40px;
     background-color: #ffffff;
-    border-radius: 16px;
+    border-radius: 30px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     max-width: 1200px;
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+    -ms-border-radius: 30px;
+    -o-border-radius: 30px;
 }
 
 /* Filter Inputs and Buttons */
@@ -169,6 +173,11 @@
     max-height: 48px;
     height: 48px;
     box-sizing: border-box;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -ms-border-radius: 20px;
+    -o-border-radius: 20px;
 }
 
 .filter-checkbox {
@@ -181,11 +190,15 @@
 .filter-input {
     padding: 0 14px;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 20px;
     font-size: 0.95rem;
     background-color: #fff;
     color: #333;
     width: 100%;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -ms-border-radius: 20px;
+    -o-border-radius: 20px;
 }
 
 .filter-input::placeholder {
@@ -203,6 +216,11 @@
     cursor: pointer;
     appearance: none;
     color: #333;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -ms-border-radius: 20px;
+    -o-border-radius: 20px;
 }
 
 /* Checkbox */
@@ -317,18 +335,27 @@
     text-align: center;
     margin-top: 2rem;
     margin-bottom: 3rem;
+    border-radius: 30px;
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+    -ms-border-radius: 30px;
+    -o-border-radius: 30px;
 }
 
 .page-btn {
     background-color: #de0d22;
     color: #fff;
     border: none;
-    border-radius: 8px;
+    border-radius: 30px;
     padding: 8px 16px;
     cursor: pointer;
     font-weight: 500;
     transition: background-color 0.2s ease;
     min-width: 100px;
+    -webkit-border-radius: 30px;
+    -moz-border-radius: 30px;
+    -ms-border-radius: 30px;
+    -o-border-radius: 30px;
 }
 
 .page-btn:hover {

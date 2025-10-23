@@ -6,11 +6,10 @@
 .dashboard-stock {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
-    padding: 1.5rem 2rem;
+    padding: 1.5rem 1.5rem;
     width: 100%;
     margin: 0 auto;
-    max-width: 1400px;
+    max-width: 1800px;
     box-sizing: border-box;
 }
 
@@ -35,14 +34,14 @@
 /* ---------------------------
    Section Containers
 ----------------------------*/
-.dashboard-section {
+/* .dashboard-section {
     background: var(--white);
     border-radius: 12px;
     box-shadow: var(--shadow);
     padding: 1.8rem;
     width: 100%;
     box-sizing: border-box;
-}
+} */
 
 /* ---------------------------
    Table Containers
@@ -53,6 +52,7 @@
     background: var(--white);
     border-radius: 12px;
     box-shadow: var(--shadow);
+    overflow-y: auto;
 }
 
 /* ---------------------------

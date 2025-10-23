@@ -1,31 +1,62 @@
 /* ===================================
-   🌸 EVERBLOOM DASHBOARD — STOCK MANAGEMENT (FIXED + RESPONSIVE)
+   🌸 EVERBLOOM DASHBOARD — STOCK PAGE FULL-WIDTH FIX
 =================================== */
 
-.dashboard-stock {
+/* 🪷 Main container: full width, margin-left for sidebar */
+/* .dashboard-stock {
+    background: var(--beige);
+    min-height: 100vh;
+    width: calc(100% - 80px);
+    margin-left: 80px;
+    padding: 30px 40px;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 28px;
-    padding: 20px 30px;
+    transition: margin-left 0.3s ease, width 0.3s ease;
+} */
+
+/* 🪻 When sidebar expands to 240px */
+.sidebar.open~.dashboard-stock {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+}
+
+/* 🌿 Content Sections (Form, Table, etc.) */
+.dashboard-section {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: 1.5rem 1.3rem;
     width: 100%;
     box-sizing: border-box;
+}
+
+/* Ensure all inner containers use full width */
+.dashboard-form,
+.filter-bar,
+.table-container {
+    width: 100%;
+    margin: 0;
+}
+
+/* Remove any forced centering */
+.dashboard-form,
+.dashboard-section h3,
+.filter-bar {
+    margin-left: 0;
+}
+
+/* Fix main title layout */
+.overview-heading {
+    margin-left: 0;
+    padding-left: 0;
 }
 
 /* ==============================
-   🪻 Section Wrapper
+   🌷 Section Titles
 ============================== */
-.dashboard-section {
-    background: var(--white);
-    border-radius: 14px;
-    box-shadow: var(--shadow);
-    padding: 1.5rem 1.8rem;
-    width: 100%;
-    box-sizing: border-box;
-    overflow: visible;
-}
-
-/* Section Titles */
-.dashboard-section h3 {
+/* .dashboard-section h3 {
     font-size: 1.4rem;
     font-weight: 600;
     color: var(--rose);
@@ -33,10 +64,10 @@
     display: flex;
     align-items: center;
     gap: 8px;
-}
+} */
 
 /* ==============================
-   🌷 Add New Flower Form
+   🌼 Add New Flower Form
 ============================== */
 .dashboard-form {
     display: flex;
@@ -44,21 +75,25 @@
     gap: 14px;
     align-items: center;
     width: 100%;
+    margin: 0 auto;
 }
 
 .dashboard-form input,
 .dashboard-form select,
 .dashboard-form textarea {
     flex: 1 1 180px;
-    padding: 12px 14px;
+    padding: 10px 14px;
     border: 1px solid #ddd;
-    border-radius: 10px;
-    font-size: 0.95rem;
+    border-radius: 100px;
+    font-size: 0.9rem;
     font-family: "Poppins", sans-serif;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
     background: #fafafa;
-    height: 48px;
-    box-sizing: border-box;
+    /* height: 44px; */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    -webkit-border-radius: 100px;
+    -moz-border-radius: 100px;
+    -ms-border-radius: 100px;
+    -o-border-radius: 100px;
 }
 
 .dashboard-form textarea {
@@ -75,17 +110,17 @@
 }
 
 .dashboard-form button {
-    background: var(--rose);
+    background: #de0d22;
     color: var(--white);
     border: none;
-    border-radius: 10px;
-    padding: 12px 22px;
+    border-radius: 999px;
+    padding: 10px 22px;
     cursor: pointer;
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     transition: background 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 2px 6px rgba(176, 58, 72, 0.2);
-    height: 48px;
+    box-shadow: 0 2px 6px rgba(176, 58, 72, 0.25);
+    height: 44px;
 }
 
 .dashboard-form button:hover {
@@ -94,21 +129,24 @@
 }
 
 /* ==============================
-   🌼 Filter Bar (Full Width)
+   🌼 Filter Bar
 ============================== */
 .filter-bar {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: flex-start;
     gap: 12px;
     margin-bottom: 1.5rem;
     padding: 12px 16px;
     background: #fff7f7;
-    border-radius: 10px;
+    border-radius: 14px;
     box-shadow: var(--shadow);
     width: 100%;
     box-sizing: border-box;
+    -webkit-border-radius: 14px;
+    -moz-border-radius: 14px;
+    -ms-border-radius: 14px;
+    -o-border-radius: 14px;
 }
 
 .filter-bar input,
@@ -116,120 +154,202 @@
     flex: 1 1 200px;
     padding: 10px 12px;
     border: 1px solid #ddd;
-    border-radius: 8px;
-    font-size: 0.9rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
     font-family: "Poppins", sans-serif;
     background: #fafafa;
-    height: 48px;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.filter-bar input:focus,
-.filter-bar select:focus {
-    border-color: var(--rose);
-    box-shadow: 0 0 0 2px rgba(184, 3, 21, 0.15);
-    outline: none;
+    /*height: 44px;
+    */
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 50px;
+    -ms-border-radius: 50px;
+    -o-border-radius: 50px;
+    -webkit-border-radius: 50px;
 }
 
 /* ==============================
-   🌺 Table Container — Full Width
+   🌺 Table (Compact, Wrapping, Fully Visible)
 ============================== */
 .table-container {
     width: 100%;
-    border-radius: 12px;
-    box-shadow: var(--shadow);
+    max-width: 920px;
+    /* ✅ fits MacBook Air screen */
+    margin: 0 auto;
     overflow-x: auto;
-    margin-top: 1rem;
-    background: var(--white);
+    border-radius: 14px;
+    background: #fff;
+    padding-bottom: 0.5rem;
+    box-sizing: border-box;
 }
 
-/* Scrollbar styling */
-.table-container::-webkit-scrollbar {
-    height: 8px;
-}
-
-.table-container::-webkit-scrollbar-thumb {
-    background-color: #e2e2e2;
-    border-radius: 10px;
-}
-
-/* ==============================
-   🌸 Table
-============================== */
 .dashboard-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 900px;
-    background: #fff;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin: 0 auto;
 }
 
+/* 🌸 Base Cell Formatting */
 .dashboard-table th,
 .dashboard-table td {
-    padding: 12px 14px;
+    padding: 8px 10px;
     text-align: left;
+    /* ✅ better readability */
     border-bottom: 1px solid #f1f1f1;
-    white-space: nowrap;
+    word-break: break-word;
+    vertical-align: middle;
+    line-height: 1.4;
 }
 
+/* ===================================
+   🌸 Column Widths + Wrapping
+=================================== */
+
+/* Flower column */
+.dashboard-table td:first-child {
+    min-width: 100px;
+    max-width: 140px;
+}
+
+/* Variety column */
+.dashboard-table td:nth-child(2) {
+    min-width: 120px;
+    max-width: 130px;
+}
+
+/* Color column */
+.dashboard-table td:nth-child(3) {
+    min-width: 80px;
+    max-width: 100px;
+}
+
+/* Normal Price */
+.dashboard-table td:nth-child(4),
+.dashboard-table th:nth-child(4) {
+    min-width: 80px;
+    max-width: 90px;
+}
+
+/* Sale Price (header wraps into 2 lines) */
+.dashboard-table th:nth-child(5),
+.dashboard-table td:nth-child(5) {
+    min-width: 70px;
+    max-width: 80px;
+    white-space: normal;
+    word-break: break-word;
+    line-height: 1.2;
+}
+
+/* Listed / On Sale / Action buttons */
+.dashboard-table td:nth-child(6),
+.dashboard-table td:nth-child(7),
+.dashboard-table th:nth-child(6),
+.dashboard-table th:nth-child(7) {
+    text-align: center;
+    min-width: 100px;
+    max-width: 110px;
+    border-radius: 20px;
+}
+
+/* ✅ Restrict cell height for multi-line text columns */
+.dashboard-table td:first-child,
+.dashboard-table td:nth-child(2),
+.dashboard-table td:nth-child(3) {
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.4;
+    max-height: 2.8em;
+    /* 2 lines */
+}
+
+/* ===================================
+   🩷 Header Styling
+=================================== */
 .dashboard-table th {
     background: var(--rose-light);
     color: var(--rose);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.4px;
+    letter-spacing: 0.3px;
+    font-size: 0.8rem;
 }
 
+.dashboard-table td {
+    font-size: 0.85rem;
+}
+
+/* Hover Effect */
 .dashboard-table tbody tr:hover {
     background: #fff3f3;
     transition: background 0.3s ease;
 }
 
 /* ==============================
-   🪻 Toggle Buttons
+   🪻 Toggle Buttons (Listed / On Sale)
 ============================== */
 .toggle-btn {
     border: none;
-    padding: 6px 14px;
-    border-radius: 8px;
-    font-size: 0.85rem;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 0.7rem;
     cursor: pointer;
-    font-weight: 500;
+    font-weight: 600;
     transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
 }
 
-.toggle-btn.activate {
-    background: var(--green);
-    color: var(--white);
+.toggle-btn.listed {
+    background: #f8dada;
+    color: var(--rose);
 }
 
-.toggle-btn.deactivate {
-    background: var(--orange);
-    color: var(--white);
+.toggle-btn.sale {
+    background: #fde4e1;
+    color: var(--rose);
+}
+
+.toggle-btn.normal {
+    background: #d9f4df;
+    color: #2f7a3e;
+}
+
+.toggle-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
 }
 
 /* ==============================
-   ✏️ Action Buttons
+   ✏️ Action Buttons (Edit / Delete)
 ============================== */
 .action-buttons {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
 }
 
 .edit-btn,
 .delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
     border: none;
-    border-radius: 8px;
-    padding: 8px 14px;
+    border-radius: 999px;
+    padding: 5px 10px;
     cursor: pointer;
-    font-size: 0.85rem;
-    font-weight: 500;
-    transition: background 0.3s ease, transform 0.2s ease;
-    margin-top: 4px;
-    width: 90px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    min-width: 70px;
 }
 
+/* Edit */
 .edit-btn {
     background: var(--rose-light);
     color: var(--rose);
@@ -238,18 +358,16 @@
 .edit-btn:hover {
     background: var(--rose);
     color: var(--white);
-    transform: translateY(-1px);
 }
 
+/* Delete */
 .delete-btn {
-    background: #ffe6e6;
-    color: var(--red);
+    background: #de0d22;
+    color: #fff;
 }
 
 .delete-btn:hover {
-    background: var(--red);
-    color: var(--white);
-    transform: translateY(-1px);
+    background: #a30210;
 }
 
 /* ==============================
@@ -264,14 +382,15 @@
 }
 
 .pagination button {
-    background: var(--rose);
+    background: #de0d22;
     color: white;
     border: none;
-    padding: 8px 14px;
-    border-radius: 8px;
+    padding: 6px 12px;
+    border-radius: 999px;
     cursor: pointer;
     transition: background 0.3s ease;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 
 .pagination button:hover:not(:disabled) {
@@ -284,8 +403,8 @@
 }
 
 .pagination span {
-    font-size: 0.9rem;
-    color: var(--text-dark);
+    font-size: 0.8rem;
+    color: var(--grey);
 }
 
 /* ==============================
@@ -313,19 +432,29 @@
     box-shadow: var(--shadow);
     overflow-y: auto;
     animation: fadeIn 0.25s ease-in-out;
-    position: relative;
 }
 
 /* ==============================
    📱 Responsive Fixes
 ============================== */
-@media (max-width: 1024px) {
-    .dashboard-section {
-        padding: 1.2rem;
+@media (max-width: 1280px) {
+    .table-container {
+        max-width: 100%;
+        overflow-x: auto;
+
     }
 
-    .dashboard-section h3 {
-        font-size: 1.2rem;
+    .dashboard-table th,
+    .dashboard-table td {
+        font-size: 0.75rem;
+        padding: 6px 8px;
+    }
+
+    .edit-btn,
+    .delete-btn,
+    .toggle-btn {
+        font-size: 0.65rem;
+        padding: 4px 8px;
     }
 }
 
@@ -334,37 +463,14 @@
         flex-direction: column;
     }
 
-    .dashboard-form input,
-    .dashboard-form select {
-        width: 100%;
-        height: 48px;
-    }
-
     .filter-bar {
         flex-direction: column;
         align-items: stretch;
     }
 
-    .filter-bar input,
-    .filter-bar select {
-        width: 100%;
-        height: 48px;
-    }
-
-    .table-container {
-        width: 100%;
-        overflow-x: auto;
-    }
-
-    .dashboard-table th,
-    .dashboard-table td {
-        font-size: 0.85rem;
-        padding: 8px;
-    }
-
     .action-buttons {
         flex-direction: column;
-        gap: 6px;
+        gap: 4px;
     }
 
     .edit-btn,
@@ -374,30 +480,13 @@
 }
 
 @media (max-width: 480px) {
-
-    .dashboard-form input,
-    .dashboard-form select,
-    .dashboard-form textarea {
-        padding: 8px 12px;
-        font-size: 0.85rem;
-        border-radius: 6px;
-        height: 48px;
+    .dashboard-section {
+        padding: 1rem;
     }
 
-    .dashboard-form button {
-        height: 48px;
-        padding: 10px 14px;
-        font-size: 0.9rem;
-        border-radius: 6px;
-    }
-
-    .filter-bar input,
-    .filter-bar select {
-        height: 48px;
-        font-size: 0.85rem;
-    }
-
-    .dashboard-section h3 {
-        margin-bottom: 0.6rem;
+    .dashboard-table th,
+    .dashboard-table td {
+        font-size: 0.7rem;
+        padding: 5px;
     }
 }

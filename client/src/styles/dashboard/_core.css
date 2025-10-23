@@ -14,7 +14,9 @@
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/* Global Page Layout */
+/* ==============================
+   🩷 Global Layout
+============================== */
 .dashboard-page {
     padding: 2rem;
     color: var(--grey);
@@ -22,6 +24,9 @@
     font-family: "Poppins", sans-serif;
 }
 
+/* ==============================
+   🌸 Headings
+============================== */
 .overview-heading {
     font-size: 1.6rem;
     font-weight: 600;
@@ -29,36 +34,49 @@
     margin-bottom: 1rem;
 }
 
-/* Section Wrappers */
-.dashboard-section {
+/* ==============================
+   🌼 Section Containers
+============================== */
+/* .dashboard-section {
     background: var(--white);
-    border-radius: 12px;
-    padding: 1.5rem;
+    border-radius: 14px;
+    padding: 1.2rem;
     margin-bottom: 1.5rem;
     box-shadow: var(--shadow);
-}
+    width: 100%;
+    box-sizing: border-box;
+} */
 
-/* Tables */
-.dashboard-table {
+/* ==============================
+   🌿 Base Tables (non-specific)
+============================== */
+/* ⚠️ renamed to avoid conflict with dashboardStock tables */
+.dashboard-core-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
+    max-width: 100%;
 }
 
-.dashboard-table th,
-.dashboard-table td {
-    padding: 0.8rem;
+.dashboard-core-table th,
+.dashboard-core-table td {
+    padding: 0.4rem;
     border-bottom: 1px solid #eee;
-    text-align: center;
+    text-align: left;
+    font-size: 0.9rem;
 }
 
-.dashboard-table th {
+.dashboard-core-table th {
     background: var(--rose-light);
     color: var(--rose);
     font-weight: 600;
+    text-transform: uppercase;
 }
 
-/* Buttons */
+/* ==============================
+   🪷 Buttons (Base Theme)
+============================== */
+/* ⚠️ base only — page-specific files override freely */
 .btn-primary {
     background: var(--rose);
     color: var(--white);
@@ -67,7 +85,7 @@
     padding: 8px 16px;
     cursor: pointer;
     font-weight: 500;
-    transition: 0.2s ease;
+    transition: background 0.2s ease;
 }
 
 .btn-primary:hover {
@@ -84,7 +102,9 @@
     font-weight: 500;
 }
 
-/* Toggles */
+/* ==============================
+   🌸 Toggle Helpers
+============================== */
 .toggle-btn.activate {
     background: var(--green);
     color: #fff;
@@ -95,21 +115,23 @@
     color: #fff;
 }
 
-/* Status dropdowns */
+/* ==============================
+   🌸 Dropdowns
+============================== */
 .status-dropdown {
     border: 1px solid #ccc;
     border-radius: 8px;
     padding: 6px 10px;
     font-size: 0.9rem;
+    background: var(--white);
 }
 
-/* Modals */
+/* ==============================
+   🌺 Modals (Global Defaults)
+============================== */
 .modal-backdrop {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: rgba(0, 0, 0, 0.4);
     display: flex;
     justify-content: center;
@@ -120,7 +142,7 @@
 .modal-content {
     background: #fff8f6;
     border: 2px solid var(--rose);
-    border-radius: 12px;
+    border-radius: 14px;
     padding: 1.5rem;
     width: 420px;
     max-width: 95%;
@@ -133,15 +155,9 @@
     gap: 10px;
 }
 
-/* === Global fix: make all tables truly responsive === */
+/* ==============================
+   🌸 Global Responsiveness
+============================== */
 .dashboard-section {
-    width: 100%;
     overflow-x: auto;
-}
-
-.dashboard-table {
-    width: 100%;
-    min-width: 800px;
-    /* ensures horizontal scroll on small screens */
-    border-collapse: collapse;
 }
