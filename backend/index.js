@@ -1,7 +1,3 @@
-// ========================================
-// 🌸 EverBloom Backend — Main Entry Point
-// ========================================
-
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -11,24 +7,27 @@ const { sequelize } = require("./models"); // Sequelize instance + models
 const app = express();
 
 // ========================
-// 🔧 CORS Configuration
+// 🔧 CORS Configuration (Final Version)
 // ========================
 const allowedOrigins = [
-  "https://www.everbloomshop.co.za",
   "https://everbloomshop.co.za",
+  "https://www.everbloomshop.co.za",
   "https://everbloom-frontend.vercel.app",
-  "http://localhost:3000",
   "http://localhost:5173",
+  "http://localhost:3000",
 ];
 
 app.use(
   cors({
-    origin: (origin, cb) => {
-      // Allow Postman / curl (no origin) and known domains
-      if (!origin || allowedOrigins.includes(origin)) return cb(null, true);
-      return cb(new Error("CORS blocked"));
+    origin: function (origin, callback) {
+      // ✅ Allow no-origin requests (like Postman or server-side)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      console.warn("🚫 Blocked by CORS:", origin);
+      return callback(new Error("Not allowed by CORS"));
     },
-    credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: [
       "Origin",
@@ -37,9 +36,13 @@ app.use(
       "Accept",
       "Authorization",
     ],
-    exposedHeaders: ["Authorization"],
+    credentials: true,
+    preflightContinue: false,
+    optionsSuccessStatus: 204,
   })
 );
+
+app.options("*", cors());
 
 // ========================
 // 🪵 Logging & Body Parsing
