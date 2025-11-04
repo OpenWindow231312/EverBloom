@@ -45,38 +45,87 @@ cd EverBloom
 
 ---
 
-### 2️⃣ Backend Setup
+## 🌿 **2️⃣ Backend Setup**
+
+### 📦 Install Dependencies
 
 ```bash
 cd backend
 npm install
 ```
 
-Create a `.env` file inside `/backend` with your MySQL credentials:
+---
+
+### ⚙️ Environment Configuration
+
+Create a `.env` file inside the `/backend` folder to store your database and environment variables.
+
+#### 🔹 **For Local Development (e.g. using XAMPP / MAMP / phpMyAdmin locally)**
 
 ```bash
-DB_HOST=localhost
+DB_HOST=127.0.0.1
 DB_USER=root
 DB_PASS=
 DB_NAME=everbloom_db
 DB_DIALECT=mysql
-DB_PORT=3307
+DB_PORT=3306
 NODE_ENV=development
+DB_SYNC=false
 ```
 
-Start the server:
+Use this configuration when running a MySQL server on your local machine.
+
+---
+
+#### 🔹 **For Production (AlwaysData MySQL Server)**
+
+```bash
+DB_HOST=mysql-anikadebeer.alwaysdata.net
+DB_USER=434073
+DB_PASS=Anika@22
+DB_NAME=anikadebeer_everbloom_db
+DB_DIALECT=mysql
+DB_PORT=3306
+NODE_ENV=production
+DB_SYNC=false
+```
+
+> 💡 **Note:** AlwaysData requires a secure (SSL) connection.  
+> The backend automatically enables SSL in production mode, so you don’t need to modify any code.
+
+---
+
+### 🚀 **Start the Server**
 
 ```bash
 npm start
 ```
 
-The API runs on:
+You should see the following message if everything is set up correctly:
 
 ```
-http://localhost:5001
+✅ Database connected successfully (Localhost or AlwaysData)
+🚀 EverBloom API running at http://localhost:5001
 ```
 
 ---
+
+### 💓 **Test the API Health Route**
+
+You can verify that the server is running by visiting:
+
+```
+http://localhost:5001/health
+```
+
+Expected response:
+
+```json
+{
+  "status": "ok",
+  "message": "🌿 EverBloom backend running smoothly"
+}
+```
 
 ### 3️⃣ Frontend Setup
 

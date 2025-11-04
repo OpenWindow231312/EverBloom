@@ -13,11 +13,16 @@
     "host": "127.0.0.1",
     "dialect": "mysql"
   },
-  "production": {
-    "username": "root",
-    "password": "",
-    "database": "everbloom_prod",
-    "host": "127.0.0.1",
-    "dialect": "mysql"
+"production": {
+  "username": "434073",
+  "password": "Anika@22",
+  "database": "anikadebeer_everbloom_db",
+  "host": "mysql-anikadebeer.alwaysdata.net",
+  "dialect": "mysql",
+  "dialectOptions": {
+    "ssl": {
+      "require": true,
+      "rejectUnauthorized": false
+    }
   }
 }
