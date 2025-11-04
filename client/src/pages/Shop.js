@@ -1,14 +1,16 @@
 // ========================================
-// 🌸 EverBloom — Shop Page
+// 🌸 EverBloom — Shop Page (Updated with Mini Cart Summary)
 // ========================================
 
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { FaHeart, FaRegHeart } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
+import { FaHeart } from "react-icons/fa";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
+import ProductCard from "../components/ProductCard";
 import API from "../api/api";
 import "../styles/shop/Shop.css";
+import "../styles/shop/CartSummaryPopup.css"; // 🌸 NEW FILE for styling
 
 function Shop() {
   const [flowers, setFlowers] = useState([]);
@@ -25,6 +27,15 @@ function Shop() {
   const [favourites, setFavourites] = useState(
     JSON.parse(localStorage.getItem("favourites")) || []
   );
+
+  // 🛒 Cart
+  const [cart, setCart] = useState(
+    JSON.parse(localStorage.getItem("cart")) || []
+  );
+
+  // 🪄 Popup summary
+  const [showSummary, setShowSummary] = useState(false);
+  const [lastAdded, setLastAdded] = useState(null);
 
   // 📄 Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,6 +76,30 @@ function Shop() {
     localStorage.setItem("favourites", JSON.stringify(updatedFavourites));
   };
 
+  // 🛒 Add to cart
+  const addToCart = (flower) => {
+    const exists = cart.find((item) => item.flower_id === flower.flower_id);
+    let updatedCart;
+
+    if (exists) {
+      updatedCart = cart.map((item) =>
+        item.flower_id === flower.flower_id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    } else {
+      updatedCart = [...cart, { ...flower, quantity: 1 }];
+    }
+
+    setCart(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+
+    // 🌷 Show summary popup
+    setLastAdded(flower);
+    setShowSummary(true);
+    setTimeout(() => setShowSummary(false), 3000);
+  };
+
   // 🌸 Reset Filters
   const resetFilters = () => {
     setSearch("");
@@ -95,7 +130,6 @@ function Shop() {
     .sort((a, b) => {
       if (sortBy === "low-high") return a.price_per_stem - b.price_per_stem;
       if (sortBy === "high-low") return b.price_per_stem - a.price_per_stem;
-      // Default alphabetical order by variety
       return a.variety.localeCompare(b.variety);
     });
 
@@ -113,6 +147,15 @@ function Shop() {
     if (currentPage > 1) setCurrentPage((p) => p - 1);
   };
 
+  // 🧮 Cart subtotal
+  const subtotal = cart.reduce(
+    (sum, item) =>
+      sum +
+      Number(item.is_on_sale ? item.sale_price_per_stem : item.price_per_stem) *
+        (item.quantity || 1),
+    0
+  );
+
   return (
     <div className="shop-wrapper">
       <NavBar />
@@ -127,7 +170,6 @@ function Shop() {
 
       {/* 🌿 Filter Bar */}
       <div className="filter-barshop">
-        {/* 🔍 Search */}
         <input
           type="text"
           placeholder="Search by flower or type..."
@@ -136,7 +178,6 @@ function Shop() {
           className="filter-input"
         />
 
-        {/* 🌸 Type Dropdown */}
         <select
           value={typeFilter}
           onChange={(e) => setTypeFilter(e.target.value)}
@@ -161,7 +202,6 @@ function Shop() {
             ))}
         </select>
 
-        {/* 💰 Sort */}
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
@@ -172,7 +212,6 @@ function Shop() {
           <option value="high-low">High to Low</option>
         </select>
 
-        {/* 🔖 Sale */}
         <label className="filter-checkbox">
           <input
             type="checkbox"
@@ -182,12 +221,10 @@ function Shop() {
           <span>Show On Sale</span>
         </label>
 
-        {/* ♻️ Reset Filters */}
         <button className="reset-btn" onClick={resetFilters}>
           Reset Filters
         </button>
 
-        {/* ❤️ Favourites Button */}
         <button
           className="favourites-btn"
           onClick={() => navigate("/favourites")}
@@ -202,16 +239,14 @@ function Shop() {
           <p>Loading flowers...</p>
         </div>
       )}
-
       {error && (
         <div className="shop-error">
           <p>{error}</p>
         </div>
       )}
-
       {!loading && !error && currentFlowers.length === 0 && (
         <div className="shop-empty">
-          <p>No flowers available at the moment 🌷</p>
+          <p>No flowers available at the moment</p>
         </div>
       )}
 
@@ -219,65 +254,17 @@ function Shop() {
       <section className="shop-page">
         <div className="shop-grid">
           {currentFlowers.map((flower) => {
-            const isOnSale = Number(flower.is_on_sale) === 1;
             const isFav = favourites.some(
               (f) => f.flower_id === flower.flower_id
             );
-
             return (
-              <div key={flower.flower_id} className="flower-card">
-                {isOnSale && <div className="sale-badge">Sale</div>}
-
-                {/* ❤️ Heart Button */}
-                <button
-                  className={`heart-btn ${isFav ? "active" : ""}`}
-                  onClick={() => toggleFavourite(flower)}
-                >
-                  {isFav ? <FaHeart /> : <FaRegHeart />}
-                </button>
-
-                <Link
-                  to={`/product/${flower.flower_id}`}
-                  className="flower-link"
-                >
-                  <img
-                    src={
-                      flower.image_url && flower.image_url.trim() !== ""
-                        ? flower.image_url
-                        : require("../assets/placeholder-flower.jpg")
-                    }
-                    alt={flower.variety}
-                    className="flower-img"
-                  />
-                </Link>
-
-                <div className="flower-info">
-                  <h3 className="flower-name">{flower.variety}</h3>
-                  <p className="flower-type">
-                    {flower.FlowerType?.type_name ||
-                      flower.FlowerType?.flowerTypeName ||
-                      flower.type_name ||
-                      "Unknown Type"}
-                  </p>
-
-                  {isOnSale ? (
-                    <p className="flower-price">
-                      <span className="sale-price">
-                        R{flower.sale_price_per_stem}
-                      </span>
-                      <span className="original-price">
-                        R{flower.price_per_stem}
-                      </span>
-                    </p>
-                  ) : (
-                    <p className="flower-price">R{flower.price_per_stem}</p>
-                  )}
-
-                  <Link to={`/product/${flower.flower_id}`}>
-                    <button className="btn-view">View Details</button>
-                  </Link>
-                </div>
-              </div>
+              <ProductCard
+                key={flower.flower_id}
+                flower={flower}
+                isFavourite={isFav}
+                onToggleFavourite={toggleFavourite}
+                onAddToCart={addToCart}
+              />
             );
           })}
         </div>
@@ -302,6 +289,29 @@ function Shop() {
             className="page-btn"
           >
             Next →
+          </button>
+        </div>
+      )}
+
+      {/* 🛍️ Floating Cart Summary */}
+      {showSummary && lastAdded && (
+        <div className="cart-summary-popup">
+          <img
+            src={
+              lastAdded.image_url || require("../assets/placeholder-flower.jpg")
+            }
+            alt={lastAdded.variety}
+            className="popup-img"
+          />
+          <div className="popup-info">
+            <h5>{lastAdded.variety}</h5>
+            <p>Added to cart</p>
+            <span className="popup-subtotal">
+              Cart Total: R{subtotal.toFixed(2)}
+            </span>
+          </div>
+          <button className="popup-btn" onClick={() => navigate("/cart")}>
+            View Cart
           </button>
         </div>
       )}

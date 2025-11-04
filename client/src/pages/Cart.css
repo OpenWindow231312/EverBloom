@@ -1,105 +1,343 @@
-/* Cart.css */
-.cart-section {
-    padding: 2rem;
-    background-color: #f9f9f9;
-    font-family: "YourFontFamily", sans-serif;
-    /* Replace with your font */
+/* ========================================
+   🌸 EverBloom — Cart Page (Modern Layout)
+   ======================================== */
+
+.cart-header {
+    text-align: center;
+    padding: 60px 20px 20px;
 }
 
-.container {
-    max-width: 1200px;
+.cart-container {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px;
+    flex-wrap: wrap;
+    max-width: 1300px;
     margin: 0 auto;
 }
 
-.cart-heading {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    text-align: center;
-    color: #de0d22;
-    /* Red color scheme */
-}
-
-.cart-description {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #555;
-}
-
+/* 🛒 Cart Items */
 .cart-items {
-    margin-bottom: 2rem;
+    flex: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
 }
 
-.cart-item {
+/* Modern horizontal card layout */
+.cart-item.modern {
     display: flex;
     align-items: center;
     justify-content: space-between;
     background: #fff;
-    padding: 1rem;
-    border-radius: 10px;
-    margin-bottom: 1rem;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.25s ease;
 }
 
-.cart-item-image {
-    width: 100px;
-    height: 100px;
-    border-radius: 10px;
+.cart-item.modern:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+
+.cart-type {
+    margin-top: -6px;
+}
+
+/* 🖼️ Image */
+.cart-img {
+    width: 90px;
+    height: 90px;
     object-fit: cover;
+    border-radius: 12px;
+    margin-right: 20px;
 }
 
-.cart-item-details {
+/* 🌸 Product Info */
+.cart-details {
     flex: 1;
-    margin-left: 1rem;
 }
 
-.cart-item-title {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
+.cart-variety {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: #222;
+    margin-bottom: 4px;
+}
+
+.cart-type {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+/* Quantity + Price Group */
+.cart-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.cart-quantity {
+    display: flex;
+    align-items: center;
+    background: #fff8f8;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+    max-width: 100px;
+}
+
+.cart-quantity button {
+    background: #de0d22;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cart-quantity button:hover {
+    background: #b90c1d;
+}
+
+.cart-quantity span {
+    width: 40px;
+    text-align: center;
+    font-weight: 600;
     color: #333;
 }
 
-.cart-item-price {
-    color: #888;
-    margin-bottom: 1rem;
+.cart-line-price {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #222;
+    min-width: 80px;
+    text-align: right;
 }
 
-.cart-item-quantity {
-    display: flex;
-    align-items: center;
+/* Remove button */
+.modern-remove {
+    background: none;
+    border: none;
+    color: #de0d22;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s ease;
 }
 
-.quantity-btn {
-    margin: 0 0.5rem;
+.modern-remove:hover {
+    color: #b90c1d;
+    text-decoration: underline;
 }
 
-.quantity-value {
-    font-size: 1rem;
-}
-
+/* 💰 Summary */
 .cart-summary {
+    flex: 1;
     background: #fff;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    padding: 24px 28px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    height: fit-content;
+    max-width: 380px;
 }
 
-.summary-heading {
-    font-size: 1.5rem;
+.cart-summary h2 {
     margin-bottom: 1rem;
+    color: #222;
+    font-weight: 700;
+    font-size: 1.3rem;
 }
 
-.summary-item {
+.summary-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 0.5rem;
+    margin-bottom: 10px;
+    font-size: 1rem;
+    color: #555;
 }
 
-.summary-item.total {
-    font-weight: bold;
-    font-size: 1.2rem;
+.summary-row.total {
+    font-weight: 700;
+    color: #000;
+    font-size: 1.1rem;
 }
 
 .checkout-btn {
+    margin-top: 1.5rem;
     width: 100%;
-    margin-top: 1rem;
+    padding: 12px 0;
+    border: none;
+    border-radius: 10px;
+    background: #de0d22;
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.checkout-btn:hover {
+    background: #b90c1d;
+    transform: translateY(-2px);
+}
+
+/* Empty Cart */
+.cart-empty {
+    text-align: center;
+    padding: 100px 0;
+    color: #555;
+}
+
+/* ========================================
+   🌸 EverBloom — Mobile Cart Fix
+   ======================================== */
+
+@media (max-width: 768px) {
+    .cart-container {
+        flex-direction: column;
+        align-items: center;
+        padding: 12px;
+        gap: 1rem;
+        width: 100%;
+        max-width: 100vw;
+        overflow-x: hidden;
+        box-sizing: border-box;
+    }
+
+    /* ✅ Card perfectly fits screen width */
+    .cart-item.modern {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 95%;
+        background: #fff;
+        border-radius: 14px;
+        padding: 12px 14px;
+        gap: 0.8rem;
+        box-sizing: border-box;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .cart-img {
+        width: 65px;
+        height: 65px;
+        border-radius: 10px;
+        flex-shrink: 0;
+    }
+
+    .cart-details {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        min-width: 0;
+        text-align: left;
+        margin-left: 4px;
+    }
+
+    .cart-variety {
+        font-size: 1rem;
+        font-weight: 600;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: left;
+    }
+
+    .cart-type {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 0.4rem;
+    }
+
+    /* 🔢 Quantity stays under name */
+    .cart-quantity {
+        display: inline-flex;
+        align-items: center;
+        background: #fff8f8;
+        border-radius: 10px;
+        padding: 2px 6px;
+        width: fit-content;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.06);
+    }
+
+    .cart-quantity button {
+        background: #de0d22;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        width: 24px;
+        height: 24px;
+        font-size: 0.9rem;
+        cursor: pointer;
+    }
+
+    .cart-quantity span {
+        width: 28px;
+        text-align: center;
+        font-weight: 600;
+        color: #333;
+        font-size: 0.9rem;
+    }
+
+    /* 💰 Price & Remove stay right-aligned */
+    .cart-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 0.4rem;
+        flex-shrink: 0;
+    }
+
+    .cart-line-price {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #222;
+    }
+
+    .modern-remove {
+        font-size: 0.8rem;
+        color: #de0d22;
+        background: none;
+        border: none;
+        cursor: pointer;
+    }
+
+    /* 💰 Summary section fits width */
+    .cart-summary {
+        width: 100%;
+        max-width: 95%;
+        margin-top: 1.5rem;
+        padding: 18px;
+        box-sizing: border-box;
+    }
+
+    /* ✅ Center all cart content on mobile */
+    .cart-items {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* centers all cards */
+        justify-content: center;
+        text-align: center;
+    }
+
+    .cart-item.modern {
+        margin: 0 auto;
+        /* ensures card centers horizontally */
+    }
+
+    .cart-summary {
+        margin: 1.5rem auto 0 auto;
+        text-align: center;
+        justify-content: center;
+    }
 }

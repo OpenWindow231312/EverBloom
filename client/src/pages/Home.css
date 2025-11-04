@@ -290,6 +290,37 @@
     line-height: 1.5;
 }
 
+/* 🌸 Featured Flowers Carousel (uses same style as "You Might Like") */
+.recommend-carousel {
+    display: flex;
+    gap: 1.5rem;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 10px 20px 30px;
+    justify-content: flex-start;
+}
+
+.recommend-carousel::-webkit-scrollbar {
+    height: 8px;
+}
+
+.recommend-carousel::-webkit-scrollbar-thumb {
+    background: #de0d22;
+    border-radius: 6px;
+}
+
+.recommend-carousel::-webkit-scrollbar-track {
+    background: #f8f8f8;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+    .recommend-carousel {
+        gap: 1rem;
+        padding: 0px 12px 20px;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .reasons-carousel {

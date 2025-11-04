@@ -1,23 +1,82 @@
-import React, { useState } from "react";
+// ========================================
+// 🌸 EverBloom — Home Page (Featured Flowers Carousel)
+// ========================================
+
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import NavBar from "../components/NavBar"; // Importing the NavBar component
-import Footer from "../components/Footer"; // ✅ Corrected import path
+import NavBar from "../components/NavBar";
+import Footer from "../components/Footer";
+import ProductCard from "../components/ProductCard";
+import API from "../api/api";
 import "./Home.css";
-import { Truck, Leaf, Award, Gem } from "lucide-react"; // ✅ Added icon imports
+import { Truck, Leaf, Award, Gem } from "lucide-react";
 
 function Home() {
   const navigate = useNavigate();
-  const [favorites, setFavorites] = useState([false, false, false]);
+  const [flowers, setFlowers] = useState([]);
+  const [favourites, setFavourites] = useState(
+    JSON.parse(localStorage.getItem("favourites")) || []
+  );
+  const [loading, setLoading] = useState(true);
 
-  const toggleFavorite = (index) => {
-    const updatedFavorites = [...favorites];
-    updatedFavorites[index] = !updatedFavorites[index];
-    setFavorites(updatedFavorites);
+  // 🌼 Fetch flowers
+  useEffect(() => {
+    const fetchFlowers = async () => {
+      try {
+        const res = await API.get("/shop");
+        const data = res.data || [];
+        // Filter featured (e.g. sale or first few)
+        const featured = data
+          .filter((f) => f.is_on_sale || f.price_per_stem < 25)
+          .slice(0, 8);
+        setFlowers(featured);
+      } catch (err) {
+        console.error("Error fetching featured flowers:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchFlowers();
+  }, []);
+
+  // ❤️ Toggle favourite
+  const toggleFavourite = (flower) => {
+    let updated;
+    const exists = favourites.find((f) => f.flower_id === flower.flower_id);
+    if (exists) {
+      updated = favourites.filter((f) => f.flower_id !== flower.flower_id);
+    } else {
+      updated = [...favourites, flower];
+    }
+    setFavourites(updated);
+    localStorage.setItem("favourites", JSON.stringify(updated));
+  };
+
+  // 🛒 Add to cart
+  const addToCart = (flower) => {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const exists = cart.find((item) => item.flower_id === flower.flower_id);
+    let updatedCart;
+
+    if (exists) {
+      updatedCart = cart.map((item) =>
+        item.flower_id === flower.flower_id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      );
+    } else {
+      updatedCart = [...cart, { ...flower, quantity: 1 }];
+    }
+
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    console.log("🛒 Added to cart:", flower.variety);
   };
 
   return (
     <div>
-      <NavBar /> {/* Adding the NavBar component at the top */}
+      <NavBar />
+
+      {/* 🌸 Hero Section */}
       <div className="hero-banner">
         <img
           src={require("../assets/HeroImageNew.jpeg")}
@@ -30,157 +89,103 @@ function Home() {
           <div className="hero-buttons">
             <button
               className="primary-button"
-              onClick={() => navigate("/Shop")}
+              onClick={() => navigate("/shop")}
             >
               Shop Collection
             </button>
             <button
               className="secondary-button"
-              onClick={() => navigate("/Rewards")}
+              onClick={() => navigate("/rewards")}
             >
               Florist Rewards
             </button>
           </div>
         </div>
       </div>
-      {/* Featured Flowers Section */}
-      <div className="featured-flowers">
+
+      {/* 🌷 Featured Flowers */}
+      <section className="featured-flowers">
         <h4 className="featured-flowers-subtitle">bestsellers</h4>
         <h1 className="featured-flowers-title">Featured Flowers</h1>
         <p className="featured-flowers-description">
-          Our most loved flower arrangements, perfect for any occasion
+          Our most loved blooms, freshly harvested from the EverBloom farm.
         </p>
 
-        <div className="featured-flowers-cards">
-          {/* Card 1 */}
-          <div className="card">
-            <div className="card-image-container">
-              <img
-                src={require("../assets/BouquetFeature3.jpeg")}
-                alt="Rustic Green Bouquet"
-                className="card-image"
+        {!loading && flowers.length > 0 && (
+          <div className="recommend-carousel">
+            {flowers.map((flower) => (
+              <ProductCard
+                key={flower.flower_id}
+                flower={flower}
+                isFavourite={favourites.some(
+                  (f) => f.flower_id === flower.flower_id
+                )}
+                onToggleFavourite={() => toggleFavourite(flower)}
+                onAddToCart={addToCart}
               />
-              <button
-                className={`favorite-button ${favorites[0] ? "filled" : ""}`}
-                onClick={() => toggleFavorite(0)}
-              >
-                ♥
-              </button>
-            </div>
-            <p className="card-subheading">mixed</p>
-            <h5 className="card-title">Rustic Green Bouquet</h5>
-            <p className="card-price">R300.00</p>
-            <button className="add-to-cart-button">add to cart</button>
+            ))}
           </div>
+        )}
 
-          {/* Card 2 */}
-          <div className="card">
-            <div className="card-image-container">
-              <img
-                src={require("../assets/BouquetFeature2.jpeg")}
-                alt="Peony Bunch"
-                className="card-image"
-              />
-              <button
-                className={`favorite-button ${favorites[1] ? "filled" : ""}`}
-                onClick={() => toggleFavorite(1)}
-              >
-                ♥
-              </button>
-            </div>
-            <p className="card-subheading">peonies</p>
-            <h5 className="card-title">Peony Bunch 10 stems</h5>
-            <p className="card-price">R190.00</p>
-            <button className="add-to-cart-button">add to cart</button>
-          </div>
-
-          {/* Card 3 */}
-          <div className="card">
-            <div className="card-image-container">
-              <img
-                src={require("../assets/BouquetFeature1.jpeg")}
-                alt="You’re my sunshine Bouquet"
-                className="card-image"
-              />
-              <button
-                className={`favorite-button ${favorites[2] ? "filled" : ""}`}
-                onClick={() => toggleFavorite(2)}
-              >
-                ♥
-              </button>
-            </div>
-            <p className="card-subheading">mixed</p>
-            <h5 className="card-title">You’re my sunshine Bouquet</h5>
-            <p className="card-price">R320.00</p>
-            <button className="add-to-cart-button">add to cart</button>
-          </div>
-        </div>
-
-        {/* View All Products Button */}
         <button
           className="view-all-products-button"
-          onClick={() => navigate("/Shop")}
+          onClick={() => navigate("/shop")}
         >
           View All Products <span className="arrow">→</span>
         </button>
-      </div>
-      {/* Why Choose Us Section */}
+      </section>
+
+      {/* 🌻 Why Choose Us */}
       <section className="why-choose-us">
         <div className="container">
           <h4 className="why-choose-us-title">Why Choose Us</h4>
           <h1 className="why-choose-us-heading">The EverBloom Promise</h1>
 
           <div className="reasons-carousel">
-            {/* Reason 1 */}
-            <div className="reason reason1">
+            <div className="reason">
               <div className="icon-container">
                 <Truck className="icon" />
               </div>
               <h5 className="reason-title">Same Day Delivery</h5>
               <p className="reason-description">
-                Fresh Flowers delivered within hours of your order and so much
-                more!
+                Fresh flowers delivered within hours of your order.
               </p>
             </div>
 
-            {/* Reason 2 */}
-            <div className="reason reason2">
+            <div className="reason">
               <div className="icon-container">
                 <Leaf className="icon" />
               </div>
               <h5 className="reason-title">Sustainably Grown</h5>
               <p className="reason-description">
-                Eco-friendly farming practices for a better tomorrow.
+                Eco-friendly practices for a greener tomorrow.
               </p>
             </div>
 
-            {/* Reason 3 */}
-            <div className="reason reason3">
+            <div className="reason">
               <div className="icon-container">
                 <Award className="icon" />
               </div>
               <h5 className="reason-title">Premium Quality</h5>
               <p className="reason-description">
-                We guarantee that only the finest blooms make it to your
-                bouquet.
+                Only the finest, farm-fresh blooms make it to your bouquet.
               </p>
             </div>
 
-            {/* Reason 4 */}
-            <div className="reason reason4">
+            <div className="reason">
               <div className="icon-container">
                 <Gem className="icon" />
               </div>
               <h5 className="reason-title">Farm to Florist Pricing</h5>
               <p className="reason-description">
-                By eliminating the middle man, we promise to give you the best
-                prices!
+                Skip the middleman — pay less for more freshness.
               </p>
             </div>
           </div>
         </div>
       </section>
-      <Footer /> {/* ✅ Footer added at the bottom */}
+
+      <Footer />
     </div>
   );
 }
