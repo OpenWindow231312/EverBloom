@@ -2,30 +2,61 @@
 <html lang="en">
 
 <head>
+  <!-- ✅ Basic Meta Setup -->
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#d6d1c4" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
-  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-  <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
-  <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+  <!-- ✅ Favicon & Manifest -->
+  <link rel="icon" type="image/png" sizes="16x16" href="./16 logo.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="./32 logo.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="./180 logo.png" />
+  <link rel="manifest" href="./180 logo.png" />
 
-  <!-- SEO -->
+  <!-- 🌸 SEO Meta -->
+  <title>EverBloom | South Africa’s Online Flower Farm Marketplace</title>
   <meta name="description"
-    content="EverBloom — South Africa’s online flower farm marketplace for blooms, decor, and custom floral creations." />
-  <meta name="keywords" content="EverBloom, flowers, decor, florists, weddings, floral design, South Africa" />
+    content="EverBloom — South Africa’s sustainable online flower marketplace. Browse fresh blooms, floral décor, and custom wedding arrangements directly from the farm." />
+  <meta name="keywords"
+    content="EverBloom, flower farm, florist, wedding flowers, decor, bouquets, Pretoria, sustainable flowers, South Africa" />
   <meta name="author" content="EverBloom Team" />
 
-  <!-- Google Analytics Tag -->
+  <!-- 🪷 Open Graph / Social Sharing -->
+  <meta property="og:title" content="EverBloom | Farm-Fresh Flowers Online" />
+  <meta property="og:description"
+    content="Shop sustainably grown flowers and décor directly from the EverBloom farm. Fresh, local, and beautifully arranged." />
+  <meta property="og:image" content="https://everbloomshop.co.za/og-image.jpg" />
+  <meta property="og:url" content="https://everbloomshop.co.za/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:locale" content="en_ZA" />
+
+  <!-- 🕊️ Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="EverBloom | South Africa’s Flower Marketplace" />
+  <meta name="twitter:description"
+    content="Discover sustainable farm-fresh flowers and décor from EverBloom — South Africa’s online flower marketplace." />
+  <meta name="twitter:image" content="https://everbloomshop.co.za/og-image.jpg" />
+
+  <!-- ⚙️ Robots / Indexing -->
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://everbloomshop.co.za/" />
+
+  <!-- 📈 Google Analytics (GA4) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-T7VC5RXVVK"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-    gtag('config', 'G-T7VC5RXVVK');
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+    gtag("config", "G-T7VC5RXVVK");
   </script>
 
-  <title>EverBloom | Online Flower Farm Marketplace</title>
+  <!-- 💨 Performance / Prefetch -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
 </head>
 
 <body>
@@ -33,9 +64,9 @@
   <div id="root"></div>
 
   <!--
-      This file is the main HTML template for EverBloom’s React app.
-      The build step will inject bundled JS and CSS automatically.
-      Only files in /public can be referenced using %PUBLIC_URL%.
+      🌸 EverBloom — React + Node.js + MySQL
+      This HTML template powers the client-side rendering.
+      Bundled JS and CSS will be injected automatically by the build process.
     -->
 </body>
 
