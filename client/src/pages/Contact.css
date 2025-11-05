@@ -1,0 +1,290 @@
+/* ========================================
+   🌸 EverBloom — Contact Page Styles
+   ======================================== */
+
+.contact-page {
+    font-family: "Poppins", sans-serif;
+    color: #333;
+    background: #fff;
+    padding-bottom: 4rem;
+}
+
+/* ===== Hero Section ===== */
+.contact-hero {
+    text-align: center;
+    padding: 3.5rem 1rem 2rem;
+    background: linear-gradient(135deg, #fff3f3, #ffffff);
+}
+
+.contact-hero h1 {
+    font-size: 2.5rem;
+    color: #de0d22;
+    margin-bottom: 0.75rem;
+    font-weight: 700;
+}
+
+.contact-hero p {
+    color: #555;
+    max-width: 600px;
+    margin: 0 auto;
+    font-size: 1rem;
+}
+
+/* ===== Contact Section ===== */
+.contact-content {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3rem;
+    padding: 3rem 2rem;
+}
+
+/* ===== Contact Info ===== */
+.contact-info {
+    flex: 1;
+    min-width: 300px;
+    max-width: 450px;
+    margin-left: 40px;
+}
+
+.contact-info h2 {
+    color: #de0d22;
+    margin-bottom: 0.5rem;
+}
+
+.contact-info p {
+    margin-bottom: 1.5rem;
+    color: #666;
+}
+
+.info-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+}
+
+.info-icon {
+    color: #de0d22;
+    font-size: 1.3rem;
+    margin-top: 4px;
+}
+
+.info-item h4 {
+    margin: 0;
+    font-size: 25px;
+    color: #222;
+}
+
+.info-item p {
+    margin: 0.2rem 0 0;
+    color: #555;
+}
+
+/* ===== Contact Form ===== */
+/* ===== Contact Form ===== */
+.contact-form {
+    flex: 1;
+    min-width: 300px;
+    max-width: 500px;
+    background: #fafafa;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+
+    /* ✅ Center the form block on all screens */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.contact-form h2 {
+    color: #de0d22;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    font-weight: 700;
+}
+
+/* ✅ Make all inputs & button uniform width and centered */
+form {
+    width: 100%;
+    max-width: 420px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-group {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.form-group input,
+.form-group textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.8rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    background: #fff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    border-color: #de0d22;
+    box-shadow: 0 0 0 2px rgba(222, 13, 34, 0.1);
+    outline: none;
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 0.9rem;
+    background: #de0d22;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-sizing: border-box;
+}
+
+.submit-btn:hover {
+    background: #b90b1c;
+    transform: translateY(-1px);
+}
+
+/* ===== Map Section ===== */
+.map-section {
+    text-align: center;
+    margin-top: 1.5rem;
+    /* ✅ Reduced space above */
+    padding: 1rem 2rem 2rem;
+}
+
+.map-section h2 {
+    color: #de0d22;
+    margin-bottom: 1rem;
+}
+
+.map-container {
+    display: flex;
+    justify-content: center;
+}
+
+.map-container iframe {
+    width: 100%;
+    max-width: 900px;
+    height: 400px;
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Success Modal ===== */
+.success-modal {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.35);
+    z-index: 100;
+    animation: fadeIn 0.3s ease;
+}
+
+.success-box {
+    background: white;
+    padding: 2rem 2.5rem;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    animation: popIn 0.3s ease;
+}
+
+.success-icon {
+    font-size: 3rem;
+    color: #28a745;
+    margin-bottom: 0.8rem;
+}
+
+.success-box h3 {
+    color: #222;
+    margin-bottom: 0.3rem;
+}
+
+.success-box p {
+    color: #666;
+    font-size: 0.95rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes popIn {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .contact-content {
+        flex-direction: column;
+        padding: 30px 40px;
+        gap: 10px;
+    }
+
+    .contact-info {
+        margin-left: -10px;
+    }
+
+    .contact-form {
+        order: 2;
+        padding: 20px;
+    }
+
+    .map-section iframe {
+        height: 300px;
+    }
+
+    .success-box {
+        width: 70%;
+    }
+
+
+}
+
+@media (max-width: 768px) {
+    .contact-form {
+        width: 80%;
+        max-width: 70%;
+        padding: 1rem;
+    }
+
+    form {
+        max-width: 100%;
+    }
+}

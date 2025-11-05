@@ -1,59 +1,85 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Search, User, ShoppingBag } from "lucide-react";
+import { User, ShoppingBag, Menu, X, Search } from "lucide-react";
 import "./NavBar.css";
 import PrimaryLogo from "../assets/PrimaryLogo.svg";
 
 function NavBar() {
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
-  const handleSearchToggle = () => {
-    setSearchOpen(!searchOpen);
-  };
+  const handleMenuToggle = () => setMenuOpen(!menuOpen);
 
   return (
     <nav className="navbar">
+      {/* Left: Logo */}
       <div className="navbar-left">
-        {/* Make the logo clickable and navigate to Home */}
         <Link to="/">
           <img src={PrimaryLogo} alt="Logo" className="navbar-logo" />
         </Link>
       </div>
-      <div className="navbar-center">
-        <Link to="/shop" className="navbar-link">
-          Shop
-        </Link>
-        <Link to="/about" className="navbar-link">
-          About
-        </Link>
-        <Link to="/contact" className="navbar-link">
-          Contact
-        </Link>
-        {/* New Rewards Link */}
-        <Link to="/rewards" className="navbar-link">
-          Rewards
-        </Link>
-        <Link to="/dashboard" className="navbar-link">
-          Dashboard
-        </Link>
-      </div>
-      <div className="navbar-right">
-        <button className="icon-button" onClick={handleSearchToggle}>
-          <Search />
-        </button>
-        <button className="icon-button" onClick={() => navigate("/account")}>
-          <User />
-        </button>
-        <button className="icon-button" onClick={() => navigate("/cart")}>
-          <ShoppingBag />
-        </button>
-      </div>
-      {searchOpen && (
-        <div className="search-bar">
-          <input type="text" placeholder="Search..." className="search-input" />
+
+      {/* Hamburger for Mobile */}
+      <button className="menu-toggle1" onClick={handleMenuToggle}>
+        {menuOpen ? <X /> : <Menu />}
+      </button>
+
+      {/* Navbar Center: Links + Search + Icons */}
+      <div className={`navbar-center ${menuOpen ? "active" : ""}`}>
+        {/* Links */}
+        <div className="navbar-links">
+          <Link
+            to="/shop"
+            className="navbar-link"
+            onClick={() => setMenuOpen(false)}
+          >
+            Shop
+          </Link>
+          <Link
+            to="/about"
+            className="navbar-link"
+            onClick={() => setMenuOpen(false)}
+          >
+            About
+          </Link>
+          <Link
+            to="/contact"
+            className="navbar-link"
+            onClick={() => setMenuOpen(false)}
+          >
+            Contact
+          </Link>
+          <Link
+            to="/dashboard"
+            className="navbar-link"
+            onClick={() => setMenuOpen(false)}
+          >
+            Dashboard
+          </Link>
         </div>
-      )}
+
+        {/* Search Bar (same style as mobile) */}
+        <div className="nav-search">
+          <div className="search-container">
+            <Search className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search..."
+              className="search-input"
+            />
+          </div>
+        </div>
+
+        {/* Icons */}
+        <div className="nav-icons mobile-icons">
+          <button className="icon-button" onClick={() => navigate("/account")}>
+            <User />
+          </button>
+          <button className="icon-button" onClick={() => navigate("/cart")}>
+            <ShoppingBag />
+          </button>
+        </div>
+      </div>
     </nav>
   );
 }
