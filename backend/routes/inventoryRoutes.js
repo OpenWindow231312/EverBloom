@@ -1,9 +1,9 @@
 // ========================================
-// ❄️ EverBloom — Inventory Routes
+// ❄️ EverBloom — Inventory Routes (with proper associations + sync)
 // ========================================
 const express = require("express");
 const router = express.Router();
-const { Inventory, HarvestBatch } = require("../models");
+const { Inventory, HarvestBatch, Flower, FlowerType } = require("../models");
 const { requireAuth, requireRole } = require("../middleware/authMiddleware");
 
 // ===============================
@@ -16,7 +16,19 @@ router.get(
   async (req, res) => {
     try {
       const inventory = await Inventory.findAll({
-        include: [{ model: HarvestBatch }],
+        include: [
+          {
+            model: HarvestBatch,
+            as: "HarvestBatch",
+            include: [
+              {
+                model: Flower,
+                as: "Flower",
+                include: [{ model: FlowerType, as: "FlowerType" }],
+              },
+            ],
+          },
+        ],
         order: [["inventory_id", "ASC"]],
       });
       res.json(inventory);
@@ -53,23 +65,32 @@ router.post(
       // Prevent duplicate inventory entries for same batch
       const existing = await Inventory.findOne({ where: { harvestBatch_id } });
       if (existing) {
-        return res
-          .status(400)
-          .json({ message: "Batch already exists in coldroom" });
+        // If already exists, just update stems count
+        existing.stemsInColdroom += Number(stemsInColdroom);
+        await existing.save();
+      } else {
+        await Inventory.create({ harvestBatch_id, stemsInColdroom });
       }
 
-      const newInventory = await Inventory.create({
-        harvestBatch_id,
-        stemsInColdroom,
-      });
-
-      // update batch status
-      batch.status = "In Coldroom";
+      // Update harvest batch status
+      batch.status = "InColdroom";
       await batch.save();
 
+      // Return updated data for frontend sync
+      const updated = await HarvestBatch.findByPk(harvestBatch_id, {
+        include: [
+          {
+            model: Flower,
+            as: "Flower",
+            include: [{ model: FlowerType, as: "FlowerType" }],
+          },
+          { model: Inventory, as: "Inventory" },
+        ],
+      });
+
       res.json({
-        message: "✅ Harvest batch added to coldroom",
-        inventory: newInventory,
+        message: "✅ Harvest batch added or updated in coldroom",
+        harvestBatch: updated,
       });
     } catch (err) {
       console.error("❌ Error adding to coldroom:", err);

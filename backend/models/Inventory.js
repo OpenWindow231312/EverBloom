@@ -1,5 +1,5 @@
 // ========================================
-// 🌸 EverBloom — Inventory Model
+// 🌸 EverBloom — Inventory Model (Linked to HarvestBatch)
 // ========================================
 module.exports = (sequelize, DataTypes) => {
   const Inventory = sequelize.define(
@@ -29,6 +29,17 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
     }
   );
+
+  // ===========================
+  // 🌿 Associations
+  // ===========================
+  Inventory.associate = (models) => {
+    Inventory.belongsTo(models.HarvestBatch, {
+      foreignKey: "harvestBatch_id",
+      as: "HarvestBatch",
+      onDelete: "CASCADE",
+    });
+  };
 
   return Inventory;
 };

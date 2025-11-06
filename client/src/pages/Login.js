@@ -1,9 +1,6 @@
-// ========================================
-// 🌸 EverBloom — Login Page (with Role Redirect + Close Button)
-// ========================================
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaTimes } from "react-icons/fa"; // ✅ added
+import { FaTimes } from "react-icons/fa";
 import "./Login.css";
 import FlowerField1 from "../assets/FlowerField1.jpeg";
 
@@ -28,7 +25,7 @@ function Login() {
         process.env.REACT_APP_API_URL ||
         "http://localhost:5001";
 
-      const res = await fetch(`${API_URL}/auth/login`, {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

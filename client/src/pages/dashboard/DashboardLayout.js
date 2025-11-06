@@ -1,5 +1,5 @@
 // ========================================
-// 🌸 EverBloom — Dashboard Layout (Responsive + Full-Width Topbar)
+// 🌸 EverBloom — Dashboard Layout (Responsive + Render Safe Final Version)
 // ========================================
 import React, { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -12,15 +12,16 @@ export default function DashboardLayout() {
   const [currentUser, setCurrentUser] = useState(null);
   const navigate = useNavigate();
 
-  const API_URL =
-    import.meta.env?.VITE_API_URL ||
-    process.env.REACT_APP_API_URL ||
-    "http://localhost:5001";
+  // ✅ Environment detection (same logic as everywhere else)
+  const isLocal = window.location.hostname.includes("localhost");
+  const API_URL = isLocal
+    ? "http://localhost:5001"
+    : "https://everbloom.onrender.com"; // ✅ Render live backend root
 
   // 🧭 Fetch current logged-in user
   useEffect(() => {
     const loadUser = async () => {
-      const user = await fetchCurrentUser(API_URL);
+      const user = await fetchCurrentUser(); // ✅ no param needed now
       if (!user) {
         navigate("/login");
       } else {
@@ -28,7 +29,7 @@ export default function DashboardLayout() {
       }
     };
     loadUser();
-  }, [API_URL, navigate]);
+  }, [navigate]);
 
   return (
     <div className="dashboard">
@@ -58,7 +59,11 @@ export default function DashboardLayout() {
                   <div style={{ textAlign: "right" }}>
                     <strong>{currentUser.fullName}</strong>
                     <br />
-                    <small>{currentUser.Roles?.[0]?.roleName || "User"}</small>
+                    <small>
+                      {currentUser.Roles?.[0]?.roleName ||
+                        currentUser.roles?.[0] ||
+                        "User"}
+                    </small>
                   </div>
                   <button
                     className="logout-btn"

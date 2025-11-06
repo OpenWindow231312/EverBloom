@@ -1,10 +1,11 @@
 /* ===================================
-   🌸 EVERBLOOM DASHBOARD — STOCK PAGE FULL-WIDTH FIX
+   🌸 EVERBLOOM DASHBOARD — STOCK PAGE
+   FINAL POLISHED RESPONSIVE VERSION
 =================================== */
 
-/* 🪷 Main container: full width, margin-left for sidebar */
+/* ---------- 🌿 Base Layout ---------- */
 /* .dashboard-stock {
-    background: var(--beige);
+    background: var(--beige, #faf9f7);
     min-height: 100vh;
     width: calc(100% - 80px);
     margin-left: 80px;
@@ -16,363 +17,227 @@
     transition: margin-left 0.3s ease, width 0.3s ease;
 } */
 
-/* 🪻 When sidebar expands to 240px */
+/* Sidebar open */
 .sidebar.open~.dashboard-stock {
     margin-left: 240px;
     width: calc(100% - 240px);
 }
 
-/* 🌿 Content Sections (Form, Table, etc.) */
+/* ---------- 🌺 Headings ---------- */
+.overview-heading {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #b80315;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* ---------- 🪷 Dashboard Card Sections ---------- */
 .dashboard-section {
-    background: var(--white);
-    border-radius: 16px;
-    box-shadow: var(--shadow);
-    padding: 1.5rem 1.3rem;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    padding: 1.8rem 1.6rem;
     width: 100%;
     box-sizing: border-box;
 }
 
-/* Ensure all inner containers use full width */
-.dashboard-form,
-.filter-bar,
-.table-container {
-    width: 100%;
-    margin: 0;
-}
-
-/* Remove any forced centering */
-.dashboard-form,
-.dashboard-section h3,
-.filter-bar {
-    margin-left: 0;
-}
-
-/* Fix main title layout */
-.overview-heading {
-    margin-left: 0;
-    padding-left: 0;
-}
-
-/* ==============================
-   🌷 Section Titles
-============================== */
-/* .dashboard-section h3 {
-    font-size: 1.4rem;
+.dashboard-section h3 {
+    font-size: 1.25rem;
     font-weight: 600;
-    color: var(--rose);
-    margin-bottom: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-} */
+    color: #b80315;
+    margin-bottom: 1.2rem;
+}
 
-/* ==============================
-   🌼 Add New Flower Form
-============================== */
-.dashboard-form {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 14px;
-    align-items: center;
+/* ===================================
+   🌼 ADD NEW FLOWER FORM
+=================================== */
+.dashboard-form1 {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    /* Automatically fit as many inputs per row as possible */
+    gap: 16px 20px;
     width: 100%;
     margin: 0 auto;
+    align-items: start;
 }
 
-.dashboard-form input,
-.dashboard-form select,
-.dashboard-form textarea {
-    flex: 1 1 180px;
-    padding: 10px 14px;
+/* Inputs and selects */
+.dashboard-form1 input,
+.dashboard-form1 select,
+.dashboard-form1 textarea {
+    padding: 12px 16px;
     border: 1px solid #ddd;
-    border-radius: 100px;
-    font-size: 0.9rem;
+    border-radius: 12px;
+    font-size: 0.95rem;
     font-family: "Poppins", sans-serif;
     background: #fafafa;
-    /* height: 44px; */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    -webkit-border-radius: 100px;
-    -moz-border-radius: 100px;
-    -ms-border-radius: 100px;
-    -o-border-radius: 100px;
+    transition: all 0.25s ease;
+    height: 46px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
-.dashboard-form textarea {
-    height: auto;
-    min-height: 60px;
+/* Slightly vary column width by field type */
+.dashboard-form1 input[name="variety"],
+.dashboard-form1 input[name="description"] {
+    grid-column: span 2;
+    /* Wider fields */
 }
 
-.dashboard-form input:focus,
-.dashboard-form select:focus,
-.dashboard-form textarea:focus {
-    border-color: var(--rose);
-    box-shadow: 0 0 0 2px rgba(176, 58, 72, 0.2);
+.dashboard-form1 textarea {
+    min-height: 70px;
+    resize: vertical;
+}
+
+.dashboard-form1 input:focus,
+.dashboard-form1 select:focus,
+.dashboard-form1 textarea:focus {
+    border-color: #de0d22;
+    box-shadow: 0 0 0 3px rgba(222, 13, 34, 0.15);
     outline: none;
 }
 
-.dashboard-form button {
+/* Submit Button */
+.dashboard-form1 button {
+    grid-column: 1 / -1;
+    /* Full-width on all screen sizes */
     background: #de0d22;
-    color: var(--white);
+    color: #fff;
     border: none;
     border-radius: 999px;
-    padding: 10px 22px;
-    cursor: pointer;
+    padding: 14px 20px;
     font-weight: 600;
-    font-size: 0.9rem;
-    transition: background 0.3s ease, transform 0.2s ease;
-    box-shadow: 0 2px 6px rgba(176, 58, 72, 0.25);
-    height: 44px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    box-shadow: 0 3px 8px rgba(176, 58, 72, 0.25);
+    height: 48px;
 }
 
-.dashboard-form button:hover {
+.dashboard-form1 button:hover {
     background: #a30210;
     transform: translateY(-2px);
 }
 
-/* ==============================
-   🌼 Filter Bar
-============================== */
+/* ===================================
+   🌷 FILTER BAR
+=================================== */
 .filter-bar {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
     margin-bottom: 1.5rem;
-    padding: 12px 16px;
+    padding: 12px 14px;
     background: #fff7f7;
-    border-radius: 14px;
-    box-shadow: var(--shadow);
+    border-radius: 16px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
     width: 100%;
     box-sizing: border-box;
-    -webkit-border-radius: 14px;
-    -moz-border-radius: 14px;
-    -ms-border-radius: 14px;
-    -o-border-radius: 14px;
 }
 
 .filter-bar input,
 .filter-bar select {
     flex: 1 1 200px;
-    padding: 10px 12px;
+    padding: 8px 12px;
     border: 1px solid #ddd;
-    border-radius: 50px;
+    border-radius: 999px;
     font-size: 0.85rem;
     font-family: "Poppins", sans-serif;
     background: #fafafa;
-    /*height: 44px;
-    */
-    -webkit-border-radius: 5px;
-    -moz-border-radius: 50px;
-    -ms-border-radius: 50px;
-    -o-border-radius: 50px;
-    -webkit-border-radius: 50px;
+    transition: all 0.25s ease;
 }
 
-/* ==============================
-   🌺 Table (Compact, Wrapping, Fully Visible)
-============================== */
-.table-container {
+.filter-bar input:focus,
+.filter-bar select:focus {
+    border-color: #de0d22;
+    box-shadow: 0 0 0 3px rgba(222, 13, 34, 0.1);
+}
+
+/* ===================================
+   🌺 TABLE STYLING
+=================================== */
+.stock-table-container {
     width: 100%;
-    max-width: 920px;
-    /* ✅ fits MacBook Air screen */
-    margin: 0 auto;
+    margin-top: 25px;
     overflow-x: auto;
-    border-radius: 14px;
-    background: #fff;
-    padding-bottom: 0.5rem;
-    box-sizing: border-box;
 }
 
 .dashboard-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 0.85rem;
-    line-height: 1.4;
-    margin: 0 auto;
+    font-size: 0.9rem;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
 }
 
-/* 🌸 Base Cell Formatting */
 .dashboard-table th,
 .dashboard-table td {
-    padding: 8px 10px;
     text-align: left;
-    /* ✅ better readability */
-    border-bottom: 1px solid #f1f1f1;
-    word-break: break-word;
+    padding: 12px 14px;
+    border-bottom: 1px solid #f0f0f0;
     vertical-align: middle;
-    line-height: 1.4;
 }
 
-/* ===================================
-   🌸 Column Widths + Wrapping
-=================================== */
-
-/* Flower column */
-.dashboard-table td:first-child {
-    min-width: 100px;
-    max-width: 140px;
-}
-
-/* Variety column */
-.dashboard-table td:nth-child(2) {
-    min-width: 120px;
-    max-width: 130px;
-}
-
-/* Color column */
-.dashboard-table td:nth-child(3) {
-    min-width: 80px;
-    max-width: 100px;
-}
-
-/* Normal Price */
-.dashboard-table td:nth-child(4),
-.dashboard-table th:nth-child(4) {
-    min-width: 80px;
-    max-width: 90px;
-}
-
-/* Sale Price (header wraps into 2 lines) */
-.dashboard-table th:nth-child(5),
-.dashboard-table td:nth-child(5) {
-    min-width: 70px;
-    max-width: 80px;
-    white-space: normal;
-    word-break: break-word;
-    line-height: 1.2;
-}
-
-/* Listed / On Sale / Action buttons */
-.dashboard-table td:nth-child(6),
-.dashboard-table td:nth-child(7),
-.dashboard-table th:nth-child(6),
-.dashboard-table th:nth-child(7) {
-    text-align: center;
-    min-width: 100px;
-    max-width: 110px;
-    border-radius: 20px;
-}
-
-/* ✅ Restrict cell height for multi-line text columns */
-.dashboard-table td:first-child,
-.dashboard-table td:nth-child(2),
-.dashboard-table td:nth-child(3) {
-    white-space: normal;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.4;
-    max-height: 2.8em;
-    /* 2 lines */
-}
-
-/* ===================================
-   🩷 Header Styling
-=================================== */
 .dashboard-table th {
-    background: var(--rose-light);
-    color: var(--rose);
+    background-color: #fff3f3;
+    color: #b80315;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.3px;
     font-size: 0.8rem;
+    letter-spacing: 0.3px;
 }
 
-.dashboard-table td {
-    font-size: 0.85rem;
+.dashboard-table td:nth-child(2) {
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    line-height: 1.3;
+    max-width: 160px;
 }
 
-/* Hover Effect */
-.dashboard-table tbody tr:hover {
-    background: #fff3f3;
-    transition: background 0.3s ease;
+.dashboard-table tr:hover {
+    background-color: #fff8f8;
+    transition: background-color 0.2s ease;
 }
 
-/* ==============================
-   🪻 Toggle Buttons (Listed / On Sale)
-============================== */
-.toggle-btn {
-    border: none;
-    padding: 4px 12px;
-    border-radius: 999px;
-    font-size: 0.7rem;
-    cursor: pointer;
-    font-weight: 600;
-    transition: all 0.3s ease;
+/* ---------- Buttons in Table ---------- */
+.icon-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    white-space: nowrap;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    font-size: 1rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.25s ease;
 }
 
-.toggle-btn.listed {
-    background: #f8dada;
-    color: var(--rose);
-}
-
-.toggle-btn.sale {
-    background: #fde4e1;
-    color: var(--rose);
-}
-
-.toggle-btn.normal {
-    background: #d9f4df;
-    color: #2f7a3e;
-}
-
-.toggle-btn:hover {
+.icon-btn:hover {
+    transform: translateY(-2px);
     opacity: 0.9;
-    transform: translateY(-1px);
 }
 
-/* ==============================
-   ✏️ Action Buttons (Edit / Delete)
-============================== */
-.action-buttons {
-    display: flex;
-    justify-content: center;
-    gap: 6px;
-    flex-wrap: wrap;
+.edit-btn.icon-btn {
+    background: #e9f4ff;
+    color: #0a6bb8;
 }
 
-.edit-btn,
-.delete-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-    border: none;
-    border-radius: 999px;
-    padding: 5px 10px;
-    cursor: pointer;
-    font-size: 0.7rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    min-width: 70px;
+.delete-btn.icon-btn {
+    background: #ffe9e9;
+    color: #b80315;
 }
 
-/* Edit */
-.edit-btn {
-    background: var(--rose-light);
-    color: var(--rose);
-}
-
-.edit-btn:hover {
-    background: var(--rose);
-    color: var(--white);
-}
-
-/* Delete */
-.delete-btn {
-    background: #de0d22;
-    color: #fff;
-}
-
-.delete-btn:hover {
-    background: #a30210;
-}
-
-/* ==============================
-   🌼 Pagination
-============================== */
+/* ===================================
+   🌼 PAGINATION
+=================================== */
 .pagination {
     display: flex;
     justify-content: flex-end;
@@ -383,110 +248,345 @@
 
 .pagination button {
     background: #de0d22;
-    color: white;
+    color: #fff;
     border: none;
-    padding: 6px 12px;
+    padding: 8px 14px;
     border-radius: 999px;
     cursor: pointer;
-    transition: background 0.3s ease;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 600;
+    transition: all 0.3s ease;
 }
 
-.pagination button:hover:not(:disabled) {
+.pagination button:hover {
     background: #a30210;
 }
 
-.pagination button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 .pagination span {
-    font-size: 0.8rem;
-    color: var(--grey);
+    font-size: 0.85rem;
+    color: #444;
 }
 
-/* ==============================
-   🪻 Modal
-============================== */
-.modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 999;
-    padding: 20px;
-}
+/* ===================================
+   📱 RESPONSIVE ADJUSTMENTS
+=================================== */
 
-.modal-content {
-    background: #fff8f6;
-    border: 2px solid var(--rose);
-    border-radius: 16px;
-    padding: 1.8rem;
-    width: 480px;
-    max-width: 95%;
-    max-height: 80vh;
-    box-shadow: var(--shadow);
-    overflow-y: auto;
-    animation: fadeIn 0.25s ease-in-out;
-}
-
-/* ==============================
-   📱 Responsive Fixes
-============================== */
-@media (max-width: 1280px) {
-    .table-container {
-        max-width: 100%;
-        overflow-x: auto;
-
+/* Tablet */
+@media (max-width: 1024px) {
+    .dashboard-stock {
+        padding: 20px;
     }
 
-    .dashboard-table th,
-    .dashboard-table td {
-        font-size: 0.75rem;
-        padding: 6px 8px;
-    }
-
-    .edit-btn,
-    .delete-btn,
-    .toggle-btn {
-        font-size: 0.65rem;
-        padding: 4px 8px;
-    }
-}
-
-@media (max-width: 768px) {
     .dashboard-form {
-        flex-direction: column;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 16px;
     }
 
     .filter-bar {
         flex-direction: column;
         align-items: stretch;
     }
+}
 
-    .action-buttons {
-        flex-direction: column;
-        gap: 4px;
+/* Mobile */
+@media (max-width: 768px) {
+    .dashboard-stock {
+        padding: 18px;
     }
 
-    .edit-btn,
-    .delete-btn {
+    .dashboard-section {
+        padding: 1.2rem;
+    }
+
+    .dashboard-form {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .dashboard-form input,
+    .dashboard-form select,
+    .dashboard-form textarea {
         width: 100%;
+        height: 46px;
+        font-size: 0.9rem;
+        border-radius: 14px;
+    }
+
+    .dashboard-form button {
+        width: 100%;
+        padding: 12px;
+    }
+
+    .filter-bar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .filter-bar input,
+    .filter-bar select {
+        width: 100%;
+        font-size: 0.8rem;
+        height: 42px;
+    }
+
+    .dashboard-table,
+    .dashboard-table thead,
+    .dashboard-table tbody,
+    .dashboard-table th,
+    .dashboard-table td,
+    .dashboard-table tr {
+        display: block;
+        width: 100%;
+    }
+
+    .dashboard-table tr {
+        margin-bottom: 14px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+        padding: 10px;
+    }
+
+    .dashboard-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border: none;
+        font-size: 0.85rem;
+    }
+
+    .dashboard-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #555;
+    }
+
+    .dashboard-table th {
+        display: none;
+    }
+
+    .icon-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
     }
 }
 
+/* Small Phones */
 @media (max-width: 480px) {
     .dashboard-section {
         padding: 1rem;
     }
 
-    .dashboard-table th,
     .dashboard-table td {
-        font-size: 0.7rem;
-        padding: 5px;
+        font-size: 0.8rem;
+    }
+
+    .dashboard-form input,
+    .dashboard-form select {
+        height: 44px;
+    }
+
+    .filter-bar input,
+    .filter-bar select {
+        height: 38px;
+        font-size: 0.75rem;
+    }
+}
+
+/* ===================================
+   📱 RESPONSIVE FORMS
+=================================== */
+@media (max-width: 1024px) {
+    .dashboard-form1 {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .dashboard-form1 {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+
+    .dashboard-form1 input,
+    .dashboard-form1 select,
+    .dashboard-form1 textarea {
+        height: 44px;
+        font-size: 0.9rem;
+    }
+
+    .dashboard-form1 button {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .dashboard-form1 input,
+    .dashboard-form1 select {
+        height: 42px;
+        font-size: 0.85rem;
+    }
+}
+
+/* ===================================
+   🌺 Edit Flower Modal (Optimized)
+=================================== */
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    background: #fff;
+    border-radius: 18px;
+    width: 650px;
+    max-width: 95%;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 1.8rem 1.6rem;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+    animation: fadeIn 0.25s ease;
+    scrollbar-width: thin;
+}
+
+.modal-content h3 {
+    margin-bottom: 1rem;
+    color: #b80315;
+    font-weight: 700;
+    font-size: 1.3rem;
+}
+
+/* Grid layout for form fields */
+.modal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px 18px;
+}
+
+.modal-grid .full-width {
+    grid-column: 1 / -1;
+}
+
+.edit-form label {
+    display: block;
+    font-weight: 600;
+    color: #444;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.edit-form input,
+.edit-form select,
+.edit-form textarea {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-family: "Poppins", sans-serif;
+    font-size: 0.9rem;
+    background: #fafafa;
+    transition: border 0.25s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.edit-form textarea {
+    min-height: 60px;
+    resize: vertical;
+}
+
+.edit-form input:focus,
+.edit-form select:focus,
+.edit-form textarea:focus {
+    border-color: #de0d22;
+    box-shadow: 0 0 0 3px rgba(222, 13, 34, 0.1);
+    outline: none;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 1.2rem;
+}
+
+.modal-actions .btn-primary,
+.modal-actions .btn-secondary {
+    border: none;
+    border-radius: 999px;
+    padding: 10px 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.btn-primary {
+    background: #de0d22;
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: #a30210;
+}
+
+.btn-secondary {
+    background: #eee;
+    color: #333;
+}
+
+.btn-secondary:hover {
+    background: #ddd;
+}
+
+/* 🌸 Image preview */
+.image-preview {
+    grid-column: 1 / -1;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.image-preview img {
+    width: 150px;
+    height: auto;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    object-fit: cover;
+}
+
+/* Subtle animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive modal */
+@media (max-width: 768px) {
+    .modal-content {
+        width: 90%;
+        max-height: 85vh;
+        padding: 1.2rem;
+    }
+
+    .modal-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .image-preview img {
+        width: 100px;
     }
 }

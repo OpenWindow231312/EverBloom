@@ -161,7 +161,7 @@ export default function DashboardHarvest() {
       {/* Add New Harvest Header */}
       <h3 className="section-heading">Add New Harvest Batch</h3>
       <section className="dashboard-section">
-        <form className="dashboard-form" onSubmit={recordHarvest}>
+        <form1 className="dashboard-form" onSubmit={recordHarvest}>
           <select
             name="flower_id"
             value={form.flower_id}
@@ -204,7 +204,7 @@ export default function DashboardHarvest() {
           <button type="submit" className="btn-primary">
             Record Harvest
           </button>
-        </form>
+        </form1>
       </section>
 
       {/* Recent Harvest Header */}

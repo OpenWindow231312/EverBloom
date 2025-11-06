@@ -12,7 +12,8 @@ export async function fetchCurrentUser() {
     const token = localStorage.getItem("token");
     if (!token) return null;
 
-    const res = await fetch(`${API_URL}/auth/me`, {
+    // 🧠 Actually store the fetch result in a variable
+    const res = await fetch(`${API_URL}/api/auth/me`, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -38,7 +39,7 @@ export async function fetchCurrentUser() {
   }
 }
 
-// ✅ Logout helper (clears localStorage + redirect handled in component)
+// ✅ Logout helper
 export function logoutUser() {
   localStorage.removeItem("token");
   localStorage.removeItem("user");

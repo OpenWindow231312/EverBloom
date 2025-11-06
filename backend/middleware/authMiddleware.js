@@ -12,7 +12,10 @@ const requireAuth = async (req, res, next) => {
       return res.status(401).json({ error: "Missing or invalid token" });
 
     const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "dev_secret");
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "everbloom_secret"
+    );
 
     const user = await User.findByPk(decoded.user_id, {
       include: { model: Role, through: { attributes: [] } },

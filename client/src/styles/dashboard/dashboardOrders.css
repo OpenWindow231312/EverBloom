@@ -1,279 +1,355 @@
 /* ===================================
-   🌸 DASHBOARD — ORDERS MANAGEMENT
+   🌸 EVERBLOOM DASHBOARD — ORDERS PAGE
+   FINAL POLISHED RESPONSIVE VERSION
 =================================== */
 
+/* ---------- 🌿 Base Layout ---------- */
 .dashboard-stock {
-    padding: 20px;
+    background: var(--beige, #faf9f7);
+    min-height: 100vh;
+    padding: 30px 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
 }
 
-/* ==============================
-   🧭 Heading & Section Titles
-============================== */
+.sidebar.open~.dashboard-stock {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+}
+
+/* ---------- 🌺 Headings ---------- */
 .overview-heading {
     font-size: 1.8rem;
-    font-weight: 600;
-    color: var(--rose);
-    margin-bottom: 1.5rem;
+    font-weight: 700;
+    color: #b80315;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
-.dashboard-section h3 {
-    font-size: 1.3rem;
+.section-subheading {
+    font-size: 1.25rem;
     font-weight: 600;
-    color: var(--rose);
-    margin-bottom: 1rem;
+    color: #b80315;
+    margin: 1rem 0 0.6rem;
 }
 
-/* ==============================
-   🔍 Filter Bar
-============================== */
+/* ---------- 🪷 Dashboard Card Sections ---------- */
+.dashboard-section {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    padding: 1.8rem 1.6rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ===================================
+   🌷 FILTER BAR
+=================================== */
 .filter-bar {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 12px;
-    background: var(--white);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    padding: 1rem 1.2rem;
+    gap: 14px;
     margin-bottom: 1.5rem;
+    padding: 12px 14px;
+    background: #fff7f7;
+    border-radius: 16px;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.06);
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .filter-bar input,
 .filter-bar select {
+    flex: 1 1 200px;
+    padding: 8px 12px;
     border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 10px 14px;
-    font-size: 0.95rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
     font-family: "Poppins", sans-serif;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background: #fafafa;
+    transition: all 0.25s ease;
 }
 
 .filter-bar input:focus,
 .filter-bar select:focus {
-    border-color: var(--rose);
-    box-shadow: 0 0 0 2px rgba(184, 3, 21, 0.15);
-    outline: none;
+    border-color: #de0d22;
+    box-shadow: 0 0 0 3px rgba(222, 13, 34, 0.1);
 }
 
-/* ==============================
-   🔍 Search Field Styling (Improved)
-============================== */
-.search-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    flex: 1;
-    min-width: 260px;
-    background: #fff;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.search-wrapper:hover,
-.search-wrapper:focus-within {
-    border-color: var(--rose);
-    box-shadow: 0 0 0 3px rgba(184, 3, 21, 0.1);
-}
-
-.search-icon {
-    position: absolute;
-    left: 12px;
-    color: #888;
-    font-size: 0.95rem;
-}
-
-.search-wrapper input {
-    width: 100%;
-    border: none;
-    outline: none;
-    background: transparent;
-    padding: 10px 12px 10px 36px;
-    font-family: "Poppins", sans-serif;
-    font-size: 0.95rem;
-    color: #333;
-}
-
-.search-wrapper input::placeholder {
-    color: #aaa;
-}
-
-/* ==============================
-   📦 Orders Table
-============================== */
+/* ===================================
+   🌼 TABLE STYLING
+=================================== */
 .table-container {
     width: 100%;
     overflow-x: auto;
-    background: var(--white);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
 }
 
 .dashboard-table {
     width: 100%;
     border-collapse: collapse;
-    min-width: 850px;
+    font-size: 0.9rem;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: top;
 }
 
 .dashboard-table th {
-    background: var(--rose-light);
-    color: var(--rose);
+    background-color: #fff3f3;
+    color: #b80315;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-    padding: 12px;
+    font-size: 0.8rem;
+    letter-spacing: 0.3px;
 }
 
-.dashboard-table td {
-    padding: 12px;
-    border-bottom: 1px solid #f1f1f1;
-    vertical-align: middle;
-    text-align: center;
-}
-
-.dashboard-table tbody tr:nth-child(even) {
-    background: #fdf6f5;
-}
-
-.dashboard-table tbody tr:hover {
-    background: #fff3f3;
-    transition: background 0.3s ease;
+.dashboard-table tr:hover {
+    background-color: #fff8f8;
+    transition: background-color 0.2s ease;
 }
 
 .no-data {
     text-align: center;
     color: #777;
-    font-size: 0.95rem;
     padding: 1rem 0;
+    font-style: italic;
 }
 
-/* ==============================
-   🪻 Status Dropdown
-============================== */
+/* ---------- 🏷️ Status Badge ---------- */
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 10px;
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-block;
+}
+
+.status-pending {
+    background: #f0ad4e;
+}
+
+.status-delivery {
+    background: #5bc0de;
+}
+
+.status-delivered {
+    background: #5cb85c;
+}
+
+.status-cancelled {
+    background: #d9534f;
+}
+
+/* ---------- 🔽 Status Dropdown ---------- */
 .status-dropdown {
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    border: 1px solid #ddd;
+    border-radius: 999px;
+    background: #fafafa;
+    font-family: "Poppins", sans-serif;
+    font-size: 0.85rem;
     padding: 6px 10px;
-    font-size: 0.9rem;
-    background: #fff;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
+    transition: all 0.25s ease;
 }
 
 .status-dropdown:focus {
-    border-color: var(--rose);
-    box-shadow: 0 0 0 2px rgba(184, 3, 21, 0.15);
+    border-color: #de0d22;
+    box-shadow: 0 0 0 3px rgba(222, 13, 34, 0.1);
     outline: none;
 }
 
-/* ==============================
-   📄 Pagination
-============================== */
+/* ===================================
+   🌼 BUTTONS
+=================================== */
+.btn-primary {
+    background: #de0d22;
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: #a30210;
+}
+
+.btn-secondary {
+    background: #eee;
+    color: #333;
+    border: none;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: #ddd;
+}
+
+/* Toggle for past orders */
+.archive-toggle-btn {
+    margin-bottom: 10px;
+    align-self: flex-start;
+}
+
+/* ===================================
+   🌺 PAGINATION
+=================================== */
 .pagination {
     display: flex;
     justify-content: flex-end;
     align-items: center;
     gap: 10px;
-    margin-top: 1rem;
+    margin-top: 1.2rem;
 }
 
 .pagination button {
-    background: var(--rose);
-    color: white;
+    background: #de0d22;
+    color: #fff;
     border: none;
     padding: 8px 14px;
-    border-radius: 8px;
+    border-radius: 999px;
     cursor: pointer;
-    font-weight: 500;
-    transition: background 0.3s ease, transform 0.2s ease;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
 }
 
-.pagination button:hover:not(:disabled) {
+.pagination button:hover {
     background: #a30210;
-    transform: translateY(-1px);
-}
-
-.pagination button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
 }
 
 .pagination span {
-    font-size: 0.9rem;
-    color: #555;
+    font-size: 0.85rem;
+    color: #444;
 }
 
-/* ==============================
-   🕓 Collapsible Past Orders
-============================== */
-.btn-secondary {
-    background: var(--rose-light);
-    color: var(--rose);
-    border: none;
-    border-radius: 8px;
-    padding: 10px 16px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: background 0.3s ease;
-    margin-bottom: 1rem;
-}
+/* ===================================
+   📱 RESPONSIVE ADJUSTMENTS
+=================================== */
 
-.btn-secondary:hover {
-    background: #fbe3e3;
-}
-
-.archive-table-wrapper {
-    margin-top: 1rem;
-}
-
-/* ==============================
-   📱 Responsive Design
-============================== */
+/* Tablet */
 @media (max-width: 1024px) {
-
-    .dashboard-table th,
-    .dashboard-table td {
-        font-size: 0.9rem;
+    .dashboard-stock {
+        padding: 20px;
     }
-}
 
-@media (max-width: 768px) {
     .filter-bar {
         flex-direction: column;
         align-items: stretch;
     }
-
-    .pagination {
-        justify-content: center;
-    }
-
-    .dashboard-table th,
-    .dashboard-table td {
-        font-size: 0.85rem;
-        padding: 8px;
-    }
 }
 
-@media (max-width: 480px) {
-    .overview-heading {
-        font-size: 1.3rem;
+/* Mobile */
+@media (max-width: 768px) {
+    .dashboard-stock {
+        padding: 18px;
     }
 
-    .dashboard-section h3 {
-        font-size: 1rem;
+    .dashboard-section {
+        padding: 1.2rem;
     }
 
-    .dashboard-table th,
-    .dashboard-table td {
-        font-size: 0.8rem;
+    .filter-bar {
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
     }
 
     .filter-bar input,
     .filter-bar select {
+        width: 100%;
+        font-size: 0.8rem;
+        height: 42px;
+    }
+
+    .dashboard-table,
+    .dashboard-table thead,
+    .dashboard-table tbody,
+    .dashboard-table th,
+    .dashboard-table td,
+    .dashboard-table tr {
+        display: block;
+        width: 100%;
+    }
+
+    .dashboard-table tr {
+        margin-bottom: 14px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+        padding: 10px;
+    }
+
+    .dashboard-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border: none;
         font-size: 0.85rem;
-        padding: 8px 10px;
+    }
+
+    .dashboard-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #555;
+    }
+
+    .dashboard-table th {
+        display: none;
+    }
+
+    .status-dropdown {
+        width: 100%;
+        font-size: 0.8rem;
+        height: 40px;
+    }
+
+    .btn-secondary.archive-toggle-btn {
+        width: 100%;
+    }
+}
+
+/* Small Phones */
+@media (max-width: 480px) {
+    .dashboard-section {
+        padding: 1rem;
+    }
+
+    .filter-bar input,
+    .filter-bar select {
+        height: 38px;
+        font-size: 0.75rem;
+    }
+
+    .dashboard-table td {
+        font-size: 0.8rem;
+    }
+
+    .status-dropdown {
+        height: 38px;
     }
 }

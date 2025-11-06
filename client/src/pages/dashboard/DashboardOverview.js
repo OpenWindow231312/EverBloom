@@ -1,5 +1,5 @@
 // ========================================
-// 🌸 EverBloom — Dashboard Overview (with Icons)
+// 🌸 EverBloom — Dashboard Overview (Final + Render Safe)
 // ========================================
 import React, { useEffect, useState } from "react";
 import axios from "axios";
@@ -17,10 +17,11 @@ export default function DashboardOverview() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const API_URL =
-    import.meta.env?.VITE_API_URL ||
-    process.env.REACT_APP_API_URL ||
-    "http://localhost:5001";
+  // ✅ Environment detection (same as api.js)
+  const isLocal = window.location.hostname.includes("localhost");
+  const API_URL = isLocal
+    ? "http://localhost:5001"
+    : "https://everbloom.onrender.com"; // ✅ your live backend root
 
   useEffect(() => {
     const fetchOverview = async () => {
@@ -29,17 +30,25 @@ export default function DashboardOverview() {
         if (!token) throw new Error("No token found. Please log in again.");
 
         const headers = { Authorization: `Bearer ${token}` };
+
+        // ✅ Correct endpoint with /api prefix
         const res = await axios.get(`${API_URL}/api/dashboard/overview`, {
           headers,
         });
+
         setOverview(res.data);
       } catch (err) {
         console.error("❌ Overview error:", err);
-        setError("Failed to load overview stats.");
+        setError(
+          err.response?.status === 401
+            ? "Session expired. Please log in again."
+            : "Failed to load overview stats."
+        );
       } finally {
         setLoading(false);
       }
     };
+
     fetchOverview();
   }, [API_URL]);
 

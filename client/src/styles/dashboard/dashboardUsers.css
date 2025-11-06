@@ -187,12 +187,12 @@
 }
 
 .toggle-btn.activate {
-    background-color: #c7f5d9;
+    /* background-color: #c7f5d9; */
     border-radius: 20px;
 }
 
 .toggle-btn.deactivate {
-    background-color: #ffd1d1;
+    /* background-color: #ffd1d1; */
     border-radius: 20px;
 }
 

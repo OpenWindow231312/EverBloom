@@ -1,17 +1,24 @@
 /* ===================================
-   🌸 DASHBOARD CORE LAYOUT + THEME
+   🌸 EVERBLOOM DASHBOARD — CORE THEME
+   Clean Unified Styling (2025)
 =================================== */
 
 :root {
-    --rose: #b03a48;
-    --rose-light: #f8e8e6;
-    --green: #5cb85c;
+    /* 🌿 Core Colours */
+    --rose: #de0d22;
+    --rose-dark: #a30210;
+    --rose-light: #fff4f4;
+    --beige: #faf7f9;
+    --white: #ffffff;
+    --grey: #444;
+    --grey-light: #888;
+    --green: #4caf50;
     --orange: #f0ad4e;
     --red: #d9534f;
-    --grey: #555;
-    --white: #fff;
-    --beige: #faf7f9;
+
+    /* ✨ Shadows + Transitions */
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    --transition: all 0.25s ease;
 }
 
 /* ==============================
@@ -22,48 +29,60 @@
     color: var(--grey);
     background: var(--beige);
     font-family: "Poppins", sans-serif;
+    min-height: 100vh;
+    box-sizing: border-box;
 }
 
 /* ==============================
    🌸 Headings
 ============================== */
 .overview-heading {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--rose);
+    margin-bottom: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* ==============================
+   🌼 Section Containers
+============================== */
+.dashboard-section {
+    background: var(--white);
+    border-radius: 18px;
+    padding: 1.8rem 1.6rem;
+    margin-bottom: 1.5rem;
+    box-shadow: var(--shadow);
+    width: 100%;
+    box-sizing: border-box;
+    transition: var(--transition);
+}
+
+.dashboard-section h3 {
+    font-size: 1.25rem;
     font-weight: 600;
     color: var(--rose);
     margin-bottom: 1rem;
 }
 
 /* ==============================
-   🌼 Section Containers
+   🌿 Tables (Shared Default)
 ============================== */
-/* .dashboard-section {
-    background: var(--white);
-    border-radius: 14px;
-    padding: 1.2rem;
-    margin-bottom: 1.5rem;
-    box-shadow: var(--shadow);
-    width: 100%;
-    box-sizing: border-box;
-} */
-
-/* ==============================
-   🌿 Base Tables (non-specific)
-============================== */
-/* ⚠️ renamed to avoid conflict with dashboardStock tables */
 .dashboard-core-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 1rem;
     max-width: 100%;
+    font-size: 0.9rem;
 }
 
 .dashboard-core-table th,
 .dashboard-core-table td {
-    padding: 0.4rem;
+    padding: 0.6rem 0.8rem;
     border-bottom: 1px solid #eee;
     text-align: left;
-    font-size: 0.9rem;
 }
 
 .dashboard-core-table th {
@@ -71,39 +90,70 @@
     color: var(--rose);
     font-weight: 600;
     text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.2px;
+}
+
+.dashboard-table td:nth-child(2) {
+    white-space: normal;
+    word-break: keep-all;
+    overflow-wrap: break-word;
+    line-height: 1.4;
+    max-width: 160px;
 }
 
 /* ==============================
-   🪷 Buttons (Base Theme)
+   🪷 Buttons (Global Theme)
 ============================== */
-/* ⚠️ base only — page-specific files override freely */
 .btn-primary {
     background: var(--rose);
     color: var(--white);
     border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
+    border-radius: 999px;
+    padding: 10px 22px;
     cursor: pointer;
-    font-weight: 500;
-    transition: background 0.2s ease;
+    font-weight: 600;
+    transition: var(--transition);
+    box-shadow: 0 3px 8px rgba(176, 58, 72, 0.25);
 }
 
 .btn-primary:hover {
-    background: #912f3d;
+    background: var(--rose-dark);
+    transform: translateY(-1px);
 }
 
 .btn-secondary {
     background: var(--rose-light);
     color: var(--rose);
     border: none;
-    border-radius: 8px;
-    padding: 8px 16px;
+    border-radius: 999px;
+    padding: 10px 22px;
     cursor: pointer;
-    font-weight: 500;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-secondary:hover {
+    background: #ffe8e8;
+}
+
+.btn-danger {
+    background: var(--red);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-danger:hover {
+    background: #b52b29;
 }
 
 /* ==============================
-   🌸 Toggle Helpers
+   🌸 Toggle Buttons
 ============================== */
 .toggle-btn.activate {
     background: var(--green);
@@ -116,18 +166,26 @@
 }
 
 /* ==============================
-   🌸 Dropdowns
+   🌼 Dropdowns
 ============================== */
 .status-dropdown {
     border: 1px solid #ccc;
-    border-radius: 8px;
-    padding: 6px 10px;
+    border-radius: 14px;
+    padding: 8px 12px;
     font-size: 0.9rem;
     background: var(--white);
+    font-family: "Poppins", sans-serif;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.status-dropdown:focus {
+    border-color: var(--rose);
+    box-shadow: 0 0 0 3px rgba(222, 13, 34, 0.15);
+    outline: none;
 }
 
 /* ==============================
-   🌺 Modals (Global Defaults)
+   🌺 Modals (Shared Default)
 ============================== */
 .modal-backdrop {
     position: fixed;
@@ -136,28 +194,69 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 10;
+    z-index: 100;
+    padding: 20px;
 }
 
 .modal-content {
     background: #fff8f6;
     border: 2px solid var(--rose);
-    border-radius: 14px;
-    padding: 1.5rem;
-    width: 420px;
+    border-radius: 18px;
+    padding: 1.8rem;
+    width: 480px;
     max-width: 95%;
     box-shadow: var(--shadow);
+    animation: fadeIn 0.25s ease-in-out;
 }
 
 .modal-actions {
     display: flex;
     justify-content: flex-end;
     gap: 10px;
+    margin-top: 1rem;
 }
 
 /* ==============================
-   🌸 Global Responsiveness
+   🌸 Scrollable + Responsive
 ============================== */
 .dashboard-section {
     overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .dashboard-page {
+        padding: 1rem;
+    }
+
+    .overview-heading {
+        font-size: 1.4rem;
+    }
+
+    .dashboard-section {
+        padding: 1.2rem;
+        border-radius: 14px;
+    }
+
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        width: 100%;
+        text-align: center;
+        padding: 12px;
+    }
+}
+
+/* ==============================
+   🌟 Animations
+============================== */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }

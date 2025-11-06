@@ -38,7 +38,7 @@ function Signup() {
         process.env.REACT_APP_API_URL ||
         "http://localhost:5001";
 
-      const res = await fetch(`${API_URL}/auth/register`, {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

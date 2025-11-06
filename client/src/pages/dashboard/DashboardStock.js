@@ -1,12 +1,12 @@
 // ========================================
-// 🌸 EverBloom — Dashboard Stock Management (Clean Layout)
+// 🌸 EverBloom — Dashboard Stock Management (Clean Layout + Edit Modal)
 // ========================================
 import React, { useEffect, useState } from "react";
 import api from "../../api/api";
 import "../../styles/dashboard/_core.css";
 import "../../styles/dashboard/dashboardStock.css";
 import { GiFlowerPot } from "react-icons/gi";
-import { FaPlus, FaEdit, FaTrashAlt, FaTimes } from "react-icons/fa";
+import { FaPlus, FaEdit, FaTrashAlt } from "react-icons/fa";
 
 export default function DashboardStock() {
   const [flowers, setFlowers] = useState([]);
@@ -199,7 +199,7 @@ export default function DashboardStock() {
       {/* 🌸 Add New Flower */}
       <section className="dashboard-section">
         <h3>Add New Flower</h3>
-        <form className="dashboard-form" onSubmit={handleAddFlower}>
+        <form1 className="dashboard-form1" onSubmit={handleAddFlower}>
           <select
             name="type_id"
             value={flowerForm.type_id}
@@ -275,7 +275,7 @@ export default function DashboardStock() {
           <button type="submit" className="btn-primary">
             <FaPlus style={{ marginRight: "6px" }} /> Add Flower
           </button>
-        </form>
+        </form1>
       </section>
 
       {/* 🌸 Filter + Table */}
@@ -316,7 +316,7 @@ export default function DashboardStock() {
         </div>
 
         {/* Table */}
-        <section className="dashboard-section">
+        <section className="stock-table-container">
           <table className="dashboard-table">
             <thead>
               <tr>
@@ -372,15 +372,17 @@ export default function DashboardStock() {
                     <div className="action-buttons">
                       <button
                         onClick={() => handleEditFlower(f)}
-                        className="edit-btn"
+                        className="edit-btn icon-btn"
+                        title="Edit Flower"
                       >
-                        <FaEdit style={{ marginRight: "4px" }} /> Edit
+                        <FaEdit />
                       </button>
                       <button
                         onClick={() => handleDeleteFlower(f.flower_id)}
-                        className="delete-btn"
+                        className="delete-btn icon-btn"
+                        title="Delete Flower"
                       >
-                        <FaTrashAlt style={{ marginRight: "4px" }} /> Delete
+                        <FaTrashAlt />
                       </button>
                     </div>
                   </td>
@@ -388,6 +390,142 @@ export default function DashboardStock() {
               ))}
             </tbody>
           </table>
+
+          {/* 🌺 Edit Flower Modal */}
+          {editingFlower && (
+            <div
+              className="modal-backdrop"
+              onClick={(e) => {
+                if (e.target.classList.contains("modal-backdrop"))
+                  setEditingFlower(null);
+              }}
+            >
+              <div className="modal-content">
+                <h3>Edit Flower</h3>
+                <form onSubmit={handleSaveFlower} className="edit-form">
+                  <div className="modal-grid">
+                    <div>
+                      <label>Type</label>
+                      <select
+                        name="type_id"
+                        value={editingFlower.type_id || ""}
+                        onChange={handleEditChange}
+                      >
+                        <option value="">Select Type</option>
+                        {types.map((t) => (
+                          <option key={t.type_id} value={t.type_id}>
+                            {t.type_name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label>Variety</label>
+                      <input
+                        type="text"
+                        name="variety"
+                        value={editingFlower.variety || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+
+                    <div>
+                      <label>Color</label>
+                      <input
+                        type="text"
+                        name="color"
+                        value={editingFlower.color || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+
+                    <div>
+                      <label>Stem Length (cm)</label>
+                      <input
+                        type="number"
+                        name="stem_length"
+                        value={editingFlower.stem_length || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+
+                    <div>
+                      <label>Shelf Life (days)</label>
+                      <input
+                        type="number"
+                        name="shelf_life"
+                        value={editingFlower.shelf_life || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+
+                    <div>
+                      <label>Price per Stem</label>
+                      <input
+                        type="number"
+                        name="price_per_stem"
+                        value={editingFlower.price_per_stem || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+
+                    <div>
+                      <label>Sale Price per Stem</label>
+                      <input
+                        type="number"
+                        name="sale_price_per_stem"
+                        value={editingFlower.sale_price_per_stem || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+
+                    <div className="full-width">
+                      <label>Description</label>
+                      <textarea
+                        name="description"
+                        value={editingFlower.description || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+
+                    <div className="full-width">
+                      <label>Image URL</label>
+                      <input
+                        type="text"
+                        name="image_url"
+                        value={editingFlower.image_url || ""}
+                        onChange={handleEditChange}
+                      />
+                    </div>
+
+                    {editingFlower.image_url && (
+                      <div className="image-preview">
+                        <img
+                          src={editingFlower.image_url}
+                          alt="Flower preview"
+                          onError={(e) => (e.target.style.display = "none")}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="modal-actions">
+                    <button
+                      type="button"
+                      className="btn-secondary"
+                      onClick={() => setEditingFlower(null)}
+                    >
+                      Cancel
+                    </button>
+                    <button type="submit" className="btn-primary">
+                      Save Changes
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          )}
         </section>
 
         {/* Pagination */}

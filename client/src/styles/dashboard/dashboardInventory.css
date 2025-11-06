@@ -1,220 +1,288 @@
 /* ===================================
-   ❄️ DASHBOARD — INVENTORY (FINAL)
-   Matches latest DashboardInventory.js
+   ❄️ EVERBLOOM DASHBOARD — INVENTORY PAGE
+   FINAL POLISHED RESPONSIVE VERSION
 =================================== */
 
+/* ---------- 🌿 Base Layout ---------- */
 .dashboard-stock {
+    background: var(--beige, #faf9f7);
+    min-height: 100vh;
+    padding: 30px 40px;
     display: flex;
     flex-direction: column;
-    padding: 1.5rem 1.5rem;
-    width: 100%;
-    margin: 0 auto;
-    max-width: 1800px;
+    gap: 28px;
     box-sizing: border-box;
+    transition: all 0.3s ease;
 }
 
-/* ---------------------------
-   Headings
-----------------------------*/
+.sidebar.open~.dashboard-stock {
+    margin-left: 240px;
+    width: calc(100% - 240px);
+}
+
+/* ---------- 🌺 Headings ---------- */
 .overview-heading {
     font-size: 1.8rem;
     font-weight: 700;
-    color: var(--rose);
-    margin-bottom: 0.5rem;
+    color: #b80315;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .section-subheading {
-    font-size: 1.3rem;
+    font-size: 1.25rem;
     font-weight: 600;
-    color: var(--rose);
-    margin: 0.8rem 0;
-    padding-left: 4px;
+    color: #b80315;
+    margin: 1rem 0 0.6rem;
 }
 
-/* ---------------------------
-   Section Containers
-----------------------------*/
-/* .dashboard-section {
-    background: var(--white);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    padding: 1.8rem;
+/* ---------- 🪷 Dashboard Sections ---------- */
+.dashboard-section {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    padding: 1.8rem 1.6rem;
     width: 100%;
     box-sizing: border-box;
-} */
+}
 
-/* ---------------------------
-   Table Containers
-----------------------------*/
+/* ===================================
+   🌼 TABLE STYLING
+=================================== */
 .table-container {
     width: 100%;
     overflow-x: auto;
-    background: var(--white);
-    border-radius: 12px;
-    box-shadow: var(--shadow);
-    overflow-y: auto;
 }
 
-/* ---------------------------
-   Table Styles
-----------------------------*/
 .dashboard-table {
     width: 100%;
     border-collapse: collapse;
-    border-radius: 10px;
+    font-size: 0.9rem;
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
     overflow: hidden;
 }
 
 .dashboard-table th,
 .dashboard-table td {
-    padding: 12px 16px;
     text-align: left;
-    border-bottom: 1px solid #eee;
-    white-space: nowrap;
+    padding: 12px 14px;
+    border-bottom: 1px solid #f0f0f0;
+    vertical-align: middle;
 }
 
 .dashboard-table th {
-    background: var(--rose-light);
-    color: var(--rose);
+    background-color: #fff3f3;
+    color: #b80315;
     font-weight: 600;
     text-transform: uppercase;
-    font-size: 0.9rem;
-    letter-spacing: 0.4px;
-}
-
-.dashboard-table td {
-    font-size: 0.95rem;
-    color: #333;
+    font-size: 0.8rem;
+    letter-spacing: 0.3px;
 }
 
 .dashboard-table tr:hover {
     background-color: #fff8f8;
+    transition: background-color 0.2s ease;
 }
 
-/* ---------------------------
-   Status Tags
-----------------------------*/
+/* ---------- 🌸 Row Status Highlights ---------- */
+.row-discarded {
+    background-color: #fff2f2;
+}
+
+.row-discarded:hover {
+    background-color: #ffeaea;
+}
+
+/* ---------- 🏷️ Status Badge ---------- */
 .status-badge {
-    display: inline-block;
-    padding: 5px 10px;
+    padding: 4px 10px;
     border-radius: 10px;
     color: #fff;
-    font-size: 0.85rem;
     font-weight: 600;
+    font-size: 0.85rem;
+    display: inline-block;
 }
 
 .status-fresh {
-    background-color: var(--green);
+    background: #5cb85c;
 }
 
 .status-expiring {
-    background-color: var(--orange);
+    background: #f0ad4e;
 }
 
 .status-expired {
-    background-color: var(--red);
+    background: #d9534f;
 }
 
-/* ---------------------------
-   Buttons
-----------------------------*/
+/* ---------- 🗑️ Discard Button ---------- */
 .delete-btn {
-    background-color: #ff4d4d;
-    color: white;
+    background: #ffe9e9;
+    color: #b80315;
     border: none;
-    border-radius: 8px;
-    padding: 6px 12px;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: all 0.25s ease;
 }
 
 .delete-btn:hover {
-    background-color: #c70000;
+    background: #b80315;
+    color: #fff;
+    transform: translateY(-1px);
 }
 
+/* ===================================
+   🌼 BUTTONS
+=================================== */
 .btn-secondary {
-    background: var(--rose-light);
-    color: var(--rose);
+    background: #eee;
+    color: #333;
     border: none;
-    border-radius: 8px;
-    padding: 10px 16px;
+    border-radius: 999px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    font-weight: 600;
     cursor: pointer;
-    font-weight: 500;
-    transition: background 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .btn-secondary:hover {
-    background: #f3dede;
-}
-
-/* ---------------------------
-   Archive Section
-----------------------------*/
-.archive-section {
-    width: 100%;
-    margin-top: 2rem;
+    background: #ddd;
 }
 
 .archive-toggle-btn {
-    display: inline-block;
-    margin-bottom: 1rem;
-    background: var(--rose-light);
-    border: 1px solid #f3dede;
-    color: var(--rose);
-    font-weight: 500;
-    border-radius: 8px;
-    padding: 8px 14px;
-    cursor: pointer;
-    transition: all 0.2s ease;
+    align-self: flex-start;
+    margin-bottom: 10px;
 }
 
-.archive-toggle-btn:hover {
-    background: var(--rose);
-    color: #fff;
-}
-
-.archive-table-wrapper {
-    margin-top: 1.2rem;
-    overflow-x: auto;
-}
-
-/* ---------------------------
-   Empty State
-----------------------------*/
+/* ===================================
+   🧊 NO DATA STATE
+=================================== */
 .no-data {
     text-align: center;
-    color: #888;
-    font-size: 0.95rem;
+    color: #777;
     padding: 1rem 0;
+    font-style: italic;
 }
 
-/* ---------------------------
-   Responsive Tweaks
-----------------------------*/
+/* ===================================
+   🌺 PAGINATION (if needed)
+=================================== */
+.pagination {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-top: 1.2rem;
+}
+
+.pagination button {
+    background: #de0d22;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.pagination button:hover {
+    background: #a30210;
+}
+
+.pagination span {
+    font-size: 0.85rem;
+    color: #444;
+}
+
+/* ===================================
+   📱 RESPONSIVE ADJUSTMENTS
+=================================== */
+
+/* Tablet */
 @media (max-width: 1024px) {
     .dashboard-stock {
-        padding: 1rem;
+        padding: 20px;
     }
 }
 
+/* Mobile */
 @media (max-width: 768px) {
+    .dashboard-stock {
+        padding: 18px;
+    }
 
+    .dashboard-section {
+        padding: 1.2rem;
+    }
+
+    .dashboard-table,
+    .dashboard-table thead,
+    .dashboard-table tbody,
     .dashboard-table th,
-    .dashboard-table td {
-        font-size: 0.85rem;
-        padding: 8px;
-    }
-
-    .overview-heading {
-        font-size: 1.5rem;
-    }
-
-    .section-subheading {
-        font-size: 1.1rem;
-    }
-
-    .archive-toggle-btn {
+    .dashboard-table td,
+    .dashboard-table tr {
+        display: block;
         width: 100%;
+    }
+
+    .dashboard-table tr {
+        margin-bottom: 14px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
+        padding: 10px;
+    }
+
+    .dashboard-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border: none;
+        font-size: 0.85rem;
+    }
+
+    .dashboard-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #555;
+    }
+
+    .dashboard-table th {
+        display: none;
+    }
+
+    .delete-btn {
+        width: 100%;
+        padding: 10px;
         text-align: center;
+    }
+
+    .btn-secondary.archive-toggle-btn {
+        width: 100%;
+    }
+}
+
+/* Small Phones */
+@media (max-width: 480px) {
+    .dashboard-section {
+        padding: 1rem;
+    }
+
+    .dashboard-table td {
+        font-size: 0.8rem;
+    }
+
+    .delete-btn {
+        font-size: 0.8rem;
     }
 }

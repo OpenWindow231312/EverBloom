@@ -1,5 +1,5 @@
 // ========================================
-// 🌸 EverBloom — HarvestBatch Model (Fixed with expiryDate)
+// 🌸 EverBloom — HarvestBatch Model (Fixed with associations + expiryDate)
 // ========================================
 module.exports = (sequelize, DataTypes) => {
   const HarvestBatch = sequelize.define(
@@ -21,7 +21,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       expiryDate: {
         type: DataTypes.DATE,
-        allowNull: true, // ✅ now matches your DB
+        allowNull: true,
       },
       totalStemsHarvested: {
         type: DataTypes.INTEGER,
@@ -61,6 +61,35 @@ module.exports = (sequelize, DataTypes) => {
       timestamps: true,
     }
   );
+
+  // ===========================
+  // 🌿 Associations
+  // ===========================
+  HarvestBatch.associate = (models) => {
+    HarvestBatch.belongsTo(models.Flower, {
+      foreignKey: "flower_id",
+      as: "Flower",
+      onDelete: "CASCADE",
+    });
+
+    HarvestBatch.hasOne(models.Inventory, {
+      foreignKey: "harvestBatch_id",
+      as: "Inventory",
+      onDelete: "CASCADE",
+    });
+  };
+
+  // ===========================
+  // 🪄 Auto-create inventory after harvest
+  // ===========================
+  HarvestBatch.afterCreate(async (batch, options) => {
+    const db = batch.sequelize.models;
+    await db.Inventory.create({
+      harvestBatch_id: batch.harvestBatch_id,
+      stemsInColdroom: batch.totalStemsHarvested,
+      lastUpdated: new Date(),
+    });
+  });
 
   return HarvestBatch;
 };
