@@ -103,16 +103,28 @@ function NavBar() {
 
           {/* ✅ Role-based Dashboard Link */}
           {currentUser &&
-            (currentUser.role === "admin" ||
-              currentUser.role === "employee") && (
-              <Link
-                to="/dashboard"
-                className="navbar-link"
-                onClick={() => setMenuOpen(false)}
-              >
-                Dashboard
-              </Link>
-            )}
+            (() => {
+              const roles =
+                currentUser.roles ||
+                currentUser.Roles?.map((r) => r.roleName) ||
+                [];
+
+              const isAdminOrEmployee = roles.some((r) =>
+                ["Admin", "Employee"].includes(r)
+              );
+
+              return (
+                isAdminOrEmployee && (
+                  <Link
+                    to="/dashboard"
+                    className="navbar-link"
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                )
+              );
+            })()}
         </div>
 
         {/* ✅ Search Bar */}

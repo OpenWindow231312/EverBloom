@@ -1,18 +1,18 @@
 // ========================================
-// 🌸 EverBloom — Auth Utility (Final Version)
+// 🌸 EverBloom — Auth Utility
 // ========================================
 const API_URL =
   import.meta.env?.VITE_API_URL ||
   process.env.REACT_APP_API_URL ||
   "http://localhost:5001";
 
-// ✅ Fetch the current logged-in user
 export async function fetchCurrentUser() {
   try {
     const token = localStorage.getItem("token");
-    if (!token) return null;
+    if (!token) return null; // No token = not logged in
 
-    const res = await fetch(`${API_URL}/auth/me`, {
+    const res = await fetch(`${API_URL}/auth/current-user`, {
+      method: "GET",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -20,7 +20,7 @@ export async function fetchCurrentUser() {
     });
 
     if (!res.ok) {
-      console.warn("⚠️ Failed to fetch user:", res.status);
+      console.warn("⚠️ Backend responded:", res.status);
       return null;
     }
 
@@ -36,11 +36,4 @@ export async function fetchCurrentUser() {
     console.error("❌ Error fetching current user:", err);
     return null;
   }
-}
-
-// ✅ Logout helper (clears localStorage + redirect handled in component)
-export function logoutUser() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  window.location.href = "/login";
 }

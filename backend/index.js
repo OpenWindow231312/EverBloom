@@ -59,7 +59,7 @@ app.set("trust proxy", true); // safe for Render, Vercel, etc.
 // ========================
 
 // Core functional routes
-app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/auth", require("./routes/AuthRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/flowers", require("./routes/flowerRoutes"));
 app.use("/api/harvests", require("./routes/harvestRoutes"));

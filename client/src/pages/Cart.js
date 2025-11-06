@@ -1,5 +1,5 @@
 // ========================================
-// 🌸 EverBloom — Cart Page (Final Responsive Version)
+// 🌸 EverBloom — Cart Page (Final Responsive + Florist Discount)
 // ========================================
 
 import React, { useEffect, useState } from "react";
@@ -52,7 +52,7 @@ function Cart() {
     updateCart(updated);
   };
 
-  // 💰 Price helpers
+  // 💰 Helpers
   const num = (val) => Number(val) || 0;
   const formatPrice = (val) => num(val).toFixed(2);
 
@@ -65,7 +65,15 @@ function Cart() {
   }, 0);
 
   const vat = subtotal * 0.15;
-  const total = subtotal + vat;
+
+  // 🌸 Florist discount logic
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isFlorist = user?.roles?.includes("Florist");
+  const discountRate =
+    parseFloat(localStorage.getItem("discount")) || (isFlorist ? 0.1 : 0.0);
+  const discountAmount = subtotal * discountRate;
+
+  const total = subtotal + vat - discountAmount;
 
   return (
     <div className="shop-wrapper">
@@ -78,7 +86,6 @@ function Cart() {
         </p>
       </header>
 
-      {/* 🌷 Empty Cart */}
       {cart.length === 0 ? (
         <div className="cart-empty">
           <p>Your cart is empty</p>
@@ -98,7 +105,6 @@ function Cart() {
 
               return (
                 <div key={item.flower_id} className="cart-item modern">
-                  {/* 🖼️ Image */}
                   <img
                     src={
                       item.image_url && item.image_url.trim() !== ""
@@ -109,7 +115,6 @@ function Cart() {
                     className="cart-img"
                   />
 
-                  {/* 🌸 Product Info */}
                   <div className="cart-details">
                     <h2 className="cart-variety">{item.variety}</h2>
                     <p className="cart-type">
@@ -118,7 +123,6 @@ function Cart() {
                         "Unknown Type"}
                     </p>
 
-                    {/* 🔢 Quantity Counter (moves below name on mobile) */}
                     <div className="cart-quantity">
                       <button onClick={() => decreaseQty(item.flower_id)}>
                         −
@@ -130,7 +134,6 @@ function Cart() {
                     </div>
                   </div>
 
-                  {/* 💰 Price + Remove (right side) */}
                   <div className="cart-actions">
                     <p className="cart-line-price">R{formatPrice(lineTotal)}</p>
                     <button
@@ -153,6 +156,14 @@ function Cart() {
               <span>Subtotal</span>
               <span>R{formatPrice(subtotal)}</span>
             </div>
+
+            {isFlorist && (
+              <div className="summary-row">
+                <span>Florist Discount (10%)</span>
+                <span>-R{formatPrice(discountAmount)}</span>
+              </div>
+            )}
+
             <div className="summary-row">
               <span>VAT (15%)</span>
               <span>R{formatPrice(vat)}</span>

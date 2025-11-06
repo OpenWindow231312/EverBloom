@@ -1,5 +1,9 @@
+// ========================================
+// 🌸 EverBloom — Login Page (with Role Redirect + Close Button)
+// ========================================
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaTimes } from "react-icons/fa"; // ✅ added
 import "./Login.css";
 import FlowerField1 from "../assets/FlowerField1.jpeg";
 
@@ -9,38 +13,55 @@ function Login() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // 🔧 Handle input changes
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // 🚀 Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5001";
+      const API_URL =
+        import.meta.env?.VITE_API_URL ||
+        process.env.REACT_APP_API_URL ||
+        "http://localhost:5001";
 
-      const res = await fetch(`${API_URL}/api/auth/login`, {
+      const res = await fetch(`${API_URL}/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch {
+        console.error("❌ Non-JSON response:", text.slice(0, 200));
+        throw new Error("Invalid response from server");
+      }
+
       console.log("🔍 Login response:", data);
 
       if (res.ok && data.token) {
-        // ✅ Store token and user in localStorage
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
 
+        // 💐 Save florist discount if exists
+        if (data.user.discount) {
+          localStorage.setItem("discount", data.user.discount);
+        }
+
         console.log("✅ Logged in successfully:", data.user);
 
-        // ⏩ Redirect to dashboard
-        navigate("/dashboard");
+        const roles = data.user.roles || [];
+        if (roles.includes("Admin") || roles.includes("Employee")) {
+          navigate("/dashboard");
+        } else {
+          navigate("/shop");
+        }
       } else {
         setError(
           data.error ||
@@ -58,6 +79,11 @@ function Login() {
 
   return (
     <div className="login-page">
+      {/* ❌ Close / Back to Home */}
+      <button className="close-btn" onClick={() => navigate("/")}>
+        <FaTimes />
+      </button>
+
       <div className="login-container">
         <h1 className="login-heading">Welcome Back!</h1>
         <p className="login-subheading">
@@ -73,6 +99,7 @@ function Login() {
             value={formData.email}
             onChange={handleChange}
             required
+            autoComplete="email"
           />
           <input
             type="password"
@@ -82,6 +109,7 @@ function Login() {
             value={formData.password}
             onChange={handleChange}
             required
+            autoComplete="current-password"
           />
 
           <Link to="/forgot-password" className="forgot-password-link">

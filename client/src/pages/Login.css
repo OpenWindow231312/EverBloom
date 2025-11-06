@@ -38,9 +38,10 @@
     width: 100%;
 }
 
+
 .login-input {
     width: 100%;
-    max-width: 400px;
+    max-width: 370px;
     height: 40px;
     border: 1px solid #ccc;
     border-radius: 30px;
@@ -48,6 +49,17 @@
     margin-bottom: 20px;
     font-size: 16px;
     font-family: "Poppins", sans-serif;
+}
+
+.login-input:hover {
+    border-color: #b91c1c;
+    /* EverBloom red */
+}
+
+.login-input:focus {
+    border-color: #b91c1c;
+    box-shadow: 0 0 0 2px rgba(185, 28, 28, 0.15);
+    outline: none;
 }
 
 .forgot-password-link {
@@ -187,7 +199,32 @@
 
     .login-input,
     .login-button {
-        height: 35px;
         font-size: 14px;
     }
+
+    .login-input {
+        max-width: 290px;
+    }
+}
+
+/* ========================================
+   🌸 EverBloom — Close Button (Top-Left)
+   ======================================== */
+.close-btn {
+    position: absolute;
+    top: 20px;
+    left: 25px;
+    background: transparent;
+    border: none;
+    color: #b91c1c;
+    /* EverBloom red */
+    font-size: 22px;
+    cursor: pointer;
+    z-index: 10;
+    transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.close-btn:hover {
+    color: #a11118;
+    transform: scale(1.1);
 }

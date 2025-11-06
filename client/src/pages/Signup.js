@@ -1,5 +1,9 @@
+// ========================================
+// 🌸 EverBloom — Signup Page
+// ========================================
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { FaTimes } from "react-icons/fa"; // ✅ added
 import "./Signup.css";
 
 function Signup() {
@@ -7,67 +11,76 @@ function Signup() {
     fullName: "",
     email: "",
     password: "",
-    florist: false,
+    role: "Customer", // default role
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
 
+  // 🪶 Handle input
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: value,
     });
   };
 
+  // 🚀 Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    setShowPopup(false);
 
     try {
-      const res = await fetch("http://localhost:5001/api/auth/register", {
+      const API_URL =
+        import.meta.env?.VITE_API_URL ||
+        process.env.REACT_APP_API_URL ||
+        "http://localhost:5001";
+
+      const res = await fetch(`${API_URL}/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const data = await res.json();
-      console.log("🔍 Signup response:", data); // 👈 debug log
+      console.log("🔍 Signup response:", data);
 
       if (res.ok) {
         setSuccess("Account created successfully!");
-        if (formData.florist) {
-          setShowPopup(true);
-        }
         setTimeout(() => navigate("/login"), 2000);
       } else {
-        setError(data.error || "Signup failed");
+        setError(data.error || "Signup failed. Try again.");
       }
     } catch (err) {
-      console.error("❌ Signup error:", err); // 👈 debug log
-      setError("Server error. Please try again.");
+      console.error("❌ Signup error:", err);
+      setError("Server error. Please try again later.");
     }
   };
 
   return (
     <div className="signup-page">
+      {/* ❌ Close / Back to Home */}
+      <button className="close-btn" onClick={() => navigate("/")}>
+        <FaTimes />
+      </button>
+
       <div className="signup-container">
         <h1 className="signup-heading">Get Started Now</h1>
         <p className="signup-subheading">Create your account to get started</p>
+
         <form className="signup-form" onSubmit={handleSubmit}>
           <input
             type="text"
             name="fullName"
-            placeholder="Name"
+            placeholder="Full Name"
             className="signup-input"
             value={formData.fullName}
             onChange={handleChange}
             required
           />
+
           <input
             type="email"
             name="email"
@@ -77,6 +90,7 @@ function Signup() {
             onChange={handleChange}
             required
           />
+
           <input
             type="password"
             name="password"
@@ -87,26 +101,18 @@ function Signup() {
             required
           />
 
-          <div className="terms-container">
-            <input
-              type="checkbox"
-              id="florist"
-              name="florist"
-              checked={formData.florist}
-              onChange={handleChange}
-              className="terms-checkbox"
-            />
-            <label htmlFor="florist" className="terms-text">
-              I am a florist
-            </label>
-          </div>
-
-          <div className="terms-container">
-            <input type="checkbox" id="terms" className="terms-checkbox" />
-            <label htmlFor="terms" className="terms-text">
-              I agree to the terms & policy
-            </label>
-          </div>
+          {/* 🌸 Role selector */}
+          <label className="role-label">Select your role:</label>
+          <select
+            name="role"
+            value={formData.role}
+            onChange={handleChange}
+            className="signup-select"
+          >
+            <option value="Customer">Customer</option>
+            <option value="Florist">Florist</option>
+            <option value="Employee">Employee</option>
+          </select>
 
           <button type="submit" className="signup-button">
             Sign Up
@@ -116,19 +122,6 @@ function Signup() {
         {error && <p className="error-message">{error}</p>}
         {success && <p className="success-message">{success}</p>}
 
-        {showPopup && (
-          <div className="popup">
-            <div className="popup-content">
-              <h3>Almost there!</h3>
-              <p>
-                Please check your email to confirm your eligibility as a
-                florist.
-              </p>
-              <button onClick={() => setShowPopup(false)}>Close</button>
-            </div>
-          </div>
-        )}
-
         <p className="signin-text">
           Have an account?{" "}
           <a href="/login" className="login-link">
@@ -136,6 +129,7 @@ function Signup() {
           </a>
         </p>
       </div>
+
       <div className="signup-image">
         <img
           src={require("../assets/FlowerField2.jpeg")}
