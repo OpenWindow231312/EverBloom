@@ -1,5 +1,5 @@
 // ========================================
-// 🌸 EverBloom — Authentication Routes
+// 🌸 EverBloom — Authentication Routes (Final Fixed)
 // ========================================
 const express = require("express");
 const router = express.Router();
@@ -8,51 +8,62 @@ const jwt = require("jsonwebtoken");
 
 const { User, Role, UserRole } = require("../models");
 
-// Helper to sign JWT
+// ========================================
+// 🔐 Helper to sign JWT
+// ========================================
 const signToken = (payload) =>
-  jwt.sign(payload, process.env.JWT_SECRET || "dev_secret", {
+  jwt.sign(payload, process.env.JWT_SECRET || "everbloom_secret", {
     expiresIn: "7d",
   });
 
-// ===============================
-// 🔹 REGISTER USER (with roles)
-// ===============================
+// ========================================
+// 🪴 REGISTER USER (with role + discount logic)
+// POST /api/auth/register
+// ========================================
 router.post("/register", async (req, res) => {
   try {
     const { fullName, email, password, role } = req.body;
 
-    // 1️⃣ Check for duplicates
+    if (!fullName || !email || !password || !role) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
+
+    // 1️⃣ Check for existing user
     const existingUser = await User.findOne({ where: { email } });
-    if (existingUser)
+    if (existingUser) {
       return res.status(400).json({ error: "Email already registered" });
+    }
 
     // 2️⃣ Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
     // 3️⃣ Create user
-    const user = await User.create({
+    const newUser = await User.create({
       fullName,
       email,
       passwordHash,
       isActive: true,
     });
 
-    // 4️⃣ Assign role
-    let selectedRole = await Role.findOne({ where: { roleName: role } });
-    if (!selectedRole)
+    // 4️⃣ Find role (must match DB column exactly)
+    const selectedRole = await Role.findOne({ where: { roleName: role } });
+    if (!selectedRole) {
       return res.status(400).json({ error: "Invalid role selected" });
+    }
 
+    // 5️⃣ Link role to user
     await UserRole.create({
-      user_id: user.user_id,
+      user_id: newUser.user_id,
       role_id: selectedRole.role_id,
     });
 
-    // 5️⃣ Special logic for Florists
-    const discount = role === "Florist" ? 0.1 : 0.0; // 10% discount
+    // 6️⃣ Optional: florist discount
+    const discount = role === "Florist" ? 0.1 : 0.0;
     const roles = [role];
 
+    // 7️⃣ Sign token
     const token = signToken({
-      user_id: user.user_id,
+      user_id: newUser.user_id,
       roles,
       discount,
     });
@@ -61,9 +72,9 @@ router.post("/register", async (req, res) => {
       message: "✅ User registered successfully",
       token,
       user: {
-        user_id: user.user_id,
-        fullName: user.fullName,
-        email: user.email,
+        user_id: newUser.user_id,
+        fullName: newUser.fullName,
+        email: newUser.email,
         roles,
         discount,
       },
@@ -74,14 +85,14 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// ===============================
-// 🔹 LOGIN USER (FIXED VERSION)
-// ===============================
+// ========================================
+// 🔹 LOGIN USER
+// POST /api/auth/login
+// ========================================
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Find user and include roles directly
     const user = await User.findOne({
       where: { email },
       include: [
@@ -101,9 +112,9 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ error: "Invalid email or password" });
 
     const roles = user.Roles?.map((r) => r.roleName) || [];
+    const discount = roles.includes("Florist") ? 0.1 : 0.0;
 
-    // Sign JWT token
-    const token = signToken({ user_id: user.user_id, roles });
+    const token = signToken({ user_id: user.user_id, roles, discount });
 
     res.json({
       message: "✅ Login successful",
@@ -113,6 +124,7 @@ router.post("/login", async (req, res) => {
         fullName: user.fullName,
         email: user.email,
         roles,
+        discount,
       },
     });
   } catch (err) {
@@ -124,9 +136,10 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// ===============================
-// 🔹 VERIFY TOKEN / CURRENT USER
-// ===============================
+// ========================================
+// 🔹 GET CURRENT USER / VERIFY TOKEN
+// GET /api/auth/me
+// ========================================
 router.get("/me", async (req, res) => {
   try {
     const authHeader = req.headers.authorization;
@@ -134,7 +147,10 @@ router.get("/me", async (req, res) => {
       return res.status(401).json({ error: "Authorization header missing" });
 
     const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "dev_secret");
+    const decoded = jwt.verify(
+      token,
+      process.env.JWT_SECRET || "everbloom_secret"
+    );
 
     const user = await User.findByPk(decoded.user_id, {
       attributes: ["user_id", "fullName", "email"],
@@ -149,41 +165,20 @@ router.get("/me", async (req, res) => {
 
     if (!user) return res.status(404).json({ error: "User not found" });
 
-    res.json({ user });
+    const roles = user.Roles?.map((r) => r.roleName) || [];
+    const discount = roles.includes("Florist") ? 0.1 : 0.0;
+
+    res.json({
+      user: {
+        user_id: user.user_id,
+        fullName: user.fullName,
+        email: user.email,
+        roles,
+        discount,
+      },
+    });
   } catch (err) {
     console.error("❌ Auth check error:", err);
-    res.status(401).json({ error: "Invalid or expired token" });
-  }
-});
-
-// ===============================
-// 🔹 CURRENT USER (alias for /me)
-// ===============================
-router.get("/current-user", async (req, res) => {
-  try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader)
-      return res.status(401).json({ error: "Authorization header missing" });
-
-    const token = authHeader.split(" ")[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || "dev_secret");
-
-    const user = await User.findByPk(decoded.user_id, {
-      attributes: ["user_id", "fullName", "email"],
-      include: [
-        {
-          model: Role,
-          through: { attributes: [] },
-          attributes: ["roleName"],
-        },
-      ],
-    });
-
-    if (!user) return res.status(404).json({ error: "User not found" });
-
-    res.json({ user });
-  } catch (err) {
-    console.error("❌ Auth check error (current-user):", err);
     res.status(401).json({ error: "Invalid or expired token" });
   }
 });
