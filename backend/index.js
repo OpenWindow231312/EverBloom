@@ -1,3 +1,6 @@
+// ========================================
+// 🌸 EverBloom — Backend Entry Point (Final Render Version)
+// ========================================
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
@@ -7,10 +10,8 @@ const { sequelize } = require("./models"); // Sequelize instance + models
 const app = express();
 
 // ========================
-// 🌸 EverBloom — Final CORS Setup (Render + AlwaysData + Custom Domain)
+// 🌸 EverBloom — CORS Setup (Render + AlwaysData + Custom Domain)
 // ========================
-const cors = require("cors");
-
 const allowedOrigins = [
   "https://everbloomshop.co.za",
   "https://www.everbloomshop.co.za",
@@ -19,41 +20,39 @@ const allowedOrigins = [
   "http://localhost:3000",
 ];
 
-app.use((req, res, next) => {
-  res.header(
-    "Access-Control-Allow-Origin",
-    allowedOrigins.includes(req.headers.origin) ? req.headers.origin : "*"
-  );
-  res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
+app.use(
+  cors({
+    origin: function (origin, callback) {
+      // Allow server-to-server or curl/Postman calls (no origin)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      console.warn("❌ Blocked by CORS:", origin);
+      return callback(new Error("Not allowed by CORS"));
+    },
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
-  // ✅ Respond immediately to preflight (OPTIONS) requests
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
-
-// ✅ Handle preflight (important for Render)
+// ✅ Ensure OPTIONS preflight requests succeed
 app.options("*", cors());
 
 // ========================
-// 🪵 Logging & Body Parsing
+// 🪵 Logging & JSON parsing
 // ========================
 if (process.env.NODE_ENV !== "production") {
   app.use(morgan("dev"));
 }
-
 app.use(express.json({ limit: "2mb" }));
-app.set("trust proxy", true); // safe for Render, Vercel, etc.
+app.set("trust proxy", true); // important for Render
 
 // ========================
 // 🛣️ API Routes
 // ========================
-
-// Core functional routes
-app.use("/auth", require("./routes/authRoutes"));
+app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/flowers", require("./routes/flowerRoutes"));
 app.use("/api/harvests", require("./routes/harvestRoutes"));
@@ -62,12 +61,8 @@ app.use("/api/orders", require("./routes/orderRoutes"));
 app.use("/api/discards", require("./routes/discardRoutes"));
 app.use("/api/deliveries", require("./routes/deliveryRoutes"));
 app.use("/api/reviews", require("./routes/reviewRoutes"));
-
-// Dashboard + stock
 app.use("/api/stock", require("./routes/stockRoutes"));
 app.use("/api/dashboard", require("./routes/dashboardRoutes"));
-
-// 🛍️ Public shop routes
 app.use("/api/shop", require("./routes/shopRoutes"));
 
 // ========================
@@ -98,8 +93,8 @@ function listRoutes(app) {
           `  ➜ ${Object.keys(r.route.methods)[0].toUpperCase()} ${r.route.path}`
         )
       );
-  } catch {
-    // no-op
+  } catch (err) {
+    console.error("⚠️ Route list error:", err.message);
   }
 }
 
@@ -114,7 +109,6 @@ const PORT = process.env.PORT || 5001;
     await sequelize.authenticate();
     console.log("✅ Database connected successfully");
 
-    // Controlled sync — only if explicitly enabled
     if (String(process.env.DB_SYNC).toLowerCase() === "true") {
       await sequelize.sync({ alter: true });
       console.log("✅ Database synced (alter: true)");
