@@ -14,6 +14,7 @@ import Rewards from "./pages/Rewards";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Cart from "./pages/Cart";
+import Favourites from "./pages/Favourites";
 
 // 🔒 Protected route wrapper
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -26,11 +27,7 @@ import DashboardOrders from "./pages/dashboard/DashboardOrders";
 import DashboardInventory from "./pages/dashboard/DashboardInventory";
 import DashboardUsers from "./pages/dashboard/DashboardUsers";
 import DashboardHarvest from "./pages/dashboard/dashboardHarvest";
-import Favourites from "./pages/Favourites";
 
-// ===============================
-// 🚀 Application Routes
-// ===============================
 function App() {
   return (
     <Routes>
@@ -40,6 +37,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/shop" element={<Shop />} />
       <Route path="/product/:id" element={<ProductPage />} />{" "}
+      {/* ✅ dynamic route */}
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
       <Route path="/rewards" element={<Rewards />} />
@@ -58,15 +56,12 @@ function App() {
           </ProtectedRoute>
         }
       >
-        {/* Nested routes render inside <Outlet /> in DashboardLayout */}
         <Route index element={<DashboardOverview />} />
         <Route path="stock" element={<DashboardStock />} />
         <Route path="orders" element={<DashboardOrders />} />
         <Route path="inventory" element={<DashboardInventory />} />
         <Route path="users" element={<DashboardUsers />} />
         <Route path="harvest" element={<DashboardHarvest />} />
-
-        {/* optional */}
       </Route>
       {/* ===========================
           ❌ 404 Fallback
@@ -84,7 +79,7 @@ function App() {
             <h1>404 — Page Not Found 🌸</h1>
             <p>
               The page you’re looking for doesn’t exist.{" "}
-              <a href="/" style={{ color: "#d84e55", textDecoration: "none" }}>
+              <a href="/" style={{ color: "#de0d22", textDecoration: "none" }}>
                 Go back home
               </a>
               .

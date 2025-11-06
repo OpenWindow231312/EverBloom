@@ -55,10 +55,10 @@ export default function ProductCard({
 
         {/* 💰 Price */}
         {isOnSale ? (
-          <p1 className="product-price">
+          <p className="product-price">
             <span className="sale-price">R{flower.sale_price_per_stem}</span>
             <span className="old-price">R{flower.price_per_stem}</span>
-          </p1>
+          </p>
         ) : (
           <p className="product-price">R{flower.price_per_stem}</p>
         )}
