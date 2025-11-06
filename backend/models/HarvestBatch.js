@@ -79,17 +79,17 @@ module.exports = (sequelize, DataTypes) => {
     });
   };
 
-  // ===========================
-  // 🪄 Auto-create inventory after harvest
-  // ===========================
-  HarvestBatch.afterCreate(async (batch, options) => {
-    const db = batch.sequelize.models;
-    await db.Inventory.create({
-      harvestBatch_id: batch.harvestBatch_id,
-      stemsInColdroom: batch.totalStemsHarvested,
-      lastUpdated: new Date(),
-    });
-  });
+  // // ===========================
+  // // 🪄 Auto-create inventory after harvest
+  // // ===========================
+  // HarvestBatch.afterCreate(async (batch, options) => {
+  //   const db = batch.sequelize.models;
+  //   await db.Inventory.create({
+  //     harvestBatch_id: batch.harvestBatch_id,
+  //     stemsInColdroom: batch.totalStemsHarvested,
+  //     lastUpdated: new Date(),
+  //   });
+  // });
 
   return HarvestBatch;
 };

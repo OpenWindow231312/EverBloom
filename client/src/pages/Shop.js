@@ -131,6 +131,11 @@ function Shop() {
       if (sortBy === "low-high") return a.price_per_stem - b.price_per_stem;
       if (sortBy === "high-low") return b.price_per_stem - a.price_per_stem;
       return a.variety.localeCompare(b.variety);
+    })
+    // 🌿 Sort in-stock flowers first
+    .sort((a, b) => {
+      if (a.isSoldOut === b.isSoldOut) return 0;
+      return a.isSoldOut ? 1 : -1;
     });
 
   // 📄 Pagination logic

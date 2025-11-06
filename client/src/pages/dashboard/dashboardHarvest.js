@@ -1,5 +1,5 @@
 // ========================================
-// 🌾 EverBloom — Dashboard Harvest Management (Final Layout Fix)
+// 🌾 EverBloom — Dashboard Harvest Management (Final Stable Version)
 // ========================================
 import React, { useEffect, useState, useMemo } from "react";
 import api from "../../api/api";
@@ -35,8 +35,8 @@ export default function DashboardHarvest() {
       7;
 
     const daysLeft = shelfLife - daysElapsed;
-
     let status = "In Coldroom";
+
     if (!batch?.Inventory) status = "Not Added";
     if (daysLeft <= 2 && daysLeft >= 0) status = "Expiring Soon";
     if (daysLeft < 0) status = "Expired";
@@ -77,6 +77,7 @@ export default function DashboardHarvest() {
           api.get("/flowers"),
           api.get("/harvests"),
         ]);
+
         setFlowers(Array.isArray(flowerRes.data) ? flowerRes.data : []);
         setBatches(Array.isArray(batchRes.data) ? batchRes.data : []);
       } catch (err) {
@@ -106,15 +107,24 @@ export default function DashboardHarvest() {
 
   const recordHarvest = async (e) => {
     e.preventDefault();
+
+    if (!form.flower_id || !form.totalStemsHarvested) {
+      alert("⚠️ Please fill in all required fields.");
+      return;
+    }
+
     try {
       const payload = {
         flower_id: form.flower_id,
         totalStemsHarvested: Number(form.totalStemsHarvested),
-        harvestDateTime: form.harvestDateTime || new Date(),
+        harvestDateTime:
+          form.harvestDateTime || new Date().toISOString().slice(0, 10),
         notes: form.notes || "",
       };
 
+      console.log("🌿 Sending Harvest Payload:", payload);
       await api.post("/harvests", payload);
+
       alert("✅ Harvest recorded successfully!");
 
       setForm({
@@ -127,8 +137,8 @@ export default function DashboardHarvest() {
       const refresh = await api.get("/harvests");
       setBatches(Array.isArray(refresh.data) ? refresh.data : []);
     } catch (err) {
-      console.error("❌ Error recording harvest:", err);
-      alert("❌ Failed to record harvest.");
+      console.error("❌ Error recording harvest:", err.response || err);
+      alert("❌ Failed to record harvest. Check backend connection.");
     }
   };
 
@@ -143,7 +153,7 @@ export default function DashboardHarvest() {
       setBatches(Array.isArray(refresh.data) ? refresh.data : []);
       alert("❄️ Harvest added to coldroom!");
     } catch (err) {
-      console.error("❌ Error adding to coldroom:", err);
+      console.error("❌ Error adding to coldroom:", err.response || err);
       alert("❌ Could not add batch to coldroom.");
     }
   };
@@ -161,7 +171,7 @@ export default function DashboardHarvest() {
       {/* Add New Harvest Header */}
       <h3 className="section-heading">Add New Harvest Batch</h3>
       <section className="dashboard-section">
-        <form1 className="dashboard-form" onSubmit={recordHarvest}>
+        <form className="dashboard-form" onSubmit={recordHarvest}>
           <select
             name="flower_id"
             value={form.flower_id}
@@ -204,7 +214,7 @@ export default function DashboardHarvest() {
           <button type="submit" className="btn-primary">
             Record Harvest
           </button>
-        </form1>
+        </form>
       </section>
 
       {/* Recent Harvest Header */}
