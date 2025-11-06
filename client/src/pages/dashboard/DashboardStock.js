@@ -144,19 +144,31 @@ export default function DashboardStock() {
     }
   };
 
-  // 🌼 Filter Logic
+  // 🌼 ✅ Improved Filter Logic
   const filteredFlowers = flowers.filter((f) => {
-    const text = filterText.toLowerCase();
-    const flowerType = f.FlowerType?.type_name?.toLowerCase() || "";
+    const text = filterText.trim().toLowerCase();
+
+    const flowerType =
+      f.FlowerType?.type_name?.toLowerCase() ||
+      f.FlowerType?.flowerTypeName?.toLowerCase() ||
+      "";
     const variety = f.variety?.toLowerCase() || "";
     const color = f.color?.toLowerCase() || "";
 
+    // text match
     const matchesText =
+      !text ||
       variety.includes(text) ||
       color.includes(text) ||
       flowerType.includes(text);
 
-    const matchesType = !filterType || flowerType === filterType.toLowerCase();
+    // type match
+    const matchesType =
+      !filterType ||
+      flowerType === filterType.toLowerCase().trim() ||
+      flowerType.includes(filterType.toLowerCase().trim());
+
+    // status match
     const matchesStatus =
       !filterStatus ||
       (filterStatus === "listed" && f.is_listed_for_sale) ||
