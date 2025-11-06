@@ -1,5 +1,5 @@
 // ========================================
-// 🌸 EverBloom — Shop Page (Updated with Mini Cart Summary)
+// 🌸 EverBloom — Shop Page (with SEO + Mini Cart Summary)
 // ========================================
 
 import React, { useEffect, useState } from "react";
@@ -10,7 +10,8 @@ import Footer from "../components/Footer";
 import ProductCard from "../components/ProductCard";
 import API from "../api/api";
 import "../styles/shop/Shop.css";
-import "../styles/shop/CartSummaryPopup.css"; // 🌸 NEW FILE for styling
+import "../styles/shop/CartSummaryPopup.css";
+import { Helmet } from "react-helmet-async";
 
 function Shop() {
   const [flowers, setFlowers] = useState([]);
@@ -162,167 +163,184 @@ function Shop() {
   );
 
   return (
-    <div className="shop-wrapper">
-      <NavBar />
-
-      <header className="shop-header">
-        <h1 className="shop-title">Shop Fresh Flowers</h1>
-        <p className="shop-subtitle">
-          Browse our full collection of farm-fresh flowers grown sustainably on
-          the EverBloom farm.
-        </p>
-      </header>
-
-      {/* 🌿 Filter Bar */}
-      <div className="filter-barshop">
-        <input
-          type="text"
-          placeholder="Search by flower or type..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="filter-input"
+    <>
+      {/* 🪷 SEO Meta Tags */}
+      <Helmet>
+        <title>EverBloom | Shop Farm-Fresh Flowers</title>
+        <meta
+          name="description"
+          content="Browse our EverBloom shop for locally grown, sustainable flowers. Perfect for weddings, décor, and gifting — all fresh from the farm."
         />
+        <meta
+          name="keywords"
+          content="flower shop, EverBloom, wedding flowers, farm fresh, South Africa, florist"
+        />
+        <link rel="canonical" href="https://everbloomshop.co.za/shop" />
+      </Helmet>
 
-        <select
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
-          className="filter-select"
-        >
-          <option value="">All Types</option>
-          {[
-            ...new Set(
-              flowers.map(
-                (f) =>
-                  f.FlowerType?.type_name ||
-                  f.FlowerType?.flowerTypeName ||
-                  f.type_name
-              )
-            ),
-          ]
-            .filter(Boolean)
-            .map((type, i) => (
-              <option key={i} value={type}>
-                {type}
-              </option>
-            ))}
-        </select>
+      <div className="shop-wrapper">
+        <NavBar />
 
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="filter-select"
-        >
-          <option value="">Sort by Price</option>
-          <option value="low-high">Low to High</option>
-          <option value="high-low">High to Low</option>
-        </select>
+        <header className="shop-header">
+          <h1 className="shop-title">Shop Fresh Flowers</h1>
+          <p className="shop-subtitle">
+            Browse our full collection of farm-fresh flowers grown sustainably
+            on the EverBloom farm.
+          </p>
+        </header>
 
-        <label className="filter-checkbox">
+        {/* 🌿 Filter Bar */}
+        <div className="filter-barshop">
           <input
-            type="checkbox"
-            checked={showSaleOnly}
-            onChange={(e) => setShowSaleOnly(e.target.checked)}
+            type="text"
+            placeholder="Search by flower or type..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="filter-input"
           />
-          <span>Show On Sale</span>
-        </label>
 
-        <button className="reset-btn" onClick={resetFilters}>
-          Reset Filters
-        </button>
-
-        <button
-          className="favourites-btn"
-          onClick={() => navigate("/favourites")}
-        >
-          <FaHeart /> Favourite Flowers
-        </button>
-      </div>
-
-      {/* 🌼 Loading / Error / Empty States */}
-      {loading && (
-        <div className="shop-loading">
-          <p>Loading flowers...</p>
-        </div>
-      )}
-      {error && (
-        <div className="shop-error">
-          <p>{error}</p>
-        </div>
-      )}
-      {!loading && !error && currentFlowers.length === 0 && (
-        <div className="shop-empty">
-          <p>No flowers available at the moment</p>
-        </div>
-      )}
-
-      {/* 🌸 Product Grid */}
-      <section className="shop-page">
-        <div className="shop-grid">
-          {currentFlowers.map((flower) => {
-            const isFav = favourites.some(
-              (f) => f.flower_id === flower.flower_id
-            );
-            return (
-              <ProductCard
-                key={flower.flower_id}
-                flower={flower}
-                isFavourite={isFav}
-                onToggleFavourite={toggleFavourite}
-                onAddToCart={addToCart}
-              />
-            );
-          })}
-        </div>
-      </section>
-
-      {/* 📄 Pagination Controls */}
-      {totalPages > 1 && (
-        <div className="pagination1">
-          <button
-            onClick={prevPage}
-            disabled={currentPage === 1}
-            className="page-btn"
+          <select
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+            className="filter-select"
           >
-            ← Previous
+            <option value="">All Types</option>
+            {[
+              ...new Set(
+                flowers.map(
+                  (f) =>
+                    f.FlowerType?.type_name ||
+                    f.FlowerType?.flowerTypeName ||
+                    f.type_name
+                )
+              ),
+            ]
+              .filter(Boolean)
+              .map((type, i) => (
+                <option key={i} value={type}>
+                  {type}
+                </option>
+              ))}
+          </select>
+
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="filter-select"
+          >
+            <option value="">Sort by Price</option>
+            <option value="low-high">Low to High</option>
+            <option value="high-low">High to Low</option>
+          </select>
+
+          <label className="filter-checkbox">
+            <input
+              type="checkbox"
+              checked={showSaleOnly}
+              onChange={(e) => setShowSaleOnly(e.target.checked)}
+            />
+            <span>Show On Sale</span>
+          </label>
+
+          <button className="reset-btn" onClick={resetFilters}>
+            Reset Filters
           </button>
-          <span className="page-info">
-            Page {currentPage} of {totalPages}
-          </span>
+
           <button
-            onClick={nextPage}
-            disabled={currentPage === totalPages}
-            className="page-btn"
+            className="favourites-btn"
+            onClick={() => navigate("/favourites")}
           >
-            Next →
+            <FaHeart /> Favourite Flowers
           </button>
         </div>
-      )}
 
-      {/* 🛍️ Floating Cart Summary */}
-      {showSummary && lastAdded && (
-        <div className="cart-summary-popup">
-          <img
-            src={
-              lastAdded.image_url || require("../assets/placeholder-flower.jpg")
-            }
-            alt={lastAdded.variety}
-            className="popup-img"
-          />
-          <div className="popup-info">
-            <h5>{lastAdded.variety}</h5>
-            <p>Added to cart</p>
-            <span className="popup-subtotal">
-              Cart Total: R{subtotal.toFixed(2)}
-            </span>
+        {/* 🌼 Loading / Error / Empty States */}
+        {loading && (
+          <div className="shop-loading">
+            <p>Loading flowers...</p>
           </div>
-          <button className="popup-btn" onClick={() => navigate("/cart")}>
-            View Cart
-          </button>
-        </div>
-      )}
+        )}
+        {error && (
+          <div className="shop-error">
+            <p>{error}</p>
+          </div>
+        )}
+        {!loading && !error && currentFlowers.length === 0 && (
+          <div className="shop-empty">
+            <p>No flowers available at the moment</p>
+          </div>
+        )}
 
-      <Footer />
-    </div>
+        {/* 🌸 Product Grid */}
+        <section className="shop-page">
+          <div className="shop-grid">
+            {currentFlowers.map((flower) => {
+              const isFav = favourites.some(
+                (f) => f.flower_id === flower.flower_id
+              );
+              return (
+                <ProductCard
+                  key={flower.flower_id}
+                  flower={flower}
+                  isFavourite={isFav}
+                  onToggleFavourite={toggleFavourite}
+                  onAddToCart={addToCart}
+                />
+              );
+            })}
+          </div>
+        </section>
+
+        {/* 📄 Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="pagination1">
+            <button
+              onClick={prevPage}
+              disabled={currentPage === 1}
+              className="page-btn"
+            >
+              ← Previous
+            </button>
+            <span className="page-info">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={nextPage}
+              disabled={currentPage === totalPages}
+              className="page-btn"
+            >
+              Next →
+            </button>
+          </div>
+        )}
+
+        {/* 🛍️ Floating Cart Summary */}
+        {showSummary && lastAdded && (
+          <div className="cart-summary-popup">
+            <img
+              src={
+                lastAdded.image_url ||
+                require("../assets/placeholder-flower.jpg")
+              }
+              alt={lastAdded.variety}
+              className="popup-img"
+            />
+            <div className="popup-info">
+              <h5>{lastAdded.variety}</h5>
+              <p>Added to cart</p>
+              <span className="popup-subtotal">
+                Cart Total: R{subtotal.toFixed(2)}
+              </span>
+            </div>
+            <button className="popup-btn" onClick={() => navigate("/cart")}>
+              View Cart
+            </button>
+          </div>
+        )}
+
+        <Footer />
+      </div>
+    </>
   );
 }
 

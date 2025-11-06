@@ -1,4 +1,4 @@
-## 🌸 EverBloom — Full-Stack MERN Application
+## EverBloom — Full-Stack MERN Application
 
 **EverBloom** is a full-stack floral management and e-commerce platform that connects **buyers, florists, and farm suppliers** through an integrated dashboard and marketplace.
 It’s built with the **MERN stack** using **MySQL + Sequelize ORM**, providing seamless management of flowers, harvests, coldroom inventory, orders, and sales — all through an intuitive dashboard interface.
@@ -7,7 +7,7 @@ It’s built with the **MERN stack** using **MySQL + Sequelize ORM**, providing 
 
 ---
 
-### 🪴 Tech Stack
+### Tech Stack
 
 | Layer          | Technology                                                        | Description                                  |
 | -------------- | ----------------------------------------------------------------- | -------------------------------------------- |
@@ -20,7 +20,7 @@ It’s built with the **MERN stack** using **MySQL + Sequelize ORM**, providing 
 
 ---
 
-### 🎨 UI & Brand Design
+### UI & Brand Design
 
 EverBloom’s visual identity captures the warmth and creativity of **local floristry** — blending handcrafted typography, natural tones, and contemporary interface design.
 
@@ -45,9 +45,9 @@ cd EverBloom
 
 ---
 
-## 🌿 **2️⃣ Backend Setup**
+## **2️⃣ Backend Setup**
 
-### 📦 Install Dependencies
+### Install Dependencies
 
 ```bash
 cd backend
@@ -90,12 +90,12 @@ NODE_ENV=production
 DB_SYNC=false
 ```
 
-> 💡 **Note:** AlwaysData requires a secure (SSL) connection.  
+> **Note:** AlwaysData requires a secure (SSL) connection.  
 > The backend automatically enables SSL in production mode, so you don’t need to modify any code.
 
 ---
 
-### 🚀 **Start the Server**
+### **Start the Server**
 
 ```bash
 npm start
@@ -110,7 +110,7 @@ You should see the following message if everything is set up correctly:
 
 ---
 
-### 💓 **Test the API Health Route**
+### **Test the API Health Route**
 
 You can verify that the server is running by visiting:
 
@@ -142,11 +142,11 @@ The React app runs locally on:
 http://localhost:3000
 ```
 
-💡 **Note:** The dashboard uses **React Icons** for consistent UI across all dashboard pages (replacing emojis).
+**Note:** The dashboard uses **React Icons** for consistent UI across all dashboard pages (replacing emojis).
 
 ---
 
-## 🌿 Application Modules
+## Application Modules
 
 The dashboard now includes **modular management pages**, each connected to live Sequelize models and API routes:
 
@@ -161,9 +161,9 @@ The dashboard now includes **modular management pages**, each connected to live 
 
 ---
 
-## 🌐 Production Deployment
+## Production Deployment
 
-### 🧩 Backend — Render
+### Backend — Render
 
 **Service:** [Render.com](https://render.com)
 **Region:** Frankfurt (EU Central)
@@ -200,7 +200,7 @@ backend
 
 ---
 
-### 🌾 Database — AlwaysData
+### Database — AlwaysData
 
 **Host:** [https://admin.alwaysdata.com](https://admin.alwaysdata.com)
 **Database:** `anikadebeer_everbloom_db`
@@ -209,7 +209,7 @@ backend
 
 ---
 
-### 🌷 Frontend — Vercel
+### Frontend — Vercel
 
 **Framework:** Create React App
 **Root Directory:** `client`
@@ -227,7 +227,7 @@ backend
 
 ---
 
-### 🌼 Domain Configuration — GoDaddy
+### Domain Configuration — GoDaddy
 
 | Type      | Name  | Value                 | TTL    |
 | --------- | ----- | --------------------- | ------ |
@@ -238,7 +238,7 @@ This links **GoDaddy DNS** → **Vercel Frontend Deployment**.
 
 ---
 
-## 🧭 Google Analytics Setup
+## Google Analytics Setup
 
 **Measurement ID:** `G-T7VC5RXVVK`
 Inserted manually in `client/public/index.html` under `<head>`:
@@ -256,7 +256,7 @@ Inserted manually in `client/public/index.html` under `<head>`:
 
 ---
 
-## 🔐 CORS Configuration
+## CORS Configuration
 
 In `/backend/index.js`, CORS allows both production and local URLs:
 
@@ -275,7 +275,7 @@ app.use(cors({
 
 ---
 
-## 🧩 Sequelize Model Index
+## Sequelize Model Index
 
 All models are dynamically imported and synchronized in
 `backend/models/index.js`.
@@ -297,7 +297,7 @@ Includes associations for:
 
 ---
 
-## 🧠 Troubleshooting
+## Troubleshooting
 
 | Issue                   | Cause                          | Fix                           |
 | ----------------------- | ------------------------------ | ----------------------------- |
@@ -309,7 +309,7 @@ Includes associations for:
 
 ---
 
-## 🪴 Credits
+## Credits
 
 **Developed by:** Anika de Beer
 **University:** Open Window Institute
@@ -320,7 +320,7 @@ Includes associations for:
 
 ## Acknowledgements
 
-## 🌸 Live Links
+## Live Links
 
 | Service                   | URL                                                              |
 | ------------------------- | ---------------------------------------------------------------- |

@@ -1,5 +1,5 @@
 // ========================================
-// 🌸 EverBloom — Individual Product Page
+// 🌸 EverBloom — Individual Product Page (with Dynamic SEO)
 // ========================================
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import API from "../api/api";
 import { Heart, ShoppingBag } from "lucide-react";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
+import { Helmet } from "react-helmet-async";
 
 function ProductPage() {
   const { id } = useParams(); // URL param (flower_id)
@@ -85,115 +86,155 @@ function ProductPage() {
     ? new Date(flower.harvest_date).toLocaleDateString("en-ZA")
     : "N/A";
 
+  // 🪷 Dynamic SEO values
+  const title = `${flower.variety} | EverBloom`;
+  const description =
+    flower.description ||
+    `Buy ${flower.variety} from EverBloom — sustainably grown, freshly harvested flowers from our South African farm.`;
+  const imageUrl =
+    flower.image_url && flower.image_url.trim() !== ""
+      ? flower.image_url
+      : "https://everbloomshop.co.za/default-flower.jpg";
+  const canonicalUrl = `https://everbloomshop.co.za/product/${flower.flower_id}`;
+
   return (
-    <div>
-      <NavBar />
+    <>
+      {/* 🪷 Dynamic SEO Meta Tags */}
+      <Helmet>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <meta
+          name="keywords"
+          content={`EverBloom, ${flower.variety}, ${
+            flower.FlowerType?.flowerTypeName || "flowers"
+          }, florist, bouquets, South Africa`}
+        />
+        <link rel="canonical" href={canonicalUrl} />
 
-      <div className="product-page">
-        <div className="product-container">
-          {/* 🖼️ Image Section */}
-          <div className="product-image-container">
-            <img
-              src={
-                flower.image_url && flower.image_url.trim() !== ""
-                  ? flower.image_url
-                  : require("../assets/placeholder-flower.jpg")
-              }
-              alt={flower.variety}
-              className="product-image"
-            />
-            <button
-              className={`favourite-btn ${isFavourite ? "active" : ""}`}
-              onClick={toggleFavourite}
-            >
-              <Heart className="heart-icon" />
-            </button>
-            {onSale && <div className="sale-badge">On Sale</div>}
-          </div>
+        {/* Open Graph / Social */}
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta property="og:image" content={imageUrl} />
+        <meta property="og:url" content={canonicalUrl} />
+        <meta property="og:type" content="product" />
+        <meta property="og:site_name" content="EverBloom" />
 
-          {/* 🌸 Details Section */}
-          <div className="product-details">
-            <h1 className="product-title">{flower.variety}</h1>
-            <p className="product-type">
-              {flower.FlowerType?.flowerTypeName || "Flower"}
-            </p>
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={imageUrl} />
+      </Helmet>
 
-            <div className="price-section">
-              {onSale ? (
-                <>
-                  <h2 className="product-price">R {salePrice}</h2>
-                  <span className="old-price">R {price}</span>
-                  <span className="sale-text">Limited time discount!</span>
-                </>
-              ) : (
-                <h2 className="product-price">R {price}</h2>
-              )}
-            </div>
+      <div>
+        <NavBar />
 
-            <p className="product-description">
-              {flower.description || "No description available."}
-            </p>
-
-            <div className="product-info1">
-              <p>
-                <strong>Stem Length:</strong> {stemLength}
-              </p>
-              <p>
-                <strong>Shelf Life:</strong> {shelfLife}
-              </p>
-              <p>
-                <strong>Harvest Date:</strong> {harvestDate}
-              </p>
-              <p
-                className={`stock-text ${
-                  flower.stock_available <= 5 ? "low-stock" : ""
-                }`}
+        <div className="product-page">
+          <div className="product-container">
+            {/* 🖼️ Image Section */}
+            <div className="product-image-container">
+              <img
+                src={
+                  flower.image_url && flower.image_url.trim() !== ""
+                    ? flower.image_url
+                    : require("../assets/placeholder-flower.jpg")
+                }
+                alt={`${flower.variety} flower`}
+                className="product-image"
+              />
+              <button
+                className={`favourite-btn ${isFavourite ? "active" : ""}`}
+                onClick={toggleFavourite}
               >
-                <strong>In Stock:</strong>{" "}
-                {flower.stock_available > 0
-                  ? `${flower.stock_available} stems`
-                  : "Out of stock"}
-              </p>
+                <Heart className="heart-icon" />
+              </button>
+              {onSale && <div className="sale-badge">On Sale</div>}
             </div>
 
-            {/* Quantity + Add to Cart */}
-            <div className="cart-actions">
-              <div className="quantity-selector">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="quantity-btn"
-                >
-                  -
-                </button>
-                <span className="quantity-value">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="quantity-btn"
-                >
-                  +
-                </button>
+            {/* 🌸 Details Section */}
+            <div className="product-details">
+              <h1 className="product-title">{flower.variety}</h1>
+              <p className="product-type">
+                {flower.FlowerType?.flowerTypeName || "Flower"}
+              </p>
+
+              <div className="price-section">
+                {onSale ? (
+                  <>
+                    <h2 className="product-price">R {salePrice}</h2>
+                    <span className="old-price">R {price}</span>
+                    <span className="sale-text">Limited time discount!</span>
+                  </>
+                ) : (
+                  <h2 className="product-price">R {price}</h2>
+                )}
               </div>
 
-              <button
-                className="add-to-cart-btn"
-                onClick={addToCart}
-                disabled={flower.stock_available <= 0}
-                style={{
-                  background: flower.stock_available <= 0 ? "#ccc" : "",
-                  cursor:
-                    flower.stock_available <= 0 ? "not-allowed" : "pointer",
-                }}
-              >
-                <ShoppingBag className="cart-icon" />
-                {flower.stock_available <= 0 ? "Sold Out" : "Add to Cart"}
-              </button>
+              <p className="product-description">
+                {flower.description || "No description available."}
+              </p>
+
+              <div className="product-info1">
+                <p>
+                  <strong>Stem Length:</strong> {stemLength}
+                </p>
+                <p>
+                  <strong>Shelf Life:</strong> {shelfLife}
+                </p>
+                <p>
+                  <strong>Harvest Date:</strong> {harvestDate}
+                </p>
+                <p
+                  className={`stock-text ${
+                    flower.stock_available <= 5 ? "low-stock" : ""
+                  }`}
+                >
+                  <strong>In Stock:</strong>{" "}
+                  {flower.stock_available > 0
+                    ? `${flower.stock_available} stems`
+                    : "Out of stock"}
+                </p>
+              </div>
+
+              {/* Quantity + Add to Cart */}
+              <div className="cart-actions">
+                <div className="quantity-selector">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="quantity-btn"
+                  >
+                    -
+                  </button>
+                  <span className="quantity-value">{quantity}</span>
+                  <button
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="quantity-btn"
+                  >
+                    +
+                  </button>
+                </div>
+
+                <button
+                  className="add-to-cart-btn"
+                  onClick={addToCart}
+                  disabled={flower.stock_available <= 0}
+                  style={{
+                    background: flower.stock_available <= 0 ? "#ccc" : "",
+                    cursor:
+                      flower.stock_available <= 0 ? "not-allowed" : "pointer",
+                  }}
+                >
+                  <ShoppingBag className="cart-icon" />
+                  {flower.stock_available <= 0 ? "Sold Out" : "Add to Cart"}
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   );
 }
 

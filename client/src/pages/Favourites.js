@@ -1,5 +1,5 @@
 // ========================================
-// 🌸 EverBloom — Favourites Page (Updated)
+// 🌸 EverBloom — Favourites Page (with SEO + Recommendations)
 // ========================================
 
 import React, { useEffect, useState } from "react";
@@ -11,6 +11,7 @@ import ProductCard from "../components/ProductCard";
 import API from "../api/api";
 import "../styles/shop/Shop.css";
 import "../components/ProductCard.css";
+import { Helmet } from "react-helmet-async";
 
 function Favourites() {
   const [favourites, setFavourites] = useState([]);
@@ -45,7 +46,7 @@ function Favourites() {
     localStorage.setItem("favourites", JSON.stringify(updated));
   };
 
-  // 🛒 Placeholder for add to cart (shared logic from shop)
+  // 🛒 Add to cart
   const addToCart = (flower) => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const exists = cart.find((item) => item.flower_id === flower.flower_id);
@@ -65,7 +66,7 @@ function Favourites() {
     console.log("🛒 Added to cart:", flower.variety);
   };
 
-  // 🌼 Generate random recommendations for "You Might Like"
+  // 🌼 Random recommendations
   const getRandomRecommendations = () => {
     if (!flowers.length) return [];
     const shuffled = [...flowers].sort(() => 0.5 - Math.random());
@@ -75,77 +76,127 @@ function Favourites() {
   const recommendations = getRandomRecommendations();
 
   return (
-    <div className="shop-wrapper">
-      <NavBar />
+    <>
+      {/* 🪷 SEO Meta Tags */}
+      <Helmet>
+        <title>EverBloom | Your Favourite Flowers</title>
+        <meta
+          name="description"
+          content="View and manage your saved flowers on EverBloom — South Africa’s online flower marketplace. Revisit your favourite blooms or explore new ones."
+        />
+        <meta
+          name="keywords"
+          content="EverBloom favourites, wishlist, saved flowers, florist, bouquets, Pretoria, South Africa"
+        />
+        <link rel="canonical" href="https://everbloomshop.co.za/favourites" />
 
-      <header className="shop-header">
-        <h1 className="shop-title">Your Favourite Blooms</h1>
-        <p className="shop-subtitle">
-          Here are the flowers you’ve saved from the EverBloom collection.
-        </p>
-      </header>
+        {/* Open Graph / Social */}
+        <meta
+          property="og:title"
+          content="Your Favourite Flowers | EverBloom"
+        />
+        <meta
+          property="og:description"
+          content="Browse your saved blooms or discover more from EverBloom’s sustainable flower collection."
+        />
+        <meta
+          property="og:image"
+          content="https://everbloomshop.co.za/og-image.jpg"
+        />
+        <meta
+          property="og:url"
+          content="https://everbloomshop.co.za/favourites"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:site_name" content="EverBloom" />
 
-      {/* 💖 Favourite Cards */}
-      {favourites.length === 0 ? (
-        <div className="shop-empty">
-          <p>You haven’t added any favourites yet 🌷</p>
-          <Link to="/shop" className="btn-view">
-            Browse Flowers
-          </Link>
-        </div>
-      ) : (
-        <section className="shop-page">
-          <div className="shop-grid">
-            {favourites.map((flower) => (
-              <ProductCard
-                key={flower.flower_id}
-                flower={flower}
-                isFavourite={true}
-                onToggleFavourite={() => removeFavourite(flower.flower_id)}
-                onAddToCart={addToCart}
-              />
-            ))}
+        {/* Twitter */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta
+          name="twitter:title"
+          content="Your Favourite Flowers | EverBloom"
+        />
+        <meta
+          name="twitter:description"
+          content="Your saved flowers from the EverBloom marketplace — revisit your favourites or shop new arrivals."
+        />
+        <meta
+          name="twitter:image"
+          content="https://everbloomshop.co.za/og-image.jpg"
+        />
+      </Helmet>
+
+      <div className="shop-wrapper">
+        <NavBar />
+
+        <header className="shop-header">
+          <h1 className="shop-title">Your Favourite Blooms</h1>
+          <p className="shop-subtitle">
+            Here are the flowers you’ve saved from the EverBloom collection.
+          </p>
+        </header>
+
+        {/* 💖 Favourite Cards */}
+        {favourites.length === 0 ? (
+          <div className="shop-empty">
+            <p>You haven’t added any favourites yet 🌷</p>
+            <Link to="/shop" className="btn-view">
+              Browse Flowers
+            </Link>
           </div>
-        </section>
-      )}
+        ) : (
+          <section className="shop-page">
+            <div className="shop-grid">
+              {favourites.map((flower) => (
+                <ProductCard
+                  key={flower.flower_id}
+                  flower={flower}
+                  isFavourite={true}
+                  onToggleFavourite={() => removeFavourite(flower.flower_id)}
+                  onAddToCart={addToCart}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
-      {/* 🌺 You Might Like Section */}
-      {!loading && recommendations.length > 0 && (
-        <section className="recommend-section">
-          <h2 className="recommend-title">You Might Like</h2>
-          <div className="recommend-carousel">
-            {recommendations.map((flower) => (
-              <ProductCard
-                key={`rec-${flower.flower_id}`}
-                flower={flower}
-                isFavourite={favourites.some(
-                  (f) => f.flower_id === flower.flower_id
-                )}
-                onToggleFavourite={(item) => {
-                  // Add/remove favourite directly from carousel
-                  const exists = favourites.find(
-                    (f) => f.flower_id === item.flower_id
-                  );
-                  let updated;
-                  if (exists) {
-                    updated = favourites.filter(
-                      (f) => f.flower_id !== item.flower_id
+        {/* 🌺 You Might Like Section */}
+        {!loading && recommendations.length > 0 && (
+          <section className="recommend-section">
+            <h2 className="recommend-title">You Might Like</h2>
+            <div className="recommend-carousel">
+              {recommendations.map((flower) => (
+                <ProductCard
+                  key={`rec-${flower.flower_id}`}
+                  flower={flower}
+                  isFavourite={favourites.some(
+                    (f) => f.flower_id === flower.flower_id
+                  )}
+                  onToggleFavourite={(item) => {
+                    const exists = favourites.find(
+                      (f) => f.flower_id === item.flower_id
                     );
-                  } else {
-                    updated = [...favourites, item];
-                  }
-                  setFavourites(updated);
-                  localStorage.setItem("favourites", JSON.stringify(updated));
-                }}
-                onAddToCart={addToCart}
-              />
-            ))}
-          </div>
-        </section>
-      )}
+                    let updated;
+                    if (exists) {
+                      updated = favourites.filter(
+                        (f) => f.flower_id !== item.flower_id
+                      );
+                    } else {
+                      updated = [...favourites, item];
+                    }
+                    setFavourites(updated);
+                    localStorage.setItem("favourites", JSON.stringify(updated));
+                  }}
+                  onAddToCart={addToCart}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
-      <Footer />
-    </div>
+        <Footer />
+      </div>
+    </>
   );
 }
 
