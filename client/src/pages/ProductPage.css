@@ -15,7 +15,7 @@
     gap: 3rem;
     max-width: 1100px;
     margin: 0 auto;
-    align-items: flex-start;
+    align-items: center;
 }
 
 /* ---------- Image Section ---------- */
@@ -91,7 +91,7 @@
 }
 
 .product-title {
-    font-size: 2rem;
+    font-size: 42px;
     color: #de0d22;
     font-weight: 700;
     margin-bottom: 0.3rem;
@@ -100,6 +100,8 @@
 .product-type {
     color: #666;
     margin-bottom: 1.2rem;
+    font-size: 20px;
+    margin-top: -2px;
 }
 
 /* Prices aligned cleanly */
@@ -111,20 +113,20 @@
 }
 
 .product-price {
-    font-size: 1.8rem;
+    font-size: 32px;
     color: #222;
     font-weight: 600;
 }
 
 .old-price {
     text-decoration: line-through;
-    color: #999;
-    font-size: 1rem;
+    color: #de0d22;
+    font-size: 20px;
 }
 
 .sale-text {
     color: #de0d22;
-    font-size: 0.9rem;
+    font-size: 16px;
     font-weight: 500;
 }
 
@@ -135,17 +137,36 @@
     color: #555;
     margin-bottom: 1.2rem;
     width: 100%;
+    margin-top: -3px;
+    font-size: 18px;
 }
 
 .product-info1 {
     text-align: left;
     width: 100%;
+
 }
 
 .product-info1 p {
     margin: 0.3rem 0;
-    font-size: 0.95rem;
+    font-size: 18px;
     color: #444;
+}
+
+.stock-text {
+    margin-top: 0.4rem;
+    font-size: 0.95rem;
+    color: #333;
+}
+
+.stock-text strong {
+    color: #444;
+    font-weight: 700;
+}
+
+.low-stock {
+    color: #de0d22;
+    font-weight: 600;
 }
 
 /* ---------- Cart Section ---------- */
@@ -270,17 +291,25 @@
         padding: 2rem 1rem;
     }
 
+    .product-container {
+        align-items: center;
+    }
+
     .product-details {
         width: 100%;
         padding: 0 0.5rem;
     }
 
     .product-title {
-        font-size: 1.6rem;
+        font-size: 32px;
     }
 
     .product-price {
-        font-size: 1.5rem;
+        font-size: 20px;
+    }
+
+    .sale-text {
+        font-size: 14px;
     }
 
     .cart-actions {
@@ -289,5 +318,17 @@
 
     .add-to-cart-btn {
         max-width: 68%;
+    }
+
+    .old-price {
+        font-size: 18px;
+    }
+
+    .product-description {
+        font-size: 16px;
+    }
+
+    .cart-actions {
+        margin-right: 20px;
     }
 }

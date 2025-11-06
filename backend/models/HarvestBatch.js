@@ -1,5 +1,5 @@
 // ========================================
-// 🌸 EverBloom — HarvestBatch Model
+// 🌸 EverBloom — HarvestBatch Model (Fixed with expiryDate)
 // ========================================
 module.exports = (sequelize, DataTypes) => {
   const HarvestBatch = sequelize.define(
@@ -18,6 +18,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
+      },
+      expiryDate: {
+        type: DataTypes.DATE,
+        allowNull: true, // ✅ now matches your DB
       },
       totalStemsHarvested: {
         type: DataTypes.INTEGER,

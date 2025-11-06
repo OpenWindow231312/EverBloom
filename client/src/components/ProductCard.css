@@ -180,7 +180,59 @@
     }
 
     .add-btn {
-        padding: 8px 0;
-        font-size: 0.9rem;
+        width: 90%;
     }
+}
+
+/* Sold Out Overlay + Styling */
+.sold-out .product-img {
+    opacity: 0.7;
+    filter: grayscale(0.3);
+}
+
+.soldout-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    background: #555;
+    color: white;
+    font-weight: 600;
+    padding: 0.3rem 0.7rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+}
+
+/* Stock status text */
+.stock-status {
+    font-size: 0.85rem;
+    margin-top: 0.4rem;
+    font-weight: 500;
+}
+
+.stock-status.in {
+    color: #1b7f3c;
+}
+
+.stock-status.out {
+    color: #b90b1c;
+}
+
+/* Disable Add to Cart button */
+.add-btn.disabled,
+.add-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    color: #666;
+    transform: none;
+}
+
+.add-btn.disabled:hover {
+    background: #ccc;
+}
+
+/* Fade effect for sold-out images */
+.img-faded {
+    opacity: 0.6;
+    filter: grayscale(60%);
 }

@@ -1,5 +1,5 @@
 // ========================================
-// 🌸 EverBloom — Product Card Component
+// 🌸 EverBloom — Product Card Component (Final Synced Version)
 // ========================================
 import React from "react";
 import { Link } from "react-router-dom";
@@ -12,11 +12,20 @@ export default function ProductCard({
   onToggleFavourite,
   onAddToCart,
 }) {
-  const isOnSale = Number(flower.is_on_sale) === 1;
+  // 🌿 Normalize backend data
+  const stockAvailable = Number(flower.stock_available || 0);
+  const isSoldOut = flower.isSoldOut || stockAvailable <= 0;
+  const isOnSale =
+    flower.is_on_sale === true || Number(flower.is_on_sale) === 1;
 
   return (
-    <div className="product-card">
-      {isOnSale && <div className="sale-badge">SALE</div>}
+    <div className={`product-card ${isSoldOut ? "sold-out" : ""}`}>
+      {/* 🏷️ Sale / Sold Out Badge */}
+      {isSoldOut ? (
+        <div className="soldout-badge">SOLD OUT</div>
+      ) : (
+        isOnSale && <div className="sale-badge">SALE</div>
+      )}
 
       {/* ❤️ Favourite Toggle */}
       <button
@@ -25,11 +34,12 @@ export default function ProductCard({
           e.stopPropagation();
           onToggleFavourite(flower);
         }}
+        disabled={isSoldOut}
       >
         {isFavourite ? <FaHeart /> : <FaRegHeart />}
       </button>
 
-      {/* 🖼️ Image + Card Link */}
+      {/* 🖼️ Image + Link */}
       <Link to={`/product/${flower.flower_id}`} className="card-link">
         <img
           src={
@@ -38,15 +48,15 @@ export default function ProductCard({
               : require("../assets/placeholder-flower.jpg")
           }
           alt={flower.variety}
-          className="product-img"
+          className={`product-img ${isSoldOut ? "img-faded" : ""}`}
         />
       </Link>
 
       {/* 🌼 Text Info */}
       <div className="product-info">
         <p className="product-type">
-          {flower.FlowerType?.type_name ||
-            flower.FlowerType?.flowerTypeName ||
+          {flower.FlowerType?.flowerTypeName ||
+            flower.FlowerType?.type_name ||
             flower.type_name ||
             "Flower"}
         </p>
@@ -63,15 +73,25 @@ export default function ProductCard({
           <p className="product-price">R{flower.price_per_stem}</p>
         )}
 
+        {/* 🪻 Stock Status */}
+        <p className={`stock-status ${isSoldOut ? "out" : "in"}`}>
+          {isSoldOut
+            ? "Out of Stock"
+            : `In Stock: ${stockAvailable} stem${
+                stockAvailable > 1 ? "s" : ""
+              }`}
+        </p>
+
         {/* 🛒 Add to Cart */}
         <button
-          className="add-btn"
+          className={`add-btn ${isSoldOut ? "disabled" : ""}`}
           onClick={(e) => {
             e.stopPropagation();
-            onAddToCart(flower);
+            if (!isSoldOut) onAddToCart(flower);
           }}
+          disabled={isSoldOut}
         >
-          Add to Cart
+          {isSoldOut ? "Sold Out" : "Add to Cart"}
         </button>
       </div>
     </div>

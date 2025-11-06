@@ -144,6 +144,16 @@ function ProductPage() {
               <p>
                 <strong>Harvest Date:</strong> {harvestDate}
               </p>
+              <p
+                className={`stock-text ${
+                  flower.stock_available <= 5 ? "low-stock" : ""
+                }`}
+              >
+                <strong>In Stock:</strong>{" "}
+                {flower.stock_available > 0
+                  ? `${flower.stock_available} stems`
+                  : "Out of stock"}
+              </p>
             </div>
 
             {/* Quantity + Add to Cart */}
@@ -164,9 +174,18 @@ function ProductPage() {
                 </button>
               </div>
 
-              <button className="add-to-cart-btn" onClick={addToCart}>
+              <button
+                className="add-to-cart-btn"
+                onClick={addToCart}
+                disabled={flower.stock_available <= 0}
+                style={{
+                  background: flower.stock_available <= 0 ? "#ccc" : "",
+                  cursor:
+                    flower.stock_available <= 0 ? "not-allowed" : "pointer",
+                }}
+              >
                 <ShoppingBag className="cart-icon" />
-                Add to Cart
+                {flower.stock_available <= 0 ? "Sold Out" : "Add to Cart"}
               </button>
             </div>
           </div>
