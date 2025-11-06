@@ -7,41 +7,35 @@ const { sequelize } = require("./models"); // Sequelize instance + models
 const app = express();
 
 // ========================
-// 🔧 CORS Configuration (Final Version)
+// 🌸 EverBloom — CORS Configuration (Render + Custom Domain)
 // ========================
 const allowedOrigins = [
   "https://everbloomshop.co.za",
   "https://www.everbloomshop.co.za",
   "https://everbloom-frontend.vercel.app",
-  "http://localhost:5173",
-  "http://localhost:3000",
+  "http://localhost:5173", // dev mode
+  "http://localhost:3000", // optional dev port
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // ✅ Allow no-origin requests (like Postman or server-side)
+      // Allow no-origin requests (like Postman or curl)
       if (!origin) return callback(null, true);
       if (allowedOrigins.includes(origin)) {
         return callback(null, true);
+      } else {
+        console.warn("❌ Blocked by CORS:", origin);
+        return callback(new Error("Not allowed by CORS"));
       }
-      console.warn("🚫 Blocked by CORS:", origin);
-      return callback(new Error("Not allowed by CORS"));
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: [
-      "Origin",
-      "X-Requested-With",
-      "Content-Type",
-      "Accept",
-      "Authorization",
-    ],
     credentials: true,
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
+// ✅ Handle preflight (important for Render)
 app.options("*", cors());
 
 // ========================
