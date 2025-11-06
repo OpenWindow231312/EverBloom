@@ -1,14 +1,65 @@
-import React, { useState } from "react";
+// ========================================
+// 🌸 EverBloom — NavBar (Updated with Role Logic & Search)
+// ========================================
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { User, ShoppingBag, Menu, X, Search } from "lucide-react";
 import "./NavBar.css";
 import PrimaryLogo from "../assets/PrimaryLogo.svg";
+import API from "../api/api"; // ✅ use your existing API instance
+import { fetchCurrentUser } from "../utils/auth"; // ✅ your existing helper
 
 function NavBar() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const navigate = useNavigate();
+  const [currentUser, setCurrentUser] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [showResults, setShowResults] = useState(false);
 
+  const navigate = useNavigate();
   const handleMenuToggle = () => setMenuOpen(!menuOpen);
+
+  // ✅ Load logged-in user
+  useEffect(() => {
+    const loadUser = async () => {
+      const user = await fetchCurrentUser();
+      if (user) setCurrentUser(user);
+    };
+    loadUser();
+  }, []);
+
+  // ✅ Handle Search
+  const handleSearch = async (e) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+
+    if (query.trim().length > 1) {
+      try {
+        const res = await API.get(`/shop/search?query=${query}`);
+        setSearchResults(res.data);
+        setShowResults(true);
+      } catch (err) {
+        console.error("Search error:", err);
+      }
+    } else {
+      setShowResults(false);
+    }
+  };
+
+  // ✅ Navigate to flower details or shop page
+  const handleResultClick = (flowerId) => {
+    navigate(`/shop/${flowerId}`);
+    setSearchQuery("");
+    setShowResults(false);
+  };
+
+  // ✅ Logout
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setCurrentUser(null);
+    navigate("/");
+  };
 
   return (
     <nav className="navbar">
@@ -49,32 +100,70 @@ function NavBar() {
           >
             Contact
           </Link>
-          <Link
-            to="/dashboard"
-            className="navbar-link"
-            onClick={() => setMenuOpen(false)}
-          >
-            Dashboard
-          </Link>
+
+          {/* ✅ Role-based Dashboard Link */}
+          {currentUser &&
+            (currentUser.role === "admin" ||
+              currentUser.role === "employee") && (
+              <Link
+                to="/dashboard"
+                className="navbar-link"
+                onClick={() => setMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+            )}
         </div>
 
-        {/* Search Bar (same style as mobile) */}
+        {/* ✅ Search Bar */}
         <div className="nav-search">
           <div className="search-container">
             <Search className="search-icon" />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Search flowers or types..."
               className="search-input"
+              value={searchQuery}
+              onChange={handleSearch}
+              onFocus={() => searchResults.length > 0 && setShowResults(true)}
+              onBlur={() => setTimeout(() => setShowResults(false), 200)}
             />
           </div>
+
+          {/* ✅ Dropdown Results */}
+          {showResults && searchResults.length > 0 && (
+            <div className="search-results">
+              {searchResults.map((flower) => (
+                <div
+                  key={flower.flower_id}
+                  className="search-result-item"
+                  onClick={() => handleResultClick(flower.flower_id)}
+                >
+                  <img
+                    src={flower.image_url}
+                    alt={flower.variety}
+                    className="search-thumb"
+                  />
+                  <span>
+                    {flower.variety} ({flower.type})
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Icons */}
         <div className="nav-icons mobile-icons">
-          <button className="icon-button" onClick={() => navigate("/account")}>
-            <User />
-          </button>
+          {currentUser ? (
+            <button className="icon-button logout-btn" onClick={handleLogout}>
+              Logout
+            </button>
+          ) : (
+            <button className="icon-button" onClick={() => navigate("/login")}>
+              <User />
+            </button>
+          )}
           <button className="icon-button" onClick={() => navigate("/cart")}>
             <ShoppingBag />
           </button>
