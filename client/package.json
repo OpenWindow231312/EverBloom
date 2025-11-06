@@ -19,6 +19,7 @@
     "react-spinners": "^0.13.8",
     "recharts": "^3.2.1",
     "swiper": "^12.0.3",
+    "vite-plugin-sitemap": "^0.8.2",
     "web-vitals": "^2.1.4"
   },
   "overrides": {
