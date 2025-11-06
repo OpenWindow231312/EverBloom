@@ -1,17 +1,20 @@
 // ========================================
-// 🌸 EverBloom — Cart Page (Final Responsive + Florist Discount)
+// 🌸 EverBloom — Cart Page (Final Version with Checkout + Order Popup)
 // ========================================
 
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
+import api from "../api/api";
 import "../styles/shop/Shop.css";
 import "../pages/Cart.css";
-import "../styles/shop/CartSummaryPopup.css";
+import "../styles/shop/CartSuccessPopup.css"; // ✅ new popup style
 
 function Cart() {
   const [cart, setCart] = useState([]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [orderNumber, setOrderNumber] = useState(null);
   const navigate = useNavigate();
 
   // 🛒 Load cart from localStorage
@@ -75,6 +78,50 @@ function Cart() {
 
   const total = subtotal + vat - discountAmount;
 
+  // ========================================
+  // 💳 Checkout Handler
+  // ========================================
+  const handleCheckout = async () => {
+    try {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user) {
+        alert("Please log in to place an order.");
+        navigate("/login");
+        return;
+      }
+
+      if (cart.length === 0) {
+        alert("Your cart is empty.");
+        return;
+      }
+
+      const payload = {
+        items: cart,
+        totalAmount: total,
+        pickupOrDelivery: "Delivery",
+      };
+
+      const res = await api.post("/orders", payload);
+
+      if (res?.data?.order) {
+        setOrderNumber(res.data.order.order_id);
+        setShowPopup(true);
+
+        // Clear cart
+        localStorage.removeItem("cart");
+        setCart([]);
+      } else {
+        alert("Failed to create order. Please try again.");
+      }
+    } catch (err) {
+      console.error("❌ Error creating order:", err);
+      alert("Something went wrong while placing your order.");
+    }
+  };
+
+  // ========================================
+  // 🧭 Render
+  // ========================================
   return (
     <div className="shop-wrapper">
       <NavBar />
@@ -176,11 +223,24 @@ function Cart() {
               <span>R{formatPrice(total)}</span>
             </div>
 
-            <button
-              className="checkout-btn"
-              onClick={() => navigate("/checkout")}
-            >
+            <button className="checkout-btn" onClick={handleCheckout}>
               Proceed to Checkout
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Success Popup */}
+      {showPopup && (
+        <div className="cart-success-popup">
+          <div className="popup-content">
+            <h2>🎉 Order Successful!</h2>
+            <p>
+              Your order number is <strong>#{orderNumber}</strong>.
+            </p>
+            <p>Check your email for delivery details.</p>
+            <button className="btn-primary" onClick={() => navigate("/shop")}>
+              Continue Shopping
             </button>
           </div>
         </div>
