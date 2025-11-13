@@ -56,13 +56,12 @@
 ================================= */
 
 .dashboard-main {
-    margin-left: 240px;
-    /* equal to sidebar width */
+
     flex: 1;
     display: flex;
     flex-direction: column;
     min-height: 100vh;
-    background: var(--white);
+    background: var(--beige);
 }
 
 /* Topbar */
@@ -100,7 +99,6 @@
 ================================= */
 
 .dashboard-content {
-    padding: 30px;
     flex: 1;
     background-color: var(--beige);
 }
@@ -586,7 +584,7 @@
     font-weight: 600;
     cursor: pointer;
     font-size: 13px;
-    color: #fff;
+    color: red;
     appearance: none;
     width: 140px;
     text-align: center;
@@ -919,302 +917,301 @@ h4 {
    ======================================== */
 
 .reviews-stats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
 }
 
 .stat-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  text-align: center;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
 }
 
 .stat-card h3 {
-  font-size: 14px;
-  color: #666;
-  margin: 0 0 0.5rem 0;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+    font-size: 14px;
+    color: #666;
+    margin: 0 0 0.5rem 0;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .stat-number {
-  font-size: 36px;
-  font-weight: 700;
-  color: #de0d22;
-  margin: 0;
+    font-size: 36px;
+    font-weight: 700;
+    color: #de0d22;
+    margin: 0;
 }
 
 .reviews-table-container {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  overflow-x: auto;
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    overflow-x: auto;
 }
 
 .customer-cell {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 .customer-cell strong {
-  font-size: 14px;
-  color: #333;
+    font-size: 14px;
+    color: #333;
 }
 
 .customer-cell small {
-  font-size: 12px;
-  color: #888;
+    font-size: 12px;
+    color: #888;
 }
 
 .flower-cell {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .flower-thumb {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
-  border-radius: 6px;
-  border: 2px solid #de0d22;
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    border: 2px solid #de0d22;
 }
 
 .rating-cell {
-  display: flex;
-  gap: 2px;
+    display: flex;
+    gap: 2px;
 }
 
 .comment-cell {
-  max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .low-rating-row {
-  background-color: #fff5f5 !important;
+    background-color: #fff5f5 !important;
 }
 
 .low-rating-row:hover {
-  background-color: #ffe5e5 !important;
+    background-color: #ffe5e5 !important;
 }
 
 .btn-follow-up {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: #de0d22;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #de0d22;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
 .btn-follow-up:hover {
-  background: #b80315;
-  transform: translateY(-2px);
+    background: #b80315;
+    transform: translateY(-2px);
 }
 
 /* Email Modal */
 .email-modal {
-  max-width: 700px;
-  width: 90%;
-  max-height: 90vh;
-  overflow-y: auto;
+    max-width: 700px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #f0f0f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #f0f0f0;
 }
 
 .modal-header h2 {
-  margin: 0;
-  color: #de0d22;
-  font-size: 24px;
+    margin: 0;
+    color: #de0d22;
+    font-size: 24px;
 }
 
 .close-modal-btn {
-  background: none;
-  border: none;
-  color: #888;
-  cursor: pointer;
-  padding: 0.5rem;
-  transition: all 0.3s ease;
+    background: none;
+    border: none;
+    color: #888;
+    cursor: pointer;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
 }
 
 .close-modal-btn:hover {
-  color: #de0d22;
-  transform: rotate(90deg);
+    color: #de0d22;
+    transform: rotate(90deg);
 }
 
 .review-summary {
-  background: #f9f9f9;
-  padding: 1.5rem;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1rem;
+    background: #f9f9f9;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
 }
 
 .review-summary-item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
 }
 
 .review-summary-item.full-width {
-  grid-column: 1 / -1;
+    grid-column: 1 / -1;
 }
 
 .review-summary-item strong {
-  font-size: 13px;
-  color: #666;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+    font-size: 13px;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .inline-stars {
-  display: flex;
-  gap: 2px;
-  margin-top: 0.25rem;
+    display: flex;
+    gap: 2px;
+    margin-top: 0.25rem;
 }
 
 .review-comment-text {
-  margin: 0.5rem 0 0 0;
-  padding: 1rem;
-  background: white;
-  border-radius: 6px;
-  font-size: 14px;
-  line-height: 1.6;
-  color: #555;
+    margin: 0.5rem 0 0 0;
+    padding: 1rem;
+    background: white;
+    border-radius: 6px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #555;
 }
 
 .email-textarea {
-  width: 100%;
-  padding: 1rem;
-  border: 2px solid #f0f0f0;
-  border-radius: 8px;
-  font-family: "Poppins", sans-serif;
-  font-size: 14px;
-  line-height: 1.6;
-  resize: vertical;
-  transition: all 0.3s ease;
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #f0f0f0;
+    border-radius: 8px;
+    font-family: "Poppins", sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    resize: vertical;
+    transition: all 0.3s ease;
 }
 
 .email-textarea:focus {
-  outline: none;
-  border-color: #de0d22;
-  box-shadow: 0 0 0 3px rgba(222, 13, 34, 0.1);
+    outline: none;
+    border-color: #de0d22;
+    box-shadow: 0 0 0 3px rgba(222, 13, 34, 0.1);
 }
 
 .form-hint {
-  display: block;
-  margin-top: 0.5rem;
-  font-size: 12px;
-  color: #888;
-  font-style: italic;
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 12px;
+    color: #888;
+    font-style: italic;
 }
 
 .modal-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
 }
 
 .btn-send-email,
 .btn-cancel {
-  flex: 1;
-  padding: 0.875rem 1.5rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  font-family: "Poppins", sans-serif;
+    flex: 1;
+    padding: 0.875rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: "Poppins", sans-serif;
 }
 
 .btn-send-email {
-  background: #de0d22;
-  color: white;
+    background: #de0d22;
+    color: white;
 }
 
 .btn-send-email:hover:not(:disabled) {
-  background: #b80315;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(222, 13, 34, 0.3);
+    background: #b80315;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(222, 13, 34, 0.3);
 }
 
 .btn-send-email:disabled {
-  background: #ccc;
-  cursor: not-allowed;
-  opacity: 0.6;
+    background: #ccc;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .btn-cancel {
-  background: #f0f0f0;
-  color: #333;
+    background: #f0f0f0;
+    color: #333;
 }
 
 .btn-cancel:hover:not(:disabled) {
-  background: #e0e0e0;
+    background: #e0e0e0;
 }
 
 .no-data-message {
-  text-align: center;
-  padding: 3rem;
-  color: #888;
-  font-size: 16px;
+    text-align: center;
+    padding: 3rem;
+    color: #888;
+    font-size: 16px;
 }
 
 /* Responsive */
 @media (max-width: 768px) {
-  .reviews-stats {
-    grid-template-columns: 1fr;
-  }
+    .reviews-stats {
+        grid-template-columns: 1fr;
+    }
 
-  .review-summary {
-    grid-template-columns: 1fr;
-  }
+    .review-summary {
+        grid-template-columns: 1fr;
+    }
 
-  .modal-actions {
-    flex-direction: column;
-  }
+    .modal-actions {
+        flex-direction: column;
+    }
 
-  .btn-send-email,
-  .btn-cancel {
-    width: 100%;
-  }
+    .btn-send-email,
+    .btn-cancel {
+        width: 100%;
+    }
 
-  .dashboard-table {
-    font-size: 13px;
-  }
+    .dashboard-table {
+        font-size: 13px;
+    }
 
-  .flower-cell {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+    .flower-cell {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-  .comment-cell {
-    max-width: 150px;
-  }
+    .comment-cell {
+        max-width: 150px;
+    }
 }
-
