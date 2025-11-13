@@ -597,3 +597,66 @@
 .order-total strong {
   margin-right: 8px;
 }
+
+/* ========================================
+   🌟 Reviews Tab Styles
+   ======================================== */
+
+.no-reviews-message {
+  text-align: center;
+  padding: 3rem;
+  background: linear-gradient(135deg, #fff9f9, #ffe5e5);
+  border-radius: 12px;
+  border: 2px dashed #de0d22;
+}
+
+.no-reviews-message p {
+  font-size: 16px;
+  color: #666;
+  margin: 0.5rem 0;
+}
+
+.no-reviews-message p:first-child {
+  font-size: 18px;
+  font-weight: 600;
+  color: #de0d22;
+}
+
+.edit-review-container {
+  margin-bottom: 2rem;
+}
+
+.review-item-with-flower {
+  margin-bottom: 2rem;
+}
+
+.flower-info-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+}
+
+.flower-thumbnail {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #de0d22;
+}
+
+.flower-info-header h4 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #de0d22;
+  margin: 0;
+}
+
+.reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}

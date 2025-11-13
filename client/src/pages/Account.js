@@ -3,9 +3,11 @@
 // ========================================
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUser, FaMapMarkerAlt, FaCreditCard, FaCamera, FaPlus, FaTrash, FaEdit, FaShoppingBag } from "react-icons/fa";
+import { FaUser, FaMapMarkerAlt, FaCreditCard, FaCamera, FaPlus, FaTrash, FaEdit, FaShoppingBag, FaStar } from "react-icons/fa";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
+import ReviewCard from "../components/ReviewCard";
+import AddReviewForm from "../components/AddReviewForm";
 import "./Account.css";
 
 function Account() {
@@ -13,12 +15,15 @@ function Account() {
   const [addresses, setAddresses] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("profile");
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [showCardModal, setShowCardModal] = useState(false);
   const [editingAddress, setEditingAddress] = useState(null);
+  const [editingReview, setEditingReview] = useState(null);
+  const [showEditReviewForm, setShowEditReviewForm] = useState(false);
   
   const navigate = useNavigate();
 
@@ -95,6 +100,18 @@ function Account() {
       if (ordersRes.ok) {
         const ordersData = await ordersRes.json();
         setOrders(ordersData);
+      }
+
+      // Fetch user reviews
+      const reviewsRes = await fetch(`${API_URL}/api/reviews/my-reviews`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (reviewsRes.ok) {
+        const reviewsData = await reviewsRes.json();
+        setReviews(reviewsData);
       }
     } catch (err) {
       console.error("Error fetching profile:", err);
@@ -309,6 +326,76 @@ function Account() {
     setShowAddressModal(true);
   };
 
+  // ===============================
+  // Review Management Functions
+  // ===============================
+  const handleEditReview = (review) => {
+    setEditingReview(review);
+    setShowEditReviewForm(true);
+  };
+
+  const handleUpdateReview = async (reviewData) => {
+    try {
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+      formData.append("rating", reviewData.rating);
+      formData.append("heading", reviewData.heading);
+      formData.append("comment", reviewData.comment);
+      if (reviewData.image) {
+        formData.append("reviewImage", reviewData.image);
+      }
+
+      const res = await fetch(`${API_URL}/api/reviews/${editingReview.review_id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (res.ok) {
+        const updatedReview = await res.json();
+        setReviews(reviews.map(r => 
+          r.review_id === updatedReview.review_id ? updatedReview : r
+        ));
+        setShowEditReviewForm(false);
+        setEditingReview(null);
+        alert("✅ Review updated successfully!");
+      } else {
+        const error = await res.json();
+        alert(error.error || "Failed to update review");
+      }
+    } catch (err) {
+      console.error("Error updating review:", err);
+      alert("Failed to update review");
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!window.confirm("Are you sure you want to delete this review?")) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/api/reviews/${reviewId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.ok) {
+        setReviews(reviews.filter(r => r.review_id !== reviewId));
+        alert("✅ Review deleted successfully!");
+      } else {
+        const error = await res.json();
+        alert(error.error || "Failed to delete review");
+      }
+    } catch (err) {
+      console.error("Error deleting review:", err);
+      alert("Failed to delete review");
+    }
+  };
+
   if (loading) {
     return (
       <div>
@@ -360,6 +447,12 @@ function Account() {
             onClick={() => setActiveTab("payment")}
           >
             <FaCreditCard /> Payment Methods
+          </button>
+          <button
+            className={`tab ${activeTab === "reviews" ? "active" : ""}`}
+            onClick={() => setActiveTab("reviews")}
+          >
+            <FaStar /> My Reviews
           </button>
         </div>
 
@@ -594,6 +687,59 @@ function Account() {
                 ))
               )}
             </div>
+          </div>
+        )}
+
+        {/* Reviews Tab */}
+        {activeTab === "reviews" && (
+          <div className="tab-content">
+            <h2>My Reviews</h2>
+            
+            {showEditReviewForm && editingReview ? (
+              <div className="edit-review-container">
+                <AddReviewForm
+                  flowerId={editingReview.flower_id}
+                  onSubmit={handleUpdateReview}
+                  onCancel={() => {
+                    setShowEditReviewForm(false);
+                    setEditingReview(null);
+                  }}
+                  initialData={editingReview}
+                  API_URL={API_URL}
+                />
+              </div>
+            ) : (
+              <>
+                {reviews.length === 0 ? (
+                  <div className="no-reviews-message">
+                    <p>You haven't written any reviews yet.</p>
+                    <p>Share your experience with flowers you've purchased!</p>
+                  </div>
+                ) : (
+                  <div className="reviews-list">
+                    {reviews.map((review) => (
+                      <div key={review.review_id} className="review-item-with-flower">
+                        <div className="flower-info-header">
+                          <img 
+                            src={review.Flower?.image_url || require("../assets/placeholder-flower.jpg")} 
+                            alt={review.Flower?.variety}
+                            className="flower-thumbnail"
+                          />
+                          <h4>{review.Flower?.variety || "Flower"}</h4>
+                        </div>
+                        <ReviewCard
+                          review={review}
+                          onEdit={handleEditReview}
+                          onDelete={handleDeleteReview}
+                          showActions={true}
+                          API_URL={API_URL}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
           </div>
         )}
       </div>
