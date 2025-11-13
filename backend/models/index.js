@@ -149,12 +149,12 @@ if (Discard && HarvestBatch && User) {
   HarvestBatch.hasMany(Discard, { foreignKey: "harvestBatch_id" });
 }
 
-// ✅ REVIEW ↔ USER + STORE
-if (Review && User && Store) {
+// ✅ REVIEW ↔ USER + FLOWER
+if (Review && User && Flower) {
   Review.belongsTo(User, { foreignKey: "user_id" });
-  Review.belongsTo(Store, { foreignKey: "store_id" });
+  Review.belongsTo(Flower, { foreignKey: "flower_id" });
   User.hasMany(Review, { foreignKey: "user_id" });
-  Store.hasMany(Review, { foreignKey: "store_id" });
+  Flower.hasMany(Review, { foreignKey: "flower_id" });
 }
 
 // ✅ FAVOURITE ↔ USER + FLOWER (User's favourite flowers)
