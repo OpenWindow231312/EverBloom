@@ -50,12 +50,16 @@ export default function DashboardLayout() {
             <div className="dashboard-user">
               {currentUser ? (
                 <>
-                  <img
-                    src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(
-                      currentUser.fullName
-                    )}`}
-                    alt={currentUser.fullName}
-                  />
+                  {currentUser.profilePhoto ? (
+                    <img
+                      src={`${API_URL}${currentUser.profilePhoto}`}
+                      alt={currentUser.fullName}
+                    />
+                  ) : (
+                    <div className="profile-avatar-placeholder">
+                      {currentUser.fullName?.charAt(0).toUpperCase() || 'U'}
+                    </div>
+                  )}
                   <div style={{ textAlign: "right" }}>
                     <strong>{currentUser.fullName}</strong>
                     <br />

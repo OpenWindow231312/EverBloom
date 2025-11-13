@@ -450,4 +450,150 @@
   .modal-content {
     padding: 20px;
   }
+
+  .orders-list {
+    gap: 15px;
+  }
+
+  .order-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .order-footer {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+/* Orders Styles */
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.order-card {
+  background: #fafafa;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  padding: 20px;
+  transition: box-shadow 0.3s ease;
+}
+
+.order-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.order-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 15px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.order-header h3 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.order-date {
+  color: #666;
+  font-size: 14px;
+}
+
+.order-status-container {
+  text-align: right;
+}
+
+.order-status {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.status-pending {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-out-for-delivery {
+  background: #d1ecf1;
+  color: #0c5460;
+}
+
+.status-delivered {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-cancelled {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.order-items {
+  margin-bottom: 15px;
+}
+
+.order-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.order-item-details {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.item-name {
+  font-weight: 500;
+  color: #333;
+}
+
+.item-quantity {
+  font-size: 13px;
+  color: #666;
+}
+
+.item-price {
+  font-weight: 600;
+  color: #b91c1c;
+}
+
+.order-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0;
+  margin-top: 15px;
+}
+
+.order-delivery,
+.order-total {
+  font-size: 14px;
+}
+
+.order-total {
+  font-size: 18px;
+  color: #b91c1c;
+}
+
+.order-total strong {
+  margin-right: 8px;
 }

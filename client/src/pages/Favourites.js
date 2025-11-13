@@ -168,6 +168,9 @@ function Favourites() {
           <p className="shop-subtitle">
             Here are the flowers you’ve saved from the EverBloom collection.
           </p>
+          <Link to="/shop" className="btn-return-to-shop">
+            ← Return to Shop
+          </Link>
         </header>
 
         {/* 💖 Favourite Cards */}

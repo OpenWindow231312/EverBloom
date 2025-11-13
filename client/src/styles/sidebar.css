@@ -88,7 +88,7 @@
     padding: 0.8rem 1rem;
     border-radius: 12px;
     margin-left: 5px;
-    margin-right: ;
+    margin-right: 5px;
     transition: all 0.25s ease;
 }
 
@@ -175,18 +175,110 @@
 }
 
 /* ==========================
-   📱 Mobile Responsive
+   📱 Mobile Top Navbar
 ========================== */
+.mobile-dashboard-nav {
+    display: none;
+}
+
 @media (max-width: 768px) {
-    .sidebar {
+    /* Hide desktop sidebar by default on mobile */
+    .sidebar:not(.mobile) {
+        display: none;
+    }
+
+    /* Show mobile top navbar */
+    .mobile-dashboard-nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #b91c1c;
+        color: white;
+        padding: 1rem 1.5rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1100;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .mobile-menu-toggle {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .mobile-nav-logo {
+        height: 32px;
+        width: auto;
+    }
+
+    /* Mobile sidebar styles */
+    .sidebar.mobile {
+        position: fixed;
+        top: 64px; /* Below mobile navbar */
+        left: 0;
+        width: 280px;
+        height: calc(100vh - 64px);
         transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1050;
     }
 
-    .sidebar.open {
+    .sidebar.mobile.open {
         transform: translateX(0);
+        width: 280px;
     }
 
+    .sidebar.mobile .nav-item span {
+        display: inline;
+    }
+
+    .sidebar.mobile .home-btn {
+        width: auto;
+        border-radius: 50px;
+        padding: 0.8rem 2rem;
+        gap: 10px;
+    }
+
+    .sidebar.mobile .home-btn span {
+        display: inline;
+    }
+
+    /* Mobile overlay */
+    .mobile-sidebar-overlay {
+        position: fixed;
+        top: 64px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1040;
+    }
+
+    /* Adjust dashboard main for mobile */
     .dashboard-main {
         margin-left: 0 !important;
+        margin-top: 64px; /* Account for mobile navbar */
+        padding: 1rem;
     }
+}
+
+/* Profile avatar placeholder in dashboard */
+.profile-avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #b91c1c;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 18px;
 }

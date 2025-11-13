@@ -109,7 +109,7 @@ function Shop() {
           // Add to favourites
           await API.post(
             "/favourites",
-            { flowerId: flower.flower_id },
+            { flower_id: flower.flower_id },
             { headers: { Authorization: `Bearer ${token}` } }
           );
           setFavourites([...favourites, flower]);
