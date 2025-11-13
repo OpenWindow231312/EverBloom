@@ -9,6 +9,7 @@ const fs = require("fs");
 
 const reviewController = require("../controllers/reviewController");
 const { requireAuth, requireRole } = require("../middleware/authMiddleware");
+const { apiLimiter, uploadLimiter } = require("../middleware/rateLimiter");
 
 // ===============================
 // 📁 Multer Configuration for Review Images
@@ -48,7 +49,7 @@ const upload = multer({
 // ===============================
 // ➕ Add a new review (authenticated users)
 // ===============================
-router.post("/", requireAuth, upload.single('reviewImage'), reviewController.addReview);
+router.post("/", uploadLimiter, requireAuth, upload.single('reviewImage'), reviewController.addReview);
 
 // ===============================
 // 📖 Get reviews for a specific flower (public)
@@ -58,26 +59,26 @@ router.get("/flower/:flowerId", reviewController.getFlowerReviews);
 // ===============================
 // 📖 Get current user's reviews (authenticated)
 // ===============================
-router.get("/my-reviews", requireAuth, reviewController.getUserReviews);
+router.get("/my-reviews", apiLimiter, requireAuth, reviewController.getUserReviews);
 
 // ===============================
 // ✏️ Update a review (owner only)
 // ===============================
-router.put("/:reviewId", requireAuth, upload.single('reviewImage'), reviewController.updateReview);
+router.put("/:reviewId", uploadLimiter, requireAuth, upload.single('reviewImage'), reviewController.updateReview);
 
 // ===============================
 // 🗑️ Delete a review (owner only)
 // ===============================
-router.delete("/:reviewId", requireAuth, reviewController.deleteReview);
+router.delete("/:reviewId", apiLimiter, requireAuth, reviewController.deleteReview);
 
 // ===============================
 // 📧 Admin: Send follow-up email (admin only)
 // ===============================
-router.post("/:reviewId/follow-up", requireAuth, requireRole("Admin"), reviewController.sendFollowUpEmail);
+router.post("/:reviewId/follow-up", apiLimiter, requireAuth, requireRole("Admin"), reviewController.sendFollowUpEmail);
 
 // ===============================
 // 📖 Get all reviews (admin only)
 // ===============================
-router.get("/", requireAuth, requireRole("Admin"), reviewController.getAllReviews);
+router.get("/", apiLimiter, requireAuth, requireRole("Admin"), reviewController.getAllReviews);
 
 module.exports = router;
