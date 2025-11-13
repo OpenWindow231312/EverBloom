@@ -9,7 +9,10 @@ const fs = require("fs");
 
 const { User, Address, PaymentMethod } = require("../models");
 const { requireAuth } = require("../middleware/authMiddleware");
-const { uploadLimiter } = require("../middleware/rateLimiter");
+const { uploadLimiter, apiLimiter } = require("../middleware/rateLimiter");
+
+// Apply API rate limiter to all profile routes
+router.use(apiLimiter);
 
 // Configure multer for profile photo uploads
 const storage = multer.diskStorage({
