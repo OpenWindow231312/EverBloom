@@ -15,6 +15,7 @@ import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Cart from "./pages/Cart";
 import Favourites from "./pages/Favourites";
+import Account from "./pages/Account";
 
 // 🔒 Protected route wrapper
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -45,6 +46,7 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/cart" element={<Cart />} />
       <Route path="/favourites" element={<Favourites />} />
+      <Route path="/account" element={<Account />} />
       {/* ===========================
           🌸 Protected Dashboard
       =========================== */}
