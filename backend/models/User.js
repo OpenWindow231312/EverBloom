@@ -28,6 +28,15 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: true,
       },
+      profilePhoto: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        defaultValue: null,
+      },
+      phone: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
     },
     {
       tableName: "Users",

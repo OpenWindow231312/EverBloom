@@ -50,6 +50,44 @@
     font-family: "Poppins", sans-serif;
 }
 
+/* Password input wrapper for toggle button */
+.password-input-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 20px;
+}
+
+.password-input-wrapper .signup-input {
+    margin-bottom: 0;
+    padding-right: 45px;
+}
+
+.password-toggle-btn {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #666;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.2s ease;
+}
+
+.password-toggle-btn:hover {
+    color: #b91c1c;
+}
+
+.password-toggle-btn:focus {
+    outline: none;
+}
+
 .signup-input:hover {
     border-color: #b91c1c;
     /* EverBloom red */

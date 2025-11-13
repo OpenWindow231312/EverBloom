@@ -62,7 +62,21 @@ const {
   ColdroomReservation,
   Discard,
   Review,
+  Address,
+  PaymentMethod,
 } = db;
+
+// ✅ USER ↔ ADDRESS (1:M)
+if (User && Address) {
+  User.hasMany(Address, { foreignKey: "user_id" });
+  Address.belongsTo(User, { foreignKey: "user_id" });
+}
+
+// ✅ USER ↔ PAYMENT METHOD (1:M)
+if (User && PaymentMethod) {
+  User.hasMany(PaymentMethod, { foreignKey: "user_id" });
+  PaymentMethod.belongsTo(User, { foreignKey: "user_id" });
+}
 
 // ✅ USER ↔ ROLE (Many-to-Many)
 if (User && Role && UserRole) {

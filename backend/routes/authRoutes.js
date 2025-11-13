@@ -7,6 +7,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const { User, Role, UserRole } = require("../models");
+const { sendOTP, verifyOTP } = require("../utils/emailService");
 
 // ========================================
 // 🔐 Helper to sign JWT
@@ -15,6 +16,57 @@ const signToken = (payload) =>
   jwt.sign(payload, process.env.JWT_SECRET || "everbloom_secret", {
     expiresIn: "7d",
   });
+
+// ========================================
+// 📧 SEND OTP FOR EMAIL VERIFICATION
+// POST /api/auth/send-otp
+// ========================================
+router.post("/send-otp", async (req, res) => {
+  try {
+    const { email, fullName } = req.body;
+
+    if (!email || !fullName) {
+      return res.status(400).json({ error: "Email and name are required" });
+    }
+
+    // Check if email is already registered
+    const existingUser = await User.findOne({ where: { email } });
+    if (existingUser) {
+      return res.status(400).json({ error: "Email already registered" });
+    }
+
+    const result = await sendOTP(email, fullName);
+    res.json({ message: result.message });
+  } catch (error) {
+    console.error("❌ Send OTP error:", error);
+    res.status(500).json({ error: "Failed to send verification code" });
+  }
+});
+
+// ========================================
+// ✅ VERIFY OTP
+// POST /api/auth/verify-otp
+// ========================================
+router.post("/verify-otp", async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      return res.status(400).json({ error: "Email and OTP are required" });
+    }
+
+    const result = verifyOTP(email, otp);
+    
+    if (result.valid) {
+      res.json({ message: result.message, verified: true });
+    } else {
+      res.status(400).json({ error: result.message, verified: false });
+    }
+  } catch (error) {
+    console.error("❌ Verify OTP error:", error);
+    res.status(500).json({ error: "Failed to verify OTP" });
+  }
+});
 
 // ========================================
 // 🪴 REGISTER USER (with role + discount logic)

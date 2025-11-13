@@ -3,7 +3,7 @@
 // ========================================
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaTimes } from "react-icons/fa"; // ✅ added
+import { FaTimes, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Signup.css";
 
 function Signup() {
@@ -15,6 +15,7 @@ function Signup() {
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   // 🪶 Handle input
@@ -91,15 +92,25 @@ function Signup() {
             required
           />
 
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            className="signup-input"
-            value={formData.password}
-            onChange={handleChange}
-            required
-          />
+          <div className="password-input-wrapper">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              className="signup-input"
+              value={formData.password}
+              onChange={handleChange}
+              required
+            />
+            <button
+              type="button"
+              className="password-toggle-btn"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
 
           {/* 🌸 Role selector */}
           <label className="role-label">Select your role:</label>

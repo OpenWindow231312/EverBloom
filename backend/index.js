@@ -53,6 +53,7 @@ app.set("trust proxy", true); // Important for Render
 // 🛣️ API Routes
 // ========================
 app.use("/api/auth", require("./routes/authRoutes"));
+app.use("/api/profile", require("./routes/profileRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/flowers", require("./routes/flowerRoutes"));
 app.use("/api/harvests", require("./routes/harvestRoutes"));
@@ -64,6 +65,12 @@ app.use("/api/reviews", require("./routes/reviewRoutes"));
 app.use("/api/stock", require("./routes/stockRoutes"));
 app.use("/api/dashboard", require("./routes/dashboardRoutes"));
 app.use("/api/shop", require("./routes/shopRoutes"));
+
+// ========================
+// 📁 Serve Static Files (Uploads)
+// ========================
+const path = require("path");
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // ========================
 // 💓 Health + Root

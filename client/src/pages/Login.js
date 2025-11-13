@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaTimes } from "react-icons/fa";
+import { FaTimes, FaEye, FaEyeSlash } from "react-icons/fa";
 import "./Login.css";
 import FlowerField1 from "../assets/FlowerField1.jpeg";
 
@@ -8,6 +8,7 @@ function Login() {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -98,16 +99,26 @@ function Login() {
             required
             autoComplete="email"
           />
-          <input
-            type="password"
-            name="password"
-            placeholder="Password"
-            className="login-input"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            autoComplete="current-password"
-          />
+          <div className="password-input-wrapper">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              placeholder="Password"
+              className="login-input"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              autoComplete="current-password"
+            />
+            <button
+              type="button"
+              className="password-toggle-btn"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <FaEyeSlash /> : <FaEye />}
+            </button>
+          </div>
 
           <Link to="/forgot-password" className="forgot-password-link">
             Forgot Password?
