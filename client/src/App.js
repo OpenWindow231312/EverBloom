@@ -29,6 +29,7 @@ import DashboardOrders from "./pages/dashboard/DashboardOrders";
 import DashboardInventory from "./pages/dashboard/DashboardInventory";
 import DashboardUsers from "./pages/dashboard/DashboardUsers";
 import DashboardHarvest from "./pages/dashboard/dashboardHarvest";
+import DashboardReviews from "./pages/dashboard/DashboardReviews";
 
 function App() {
   return (
@@ -66,6 +67,7 @@ function App() {
         <Route path="inventory" element={<DashboardInventory />} />
         <Route path="users" element={<DashboardUsers />} />
         <Route path="harvest" element={<DashboardHarvest />} />
+        <Route path="reviews" element={<DashboardReviews />} />
       </Route>
       {/* ===========================
           ❌ 404 Fallback

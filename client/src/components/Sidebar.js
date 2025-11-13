@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   Boxes,
   Users,
+  Star,
 } from "lucide-react";
 import { FaHome } from "react-icons/fa";
 import "../styles/sidebar.css";
@@ -42,6 +43,7 @@ export default function Sidebar() {
     { to: "/dashboard/orders", label: "Orders", icon: ShoppingCart },
     { to: "/dashboard/inventory", label: "Inventory", icon: Boxes },
     { to: "/dashboard/users", label: "Users", icon: Users },
+    { to: "/dashboard/reviews", label: "Reviews", icon: Star },
   ];
 
   const handleNavClick = () => {
