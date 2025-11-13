@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 
 const { User, Role, UserRole } = require("../models");
 const { sendOTP, verifyOTP } = require("../utils/emailService");
+const { authLimiter, otpLimiter } = require("../middleware/rateLimiter");
 
 // ========================================
 // 🔐 Helper to sign JWT
@@ -21,7 +22,7 @@ const signToken = (payload) =>
 // 📧 SEND OTP FOR EMAIL VERIFICATION
 // POST /api/auth/send-otp
 // ========================================
-router.post("/send-otp", async (req, res) => {
+router.post("/send-otp", otpLimiter, async (req, res) => {
   try {
     const { email, fullName } = req.body;
 
@@ -47,7 +48,7 @@ router.post("/send-otp", async (req, res) => {
 // ✅ VERIFY OTP
 // POST /api/auth/verify-otp
 // ========================================
-router.post("/verify-otp", async (req, res) => {
+router.post("/verify-otp", authLimiter, async (req, res) => {
   try {
     const { email, otp } = req.body;
 
@@ -72,7 +73,7 @@ router.post("/verify-otp", async (req, res) => {
 // 🪴 REGISTER USER (with role + discount logic)
 // POST /api/auth/register
 // ========================================
-router.post("/register", async (req, res) => {
+router.post("/register", authLimiter, async (req, res) => {
   try {
     const { fullName, email, password, role } = req.body;
 
@@ -141,7 +142,7 @@ router.post("/register", async (req, res) => {
 // 🔹 LOGIN USER
 // POST /api/auth/login
 // ========================================
-router.post("/login", async (req, res) => {
+router.post("/login", authLimiter, async (req, res) => {
   try {
     const { email, password } = req.body;
 

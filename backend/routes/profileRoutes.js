@@ -8,7 +8,8 @@ const path = require("path");
 const fs = require("fs");
 
 const { User, Address, PaymentMethod } = require("../models");
-const { requireAuth } = require("../middleware/requireAuth");
+const { requireAuth } = require("../middleware/authMiddleware");
+const { uploadLimiter } = require("../middleware/rateLimiter");
 
 // Configure multer for profile photo uploads
 const storage = multer.diskStorage({
@@ -106,7 +107,7 @@ router.put("/", requireAuth, async (req, res) => {
 // 📷 UPLOAD PROFILE PHOTO
 // POST /api/profile/photo
 // ========================================
-router.post("/photo", requireAuth, upload.single("profilePhoto"), async (req, res) => {
+router.post("/photo", uploadLimiter, requireAuth, upload.single("profilePhoto"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
