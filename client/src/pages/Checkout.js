@@ -56,7 +56,7 @@ function Checkout() {
     } finally {
       setLoading(false);
     }
-  }, [navigate]);
+  }, [navigate, API_URL]);
 
   useEffect(() => {
     // Load cart

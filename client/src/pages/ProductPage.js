@@ -2,7 +2,7 @@
 // 🌸 EverBloom — Individual Product Page (with Dynamic SEO)
 // ========================================
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import "./ProductPage.css";
 import API from "../api/api";
 import { Heart, ShoppingBag } from "lucide-react";
@@ -12,7 +12,6 @@ import { Helmet } from "react-helmet-async";
 
 function ProductPage() {
   const { id } = useParams(); // URL param (flower_id)
-  const navigate = useNavigate();
 
   const [flower, setFlower] = useState(null);
   const [quantity, setQuantity] = useState(1);

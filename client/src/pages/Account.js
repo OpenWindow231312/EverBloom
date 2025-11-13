@@ -102,7 +102,7 @@ function Account() {
     } finally {
       setLoading(false);
     }
-  }, [navigate]);
+  }, [navigate, API_URL]);
 
   useEffect(() => {
     fetchProfile();
