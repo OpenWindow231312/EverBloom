@@ -6,10 +6,8 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
-import api from "../api/api";
 import "../styles/shop/Shop.css";
 import "../pages/Cart.css";
-import "../styles/shop/CartSuccessPopup.css"; // ✅ new popup style
 
 function Cart() {
   const [cart, setCart] = useState([]);
@@ -202,22 +200,6 @@ function Cart() {
 
             <button className="checkout-btn" onClick={handleCheckout}>
               Proceed to Checkout
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* ✅ Success Popup */}
-      {showPopup && (
-        <div className="cart-success-popup">
-          <div className="popup-content">
-            <h2>🎉 Order Successful!</h2>
-            <p>
-              Your order number is <strong>#{orderNumber}</strong>.
-            </p>
-            <p>Check your email for delivery details.</p>
-            <button className="btn-primary" onClick={() => navigate("/shop")}>
-              Continue Shopping
             </button>
           </div>
         </div>

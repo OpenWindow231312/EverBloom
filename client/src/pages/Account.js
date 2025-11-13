@@ -1,7 +1,7 @@
 // ========================================
 // 🌸 EverBloom — Account/Profile Page
 // ========================================
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaMapMarkerAlt, FaCreditCard, FaCamera, FaPlus, FaTrash, FaEdit } from "react-icons/fa";
 import NavBar from "../components/NavBar";
@@ -57,11 +57,7 @@ function Account() {
     phone: "",
   });
 
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -93,7 +89,11 @@ function Account() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    fetchProfile();
+  }, [fetchProfile]);
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();

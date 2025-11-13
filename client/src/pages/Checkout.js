@@ -1,7 +1,7 @@
 // ========================================
 // 🌸 EverBloom — Checkout Page
 // ========================================
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
@@ -25,16 +25,7 @@ function Checkout() {
     process.env.REACT_APP_API_URL ||
     "http://localhost:5001";
 
-  useEffect(() => {
-    // Load cart
-    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    setCart(savedCart);
-
-    // Fetch user profile data
-    fetchUserData();
-  }, []);
-
-  const fetchUserData = async () => {
+  const fetchUserData = useCallback(async () => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -65,7 +56,16 @@ function Checkout() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [navigate]);
+
+  useEffect(() => {
+    // Load cart
+    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
+    setCart(savedCart);
+
+    // Fetch user profile data
+    fetchUserData();
+  }, [fetchUserData]);
 
   // Calculate totals
   const num = (val) => Number(val) || 0;
