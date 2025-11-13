@@ -3,7 +3,7 @@
 // ========================================
 import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUser, FaMapMarkerAlt, FaCreditCard, FaCamera, FaPlus, FaTrash, FaEdit } from "react-icons/fa";
+import { FaUser, FaMapMarkerAlt, FaCreditCard, FaCamera, FaPlus, FaTrash, FaEdit, FaShoppingBag } from "react-icons/fa";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 import "./Account.css";
@@ -12,6 +12,7 @@ function Account() {
   const [user, setUser] = useState(null);
   const [addresses, setAddresses] = useState([]);
   const [paymentMethods, setPaymentMethods] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [activeTab, setActiveTab] = useState("profile");
@@ -83,13 +84,25 @@ function Account() {
       } else {
         setError(data.error || "Failed to load profile");
       }
+
+      // Fetch user orders
+      const ordersRes = await fetch(`${API_URL}/api/orders/my-orders`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (ordersRes.ok) {
+        const ordersData = await ordersRes.json();
+        setOrders(ordersData);
+      }
     } catch (err) {
       console.error("Error fetching profile:", err);
       setError("Server error");
     } finally {
       setLoading(false);
     }
-  }, [navigate]);
+  }, [navigate, API_URL]);
 
   useEffect(() => {
     fetchProfile();
@@ -331,6 +344,12 @@ function Account() {
             <FaUser /> Profile
           </button>
           <button
+            className={`tab ${activeTab === "orders" ? "active" : ""}`}
+            onClick={() => setActiveTab("orders")}
+          >
+            <FaShoppingBag /> Orders
+          </button>
+          <button
             className={`tab ${activeTab === "addresses" ? "active" : ""}`}
             onClick={() => setActiveTab("addresses")}
           >
@@ -424,6 +443,65 @@ function Account() {
                 >
                   <FaEdit /> Edit Profile
                 </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Orders Tab */}
+        {activeTab === "orders" && (
+          <div className="tab-content">
+            <h2>My Orders</h2>
+            {orders.length === 0 ? (
+              <p>You haven't placed any orders yet.</p>
+            ) : (
+              <div className="orders-list">
+                {orders.map((order) => (
+                  <div key={order.order_id} className="order-card">
+                    <div className="order-header">
+                      <div>
+                        <h3>Order #{order.order_id}</h3>
+                        <p className="order-date">
+                          {new Date(order.createdAt).toLocaleDateString('en-US', {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                      <div className="order-status-container">
+                        <span className={`order-status status-${order.status.toLowerCase().replace(/\s+/g, '-')}`}>
+                          {order.status}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="order-items">
+                      {order.OrderItems && order.OrderItems.map((item) => (
+                        <div key={item.order_item_id} className="order-item">
+                          <div className="order-item-details">
+                            <span className="item-name">
+                              {item.Flower?.variety || 'Flower'}
+                            </span>
+                            <span className="item-quantity">
+                              Qty: {item.quantityOrdered}
+                            </span>
+                          </div>
+                          <span className="item-price">
+                            R{(item.unitPrice * item.quantityOrdered).toFixed(2)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="order-footer">
+                      <div className="order-delivery">
+                        <strong>Delivery Method:</strong> {order.pickupOrDelivery}
+                      </div>
+                      <div className="order-total">
+                        <strong>Total:</strong> R{parseFloat(order.totalAmount).toFixed(2)}
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             )}
           </div>

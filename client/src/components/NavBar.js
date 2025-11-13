@@ -20,6 +20,12 @@ function NavBar() {
   const navigate = useNavigate();
   const handleMenuToggle = () => setMenuOpen(!menuOpen);
 
+  // API URL configuration
+  const API_URL =
+    import.meta.env?.VITE_API_URL ||
+    process.env.REACT_APP_API_URL ||
+    "http://localhost:5001";
+
   // ✅ Load logged-in user
   useEffect(() => {
     const loadUser = async () => {
@@ -188,7 +194,7 @@ function NavBar() {
               >
                 {currentUser.profilePhoto ? (
                   <img 
-                    src={currentUser.profilePhoto} 
+                    src={`${API_URL}${currentUser.profilePhoto}`} 
                     alt={currentUser.fullName} 
                     className="profile-avatar"
                   />

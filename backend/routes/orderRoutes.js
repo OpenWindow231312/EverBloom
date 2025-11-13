@@ -6,6 +6,27 @@ const router = express.Router();
 const { Order, OrderItem, Flower, User } = require("../models");
 const { requireAuth, requireRole } = require("../middleware/authMiddleware");
 
+// 🧾 Get user's own orders
+router.get("/my-orders", requireAuth, async (req, res) => {
+  try {
+    const orders = await Order.findAll({
+      where: { user_id: req.user.user_id },
+      include: [
+        {
+          model: OrderItem,
+          as: "OrderItems",
+          include: [{ model: Flower, as: "Flower" }],
+        },
+      ],
+      order: [["order_id", "DESC"]],
+    });
+    res.json(orders);
+  } catch (err) {
+    console.error("❌ Error fetching user orders:", err);
+    res.status(500).json({ message: "Error fetching orders" });
+  }
+});
+
 // 🧾 Get all orders (Admin/Employee)
 router.get(
   "/",

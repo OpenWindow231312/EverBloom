@@ -625,3 +625,23 @@
         font-size: 1rem;
     }
 }
+
+/* Return to Shop Button */
+.btn-return-to-shop {
+    display: inline-block;
+    margin-top: 1rem;
+    padding: 12px 28px;
+    background: #b91c1c;
+    color: white;
+    text-decoration: none;
+    border-radius: 25px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(185, 28, 28, 0.2);
+}
+
+.btn-return-to-shop:hover {
+    background: #a11118;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(185, 28, 28, 0.3);
+}
