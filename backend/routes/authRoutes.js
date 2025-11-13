@@ -40,7 +40,15 @@ router.post("/send-otp", otpLimiter, async (req, res) => {
     res.json({ message: result.message });
   } catch (error) {
     console.error("❌ Send OTP error:", error);
-    res.status(500).json({ error: "Failed to send verification code" });
+    console.error("Error details:", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+    res.status(500).json({ 
+      error: "Failed to send verification code",
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
@@ -98,10 +106,11 @@ router.post("/register", authLimiter, async (req, res) => {
       isActive: true,
     });
 
-    // 4️⃣ Find role (must match DB column exactly)
-    const selectedRole = await Role.findOne({ where: { roleName: role } });
+    // 4️⃣ Find or create role
+    let selectedRole = await Role.findOne({ where: { roleName: role } });
     if (!selectedRole) {
-      return res.status(400).json({ error: "Invalid role selected" });
+      // Create the role if it doesn't exist
+      selectedRole = await Role.create({ roleName: role });
     }
 
     // 5️⃣ Link role to user
@@ -134,7 +143,15 @@ router.post("/register", authLimiter, async (req, res) => {
     });
   } catch (err) {
     console.error("❌ Register error:", err);
-    res.status(500).json({ error: "Server error during registration" });
+    console.error("Error details:", {
+      message: err.message,
+      stack: err.stack,
+      name: err.name
+    });
+    res.status(500).json({ 
+      error: "Server error during registration",
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
   }
 });
 
@@ -182,9 +199,14 @@ router.post("/login", authLimiter, async (req, res) => {
     });
   } catch (err) {
     console.error("❌ Login error:", err);
+    console.error("Error details:", {
+      message: err.message,
+      stack: err.stack,
+      name: err.name
+    });
     res.status(500).json({
       error: "Server error during login",
-      details: err.message,
+      details: process.env.NODE_ENV === 'development' ? err.message : undefined
     });
   }
 });

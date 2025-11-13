@@ -8,6 +8,15 @@ const path = require("path");
 // ----------------------------
 // DB Connection (Render / Cloud SQL compatible)
 // ----------------------------
+const dialectOptions = process.env.NODE_ENV === 'production' 
+  ? {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    }
+  : {};
+
 const sequelize = new Sequelize(
   process.env.DB_NAME,
   process.env.DB_USER,
@@ -16,12 +25,7 @@ const sequelize = new Sequelize(
     host: process.env.DB_HOST,
     dialect: process.env.DB_DIALECT || "mysql",
     logging: false,
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      },
-    },
+    dialectOptions,
     pool: {
       max: 5,
       min: 0,
