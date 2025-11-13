@@ -54,6 +54,7 @@ app.set("trust proxy", true); // Important for Render
 // ========================
 app.use("/api/auth", require("./routes/authRoutes"));
 app.use("/api/profile", require("./routes/profileRoutes"));
+app.use("/api/favourites", require("./routes/favouriteRoutes"));
 app.use("/api/users", require("./routes/userRoutes"));
 app.use("/api/flowers", require("./routes/flowerRoutes"));
 app.use("/api/harvests", require("./routes/harvestRoutes"));

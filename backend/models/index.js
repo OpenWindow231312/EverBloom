@@ -68,6 +68,7 @@ const {
   Review,
   Address,
   PaymentMethod,
+  Favourite,
 } = db;
 
 // ✅ USER ↔ ADDRESS (1:M)
@@ -154,6 +155,14 @@ if (Review && User && Store) {
   Review.belongsTo(Store, { foreignKey: "store_id" });
   User.hasMany(Review, { foreignKey: "user_id" });
   Store.hasMany(Review, { foreignKey: "store_id" });
+}
+
+// ✅ FAVOURITE ↔ USER + FLOWER (User's favourite flowers)
+if (Favourite && User && Flower) {
+  Favourite.belongsTo(User, { foreignKey: "user_id" });
+  Favourite.belongsTo(Flower, { foreignKey: "flower_id" });
+  User.hasMany(Favourite, { foreignKey: "user_id" });
+  Flower.hasMany(Favourite, { foreignKey: "flower_id" });
 }
 
 // ----------------------------
