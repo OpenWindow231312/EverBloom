@@ -6,11 +6,25 @@ const API_URL =
   process.env.REACT_APP_API_URL ||
   "http://localhost:5001";
 
+// ✅ Check if user is authenticated
+export function isAuthenticated() {
+  const token = localStorage.getItem("token");
+  return !!token;
+}
+
+// ✅ Get stored token
+export function getToken() {
+  return localStorage.getItem("token");
+}
+
 // ✅ Fetch the current logged-in user
 export async function fetchCurrentUser() {
   try {
     const token = localStorage.getItem("token");
-    if (!token) return null;
+    // Return null immediately if no token - don't make API call
+    if (!token) {
+      return null;
+    }
 
     // 🧠 Actually store the fetch result in a variable
     const res = await fetch(`${API_URL}/api/auth/me`, {
@@ -21,7 +35,15 @@ export async function fetchCurrentUser() {
     });
 
     if (!res.ok) {
-      console.warn("⚠️ Failed to fetch user:", res.status);
+      // If token is invalid, clear it
+      if (res.status === 401) {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+      }
+      // Only log warning if we actually had a token (not expected 401)
+      if (token) {
+        console.warn("⚠️ Token is invalid or expired");
+      }
       return null;
     }
 
