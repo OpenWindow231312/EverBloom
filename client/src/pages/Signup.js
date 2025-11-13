@@ -120,7 +120,6 @@ function Signup() {
       setLoading(false);
     }
   };
-  };
 
   return (
     <div className="signup-page">
