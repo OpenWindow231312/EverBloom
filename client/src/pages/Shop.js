@@ -12,6 +12,7 @@ import API from "../api/api";
 import "../styles/shop/Shop.css";
 import "../styles/shop/CartSummaryPopup.css";
 import { Helmet } from "react-helmet-async";
+import { isAuthenticated, getToken } from "../utils/auth";
 
 function Shop() {
   const [flowers, setFlowers] = useState([]);
@@ -25,9 +26,7 @@ function Shop() {
   const [sortBy, setSortBy] = useState("");
 
   // ❤️ Favourites
-  const [favourites, setFavourites] = useState(
-    JSON.parse(localStorage.getItem("favourites")) || []
-  );
+  const [favourites, setFavourites] = useState([]);
 
   // 🛒 Cart
   const [cart, setCart] = useState(
@@ -37,6 +36,9 @@ function Shop() {
   // 🪄 Popup summary
   const [showSummary, setShowSummary] = useState(false);
   const [lastAdded, setLastAdded] = useState(null);
+
+  // 🌸 Welcome modal
+  const [showWelcome, setShowWelcome] = useState(false);
 
   // 📄 Pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -58,23 +60,77 @@ function Shop() {
       }
     };
     fetchFlowers();
+
+    // Show welcome modal on first visit
+    const hasSeenWelcome = sessionStorage.getItem("hasSeenWelcome");
+    if (!hasSeenWelcome) {
+      setShowWelcome(true);
+      sessionStorage.setItem("hasSeenWelcome", "true");
+    }
+  }, []);
+
+  // 🪴 Fetch favourites (from backend if logged in, else localStorage)
+  useEffect(() => {
+    const fetchFavourites = async () => {
+      if (isAuthenticated()) {
+        try {
+          const token = getToken();
+          const res = await API.get("/favourites", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setFavourites(res.data);
+        } catch (err) {
+          console.error("Error fetching favourites:", err);
+          // Fallback to localStorage
+          setFavourites(JSON.parse(localStorage.getItem("favourites")) || []);
+        }
+      } else {
+        setFavourites(JSON.parse(localStorage.getItem("favourites")) || []);
+      }
+    };
+    fetchFavourites();
   }, []);
 
   // ❤️ Toggle favourite
-  const toggleFavourite = (flower) => {
-    let updatedFavourites;
+  const toggleFavourite = async (flower) => {
     const exists = favourites.find((f) => f.flower_id === flower.flower_id);
 
-    if (exists) {
-      updatedFavourites = favourites.filter(
-        (f) => f.flower_id !== flower.flower_id
-      );
+    if (isAuthenticated()) {
+      // Save to backend
+      try {
+        const token = getToken();
+        if (exists) {
+          // Remove from favourites
+          await API.delete(`/favourites/${flower.flower_id}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          setFavourites(favourites.filter((f) => f.flower_id !== flower.flower_id));
+        } else {
+          // Add to favourites
+          await API.post(
+            "/favourites",
+            { flowerId: flower.flower_id },
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          setFavourites([...favourites, flower]);
+        }
+      } catch (err) {
+        console.error("Error toggling favourite:", err);
+        alert("Could not update favourites. Please try again.");
+      }
     } else {
-      updatedFavourites = [...favourites, flower];
+      // Save to localStorage (guest users)
+      let updatedFavourites;
+      if (exists) {
+        updatedFavourites = favourites.filter(
+          (f) => f.flower_id !== flower.flower_id
+        );
+      } else {
+        updatedFavourites = [...favourites, flower];
+      }
+      setFavourites(updatedFavourites);
+      localStorage.setItem("favourites", JSON.stringify(updatedFavourites));
     }
-
-    setFavourites(updatedFavourites);
-    localStorage.setItem("favourites", JSON.stringify(updatedFavourites));
   };
 
   // 🛒 Add to cart
@@ -335,6 +391,25 @@ function Shop() {
             <button className="popup-btn" onClick={() => navigate("/cart")}>
               View Cart
             </button>
+          </div>
+        )}
+
+        {/* 🌸 Welcome Modal */}
+        {showWelcome && (
+          <div className="welcome-modal-backdrop" onClick={() => setShowWelcome(false)}>
+            <div className="welcome-modal" onClick={(e) => e.stopPropagation()}>
+              <h2>Welcome to EverBloom! 🌸</h2>
+              <p>
+                Add your favourite flowers to cart — per stem and we'll bunch them up
+                beautifully for you, or save them to your favourites for later!
+              </p>
+              <button
+                className="welcome-btn"
+                onClick={() => setShowWelcome(false)}
+              >
+                Start Shopping
+              </button>
+            </div>
           </div>
         )}
 

@@ -1,14 +1,15 @@
 // ========================================
-// 🌸 EverBloom — Favourites Page (with SEO + Recommendations)
+// 🌸 EverBloom — Favourites Page (with Backend Integration)
 // ========================================
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { FaHeartBroken } from "react-icons/fa";
 import NavBar from "../components/NavBar";
 import Footer from "../components/Footer";
 import ProductCard from "../components/ProductCard";
 import API from "../api/api";
+import { isAuthenticated } from "../utils/auth";
 import "../styles/shop/Shop.css";
 import "../components/ProductCard.css";
 import { Helmet } from "react-helmet-async";
@@ -18,11 +19,29 @@ function Favourites() {
   const [flowers, setFlowers] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🌸 Load favourites from localStorage
-  useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("favourites")) || [];
-    setFavourites(saved);
+  // 🌸 Load favourites (backend if logged in, localStorage if guest)
+  const loadFavourites = useCallback(async () => {
+    try {
+      if (isAuthenticated()) {
+        // Fetch from backend for logged-in users
+        const res = await API.get("/favourites");
+        setFavourites(res.data);
+      } else {
+        // Use localStorage for guests
+        const saved = JSON.parse(localStorage.getItem("favourites")) || [];
+        setFavourites(saved);
+      }
+    } catch (err) {
+      console.error("Error loading favourites:", err);
+      // Fallback to localStorage
+      const saved = JSON.parse(localStorage.getItem("favourites")) || [];
+      setFavourites(saved);
+    }
   }, []);
+
+  useEffect(() => {
+    loadFavourites();
+  }, [loadFavourites]);
 
   // 🌺 Fetch all flowers for recommendation carousel
   useEffect(() => {
@@ -40,10 +59,25 @@ function Favourites() {
   }, []);
 
   // ❤️ Remove favourite
-  const removeFavourite = (id) => {
-    const updated = favourites.filter((f) => f.flower_id !== id);
-    setFavourites(updated);
-    localStorage.setItem("favourites", JSON.stringify(updated));
+  const removeFavourite = async (id) => {
+    try {
+      if (isAuthenticated()) {
+        // Remove from backend
+        await API.delete(`/favourites/${id}`);
+      } else {
+        // Remove from localStorage
+        const updated = favourites.filter((f) => f.flower_id !== id);
+        localStorage.setItem("favourites", JSON.stringify(updated));
+      }
+      // Reload favourites
+      loadFavourites();
+    } catch (err) {
+      console.error("Error removing favourite:", err);
+      // Fallback to localStorage
+      const updated = favourites.filter((f) => f.flower_id !== id);
+      setFavourites(updated);
+      localStorage.setItem("favourites", JSON.stringify(updated));
+    }
   };
 
   // 🛒 Add to cart
