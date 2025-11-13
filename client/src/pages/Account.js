@@ -42,6 +42,7 @@ function Account() {
   // Card form state
   const [cardForm, setCardForm] = useState({
     cardholderName: "",
+    nickname: "",
     cardType: "Visa",
     lastFourDigits: "",
     expiryMonth: "",
@@ -280,6 +281,7 @@ function Account() {
   const resetCardForm = () => {
     setCardForm({
       cardholderName: "",
+      nickname: "",
       cardType: "Visa",
       lastFourDigits: "",
       expiryMonth: "",
@@ -497,6 +499,7 @@ function Account() {
                   <div key={card.payment_id} className="payment-card">
                     {card.isDefault && <span className="default-badge">Default</span>}
                     <div className="card-type">{card.cardType}</div>
+                    {card.nickname && <div className="card-nickname">{card.nickname}</div>}
                     <div className="card-number">•••• •••• •••• {card.lastFourDigits}</div>
                     <div className="card-holder">{card.cardholderName}</div>
                     <div className="card-expiry">
@@ -650,6 +653,17 @@ function Account() {
                     setCardForm({ ...cardForm, cardholderName: e.target.value })
                   }
                   required
+                />
+              </div>
+              <div className="form-group">
+                <label>Card Nickname (Optional)</label>
+                <input
+                  type="text"
+                  placeholder="e.g., Personal Visa, Work Card"
+                  value={cardForm.nickname}
+                  onChange={(e) =>
+                    setCardForm({ ...cardForm, nickname: e.target.value })
+                  }
                 />
               </div>
               <div className="form-group">

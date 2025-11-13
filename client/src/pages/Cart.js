@@ -13,8 +13,6 @@ import "../styles/shop/CartSuccessPopup.css"; // ✅ new popup style
 
 function Cart() {
   const [cart, setCart] = useState([]);
-  const [showPopup, setShowPopup] = useState(false);
-  const [orderNumber, setOrderNumber] = useState(null);
   const navigate = useNavigate();
 
   // 🛒 Load cart from localStorage
@@ -81,42 +79,21 @@ function Cart() {
   // ========================================
   // 💳 Checkout Handler
   // ========================================
-  const handleCheckout = async () => {
-    try {
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (!user) {
-        alert("Please log in to place an order.");
-        navigate("/login");
-        return;
-      }
-
-      if (cart.length === 0) {
-        alert("Your cart is empty.");
-        return;
-      }
-
-      const payload = {
-        items: cart,
-        totalAmount: total,
-        pickupOrDelivery: "Delivery",
-      };
-
-      const res = await api.post("/orders", payload);
-
-      if (res?.data?.order) {
-        setOrderNumber(res.data.order.order_id);
-        setShowPopup(true);
-
-        // Clear cart
-        localStorage.removeItem("cart");
-        setCart([]);
-      } else {
-        alert("Failed to create order. Please try again.");
-      }
-    } catch (err) {
-      console.error("❌ Error creating order:", err);
-      alert("Something went wrong while placing your order.");
+  const handleCheckout = () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user) {
+      alert("Please log in to place an order.");
+      navigate("/login");
+      return;
     }
+
+    if (cart.length === 0) {
+      alert("Your cart is empty.");
+      return;
+    }
+
+    // Navigate to checkout page
+    navigate("/checkout");
   };
 
   // ========================================

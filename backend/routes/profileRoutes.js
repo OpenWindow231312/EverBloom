@@ -59,7 +59,7 @@ router.get("/", requireAuth, async (req, res) => {
         },
         {
           model: PaymentMethod,
-          attributes: ["payment_id", "cardholderName", "cardType", "lastFourDigits", "expiryMonth", "expiryYear", "isDefault"],
+          attributes: ["payment_id", "cardholderName", "nickname", "cardType", "lastFourDigits", "expiryMonth", "expiryYear", "isDefault"],
         },
       ],
     });
@@ -276,7 +276,7 @@ router.get("/payment-methods", requireAuth, async (req, res) => {
 // Add new payment method
 router.post("/payment-methods", requireAuth, async (req, res) => {
   try {
-    const { cardholderName, cardType, lastFourDigits, expiryMonth, expiryYear, isDefault } = req.body;
+    const { cardholderName, nickname, cardType, lastFourDigits, expiryMonth, expiryYear, isDefault } = req.body;
 
     if (!cardholderName || !lastFourDigits || !expiryMonth || !expiryYear) {
       return res.status(400).json({ error: "Required card fields are missing" });
@@ -302,6 +302,7 @@ router.post("/payment-methods", requireAuth, async (req, res) => {
     const paymentMethod = await PaymentMethod.create({
       user_id: req.user.user_id,
       cardholderName,
+      nickname: nickname || null,
       cardType: cardType || "Visa",
       lastFourDigits: lastFourDigits.slice(-4),
       expiryMonth,

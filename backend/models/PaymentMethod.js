@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      nickname: {
+        type: DataTypes.STRING,
+        allowNull: true,
+      },
       cardType: {
         type: DataTypes.ENUM("Visa", "Mastercard", "American Express", "Other"),
         defaultValue: "Visa",

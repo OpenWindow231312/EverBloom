@@ -14,6 +14,7 @@ import Rewards from "./pages/Rewards";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 import Favourites from "./pages/Favourites";
 import Account from "./pages/Account";
 
@@ -45,6 +46,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/cart" element={<Cart />} />
+      <Route path="/checkout" element={<Checkout />} />
       <Route path="/favourites" element={<Favourites />} />
       <Route path="/account" element={<Account />} />
       {/* ===========================
