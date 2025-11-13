@@ -45,10 +45,10 @@ ALTER TABLE `Reviews` ADD CONSTRAINT `chk_rating_range` CHECK (`rating` >= 1 AND
 -- ========================================
 -- Uncomment the following lines to add sample reviews
 
--- INSERT INTO `Reviews` (`review_id`, `flower_id`, `user_id`, `rating`, `heading`, `comment`, `image_url`, `createdAt`, `updatedAt`) VALUES
--- (1, 1, 2, 5, 'Absolutely Beautiful!', 'These roses are stunning! Fresh, long-lasting, and the perfect shade of red. Highly recommend for any special occasion.', NULL, NOW(), NOW()),
--- (2, 1, 4, 4, 'Great quality, minor issue', 'The roses were gorgeous and fresh. One stem was slightly shorter than expected, but overall very pleased with the purchase.', NULL, NOW(), NOW()),
--- (3, 2, 3, 5, 'Perfect for my wedding!', 'Used these carnations for my wedding bouquet and they were absolutely perfect. Lasted all day and looked amazing in photos!', NULL, NOW(), NOW());
+INSERT INTO `Reviews` (`review_id`, `flower_id`, `user_id`, `rating`, `heading`, `comment`, `image_url`, `createdAt`, `updatedAt`) VALUES
+(1, 1, 2, 5, 'Absolutely Beautiful!', 'These roses are stunning! Fresh, long-lasting, and the perfect shade of red. Highly recommend for any special occasion.', NULL, NOW(), NOW()),
+(2, 1, 4, 4, 'Great quality, minor issue', 'The roses were gorgeous and fresh. One stem was slightly shorter than expected, but overall very pleased with the purchase.', NULL, NOW(), NOW()),
+(3, 2, 3, 5, 'Perfect for my wedding!', 'Used these carnations for my wedding bouquet and they were absolutely perfect. Lasted all day and looked amazing in photos!', NULL, NOW(), NOW());
 
 -- ========================================
 -- Migration Complete
