@@ -322,3 +322,78 @@
     color: #a11118;
     transform: scale(1.1);
 }
+
+/* ========================================
+   🌸 OTP Verification Styles
+   ======================================== */
+.otp-message {
+    text-align: center;
+    color: #666;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+.otp-message strong {
+    color: #b91c1c;
+}
+
+.otp-input {
+    text-align: center;
+    font-size: 24px;
+    letter-spacing: 8px;
+    font-weight: 600;
+}
+
+.resend-btn,
+.back-btn {
+    width: 100%;
+    max-width: 400px;
+    height: 40px;
+    background-color: transparent;
+    color: #b91c1c;
+    border: 2px solid #b91c1c;
+    border-radius: 30px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: all 0.3s ease;
+}
+
+.resend-btn:hover,
+.back-btn:hover {
+    background-color: #b91c1c;
+    color: white;
+}
+
+.resend-btn:disabled,
+.back-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ========================================
+   🌸 Error and Success Messages
+   ======================================== */
+.error-message {
+    color: #b91c1c;
+    background-color: #fee;
+    border: 1px solid #fcc;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.success-message {
+    color: #059669;
+    background-color: #d1fae5;
+    border: 1px solid #6ee7b7;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+}

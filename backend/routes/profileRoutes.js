@@ -8,7 +8,7 @@ const path = require("path");
 const fs = require("fs");
 
 const { User, Address, PaymentMethod } = require("../models");
-const authMiddleware = require("../middleware/authMiddleware");
+const { requireAuth } = require("../middleware/requireAuth");
 
 // Configure multer for profile photo uploads
 const storage = multer.diskStorage({
@@ -44,7 +44,7 @@ const upload = multer({
 // 👤 GET USER PROFILE
 // GET /api/profile
 // ========================================
-router.get("/", authMiddleware, async (req, res) => {
+router.get("/", requireAuth, async (req, res) => {
   try {
     const user = await User.findByPk(req.user.user_id, {
       attributes: ["user_id", "fullName", "email", "profilePhoto", "phone"],
@@ -75,7 +75,7 @@ router.get("/", authMiddleware, async (req, res) => {
 // 📝 UPDATE USER PROFILE
 // PUT /api/profile
 // ========================================
-router.put("/", authMiddleware, async (req, res) => {
+router.put("/", requireAuth, async (req, res) => {
   try {
     const { fullName, phone } = req.body;
     
@@ -106,7 +106,7 @@ router.put("/", authMiddleware, async (req, res) => {
 // 📷 UPLOAD PROFILE PHOTO
 // POST /api/profile/photo
 // ========================================
-router.post("/photo", authMiddleware, upload.single("profilePhoto"), async (req, res) => {
+router.post("/photo", requireAuth, upload.single("profilePhoto"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({ error: "No file uploaded" });
@@ -144,7 +144,7 @@ router.post("/photo", authMiddleware, upload.single("profilePhoto"), async (req,
 // ========================================
 
 // Get all addresses
-router.get("/addresses", authMiddleware, async (req, res) => {
+router.get("/addresses", requireAuth, async (req, res) => {
   try {
     const addresses = await Address.findAll({
       where: { user_id: req.user.user_id },
@@ -157,7 +157,7 @@ router.get("/addresses", authMiddleware, async (req, res) => {
 });
 
 // Add new address
-router.post("/addresses", authMiddleware, async (req, res) => {
+router.post("/addresses", requireAuth, async (req, res) => {
   try {
     const { addressType, fullName, streetAddress, city, province, postalCode, country, phone, isDefault } = req.body;
 
@@ -194,7 +194,7 @@ router.post("/addresses", authMiddleware, async (req, res) => {
 });
 
 // Update address
-router.put("/addresses/:id", authMiddleware, async (req, res) => {
+router.put("/addresses/:id", requireAuth, async (req, res) => {
   try {
     const address = await Address.findOne({
       where: { address_id: req.params.id, user_id: req.user.user_id },
@@ -234,7 +234,7 @@ router.put("/addresses/:id", authMiddleware, async (req, res) => {
 });
 
 // Delete address
-router.delete("/addresses/:id", authMiddleware, async (req, res) => {
+router.delete("/addresses/:id", requireAuth, async (req, res) => {
   try {
     const address = await Address.findOne({
       where: { address_id: req.params.id, user_id: req.user.user_id },
@@ -257,7 +257,7 @@ router.delete("/addresses/:id", authMiddleware, async (req, res) => {
 // ========================================
 
 // Get all payment methods
-router.get("/payment-methods", authMiddleware, async (req, res) => {
+router.get("/payment-methods", requireAuth, async (req, res) => {
   try {
     const paymentMethods = await PaymentMethod.findAll({
       where: { user_id: req.user.user_id },
@@ -270,7 +270,7 @@ router.get("/payment-methods", authMiddleware, async (req, res) => {
 });
 
 // Add new payment method
-router.post("/payment-methods", authMiddleware, async (req, res) => {
+router.post("/payment-methods", requireAuth, async (req, res) => {
   try {
     const { cardholderName, cardType, lastFourDigits, expiryMonth, expiryYear, isDefault } = req.body;
 
@@ -313,7 +313,7 @@ router.post("/payment-methods", authMiddleware, async (req, res) => {
 });
 
 // Delete payment method
-router.delete("/payment-methods/:id", authMiddleware, async (req, res) => {
+router.delete("/payment-methods/:id", requireAuth, async (req, res) => {
   try {
     const paymentMethod = await PaymentMethod.findOne({
       where: { payment_id: req.params.id, user_id: req.user.user_id },

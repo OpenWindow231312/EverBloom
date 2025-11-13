@@ -266,3 +266,19 @@
     color: #a11118;
     transform: scale(1.1);
 }
+
+/* ========================================
+   🌸 Error Messages
+   ======================================== */
+.error-message {
+    color: #b91c1c;
+    background-color: #fee;
+    border: 1px solid #fcc;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-top: 15px;
+    text-align: center;
+    font-size: 14px;
+    max-width: 400px;
+    width: 100%;
+}
