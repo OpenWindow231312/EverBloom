@@ -1,9 +1,9 @@
 // ========================================
-// 🌸 EverBloom — NavBar (Updated with Role Logic & Search)
+// 🌸 EverBloom — NavBar (Updated with Profile Dropdown)
 // ========================================
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { User, ShoppingBag, Menu, X, Search } from "lucide-react";
+import { User, ShoppingBag, Menu, X, Search, ChevronDown } from "lucide-react";
 import "./NavBar.css";
 import PrimaryLogo from "../assets/PrimaryLogo.svg";
 import API from "../api/api"; // ✅ use your existing API instance
@@ -15,6 +15,7 @@ function NavBar() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [showResults, setShowResults] = useState(false);
+  const [showProfileDropdown, setShowProfileDropdown] = useState(false);
 
   const navigate = useNavigate();
   const handleMenuToggle = () => setMenuOpen(!menuOpen);
@@ -27,6 +28,18 @@ function NavBar() {
     };
     loadUser();
   }, []);
+
+  // ✅ Close profile dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (showProfileDropdown && !event.target.closest('.profile-dropdown-container')) {
+        setShowProfileDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showProfileDropdown]);
 
   // ✅ Handle Search
   const handleSearch = async (e) => {
@@ -168,9 +181,53 @@ function NavBar() {
         {/* Icons */}
         <div className="nav-icons mobile-icons">
           {currentUser ? (
-            <button className="icon-button logout-btn" onClick={handleLogout}>
-              Logout
-            </button>
+            <div className="profile-dropdown-container">
+              <button 
+                className="profile-button" 
+                onClick={() => setShowProfileDropdown(!showProfileDropdown)}
+              >
+                {currentUser.profilePhoto ? (
+                  <img 
+                    src={currentUser.profilePhoto} 
+                    alt={currentUser.fullName} 
+                    className="profile-avatar"
+                  />
+                ) : (
+                  <div className="profile-avatar-placeholder">
+                    {currentUser.fullName?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                )}
+                <ChevronDown size={16} className="profile-chevron" />
+              </button>
+              
+              {showProfileDropdown && (
+                <div className="profile-dropdown">
+                  <div className="profile-dropdown-header">
+                    <p className="profile-name">{currentUser.fullName}</p>
+                    <p className="profile-email">{currentUser.email}</p>
+                  </div>
+                  <div className="profile-dropdown-divider"></div>
+                  <Link 
+                    to="/account" 
+                    className="profile-dropdown-item"
+                    onClick={() => setShowProfileDropdown(false)}
+                  >
+                    <User size={16} />
+                    <span>Profile Settings</span>
+                  </Link>
+                  <div className="profile-dropdown-divider"></div>
+                  <button 
+                    className="profile-dropdown-item logout-item" 
+                    onClick={() => {
+                      handleLogout();
+                      setShowProfileDropdown(false);
+                    }}
+                  >
+                    <span>Logout</span>
+                  </button>
+                </div>
+              )}
+            </div>
           ) : (
             <button className="icon-button" onClick={() => navigate("/login")}>
               <User />
