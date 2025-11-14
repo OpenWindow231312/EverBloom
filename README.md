@@ -1,6 +1,6 @@
 # 🌸 EverBloom — Full-Stack Floral Management & E-Commerce Platform
 
-<img width="4098" height="2400" alt="Hero new" src="https://github.com/user-attachments/assets/6efacbd0-4ed1-4d48-8053-de065a61b5cd" />
+<img width="1797" height="1053" alt="Hero" src="https://github.com/user-attachments/assets/fad3af49-bca7-4188-bb97-46503726a1f0" />
 
 [![Stars](https://img.shields.io/github/stars/OpenWindow231312/EverBloom)](https://github.com/OpenWindow231312/EverBloom/stargazers)
 [![Forks](https://img.shields.io/github/forks/OpenWindow231312/EverBloom)](https://github.com/OpenWindow231312/EverBloom/network/members)
@@ -190,8 +190,8 @@ Installed in `/public/index.html`.
 
 # 🖼️ Mockups & Screens
 
-<img width="4098" height="2400" alt="Overview new" src="https://github.com/user-attachments/assets/0c4ac4f6-e159-4edd-823f-9894f37d4ac4" />
-<img width="8332" height="7538" alt="Frame e6" src="https://github.com/user-attachments/assets/a8913f57-6ed3-4be5-bb07-ea8621596c01" />
+<img width="1797" height="1052" alt="Overview" src="https://github.com/user-attachments/assets/8870713b-4d41-4694-9063-750f946d1567" />
+<img width="1801" height="1636" alt="Frame 8" src="https://github.com/user-attachments/assets/d978edd2-3207-4a47-a6b0-2694b44710a3" />
 
 ---
 
