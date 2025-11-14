@@ -1,5 +1,7 @@
 # 🌸 EverBloom — Full-Stack Floral Management & E-Commerce Platform
 
+![Hero](https://github.com/user-attachments/assets/40576841-c4e0-483a-b3ef-11814a2277cd)
+
 [![Stars](https://img.shields.io/github/stars/OpenWindow231312/EverBloom)](https://github.com/OpenWindow231312/EverBloom/stargazers)
 [![Forks](https://img.shields.io/github/forks/OpenWindow231312/EverBloom)](https://github.com/OpenWindow231312/EverBloom/network/members)
 ![GitHub repo size](https://img.shields.io/github/repo-size/OpenWindow231312/EverBloom)
@@ -30,8 +32,6 @@
 
 EverBloom is a full-stack floral management and e-commerce application that connects **buyers, florists, and farm suppliers** through a unified digital ecosystem.  
 Built with React, Node.js, Express, MySQL (AlwaysData), and deployed via Vercel + Render — EverBloom supports **inventory management, harvest tracking, e-commerce, dashboards, roles**, and more.
-
-<img width="4098" height="2400" alt="Everbloom Dashboard Front image" src="https://github.com/user-attachments/assets/f9b27a79-c3cd-483a-8182-5e00b915d024" />
 
 ---
 
@@ -190,20 +190,8 @@ Installed in `/public/index.html`.
 
 # 🖼️ Mockups & Screens
 
-Add your mockups to GitHub and they will appear here.
-
-### Dashboard + Management Screens  
-- Stock  
-- Harvest  
-- Inventory  
-- Orders  
-- Users  
-
-### Shopfront Screens  
-- Homepage  
-- Product cards  
-- Cart  
-- Checkout  
+![Overview](https://github.com/user-attachments/assets/861af038-49cf-4222-82ce-e3e81d6900de)
+<img width="8332" height="7538" alt="Frame e6" src="https://github.com/user-attachments/assets/a8913f57-6ed3-4be5-bb07-ea8621596c01" />
 
 ---
 
