@@ -67,7 +67,7 @@ function NavBar() {
 
   // ✅ Navigate to flower details or shop page
   const handleResultClick = (flowerId) => {
-    navigate(`/shop/${flowerId}`);
+    navigate(`/product/${flowerId}`);
     setSearchQuery("");
     setShowResults(false);
   };

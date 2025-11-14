@@ -237,6 +237,20 @@ export default function DashboardOrders() {
                         onChange={(e) =>
                           updateStatus(o.order_id, e.target.value)
                         }
+                        style={{
+                          background:
+                            o.status === "Pending"
+                              ? "#f0ad4e"
+                              : o.status === "Out for Delivery"
+                              ? "#FCB207"
+                              : o.status === "Delivered"
+                              ? "#5cb85c"
+                              : o.status === "Cancelled"
+                              ? "#d9534f"
+                              : "#fafafa",
+                          color:
+                            o.status === "Out for Delivery" ? "#333" : "white",
+                        }}
                       >
                         <option value="Pending">Pending</option>
                         <option value="Out for Delivery">

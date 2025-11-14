@@ -158,14 +158,40 @@
 
 /* ---------- 🔽 Status Dropdown ---------- */
 .status-dropdown {
-    border: 1px solid #ddd;
-    border-radius: 999px;
-    background: #fafafa;
+    border: 2px solid #ddd;
+    border-radius: 8px;
     font-family: "Poppins", sans-serif;
     font-size: 0.85rem;
-    padding: 6px 10px;
+    padding: 8px 12px;
     cursor: pointer;
     transition: all 0.25s ease;
+    font-weight: 600;
+    color: white;
+}
+
+/* Color-code the dropdown based on the selected value */
+.status-dropdown option[value="Pending"],
+.status-dropdown[value="Pending"] {
+    background: #f0ad4e;
+    color: white;
+}
+
+.status-dropdown option[value="Out for Delivery"],
+.status-dropdown[value="Out for Delivery"] {
+    background: #FCB207;
+    color: #333;
+}
+
+.status-dropdown option[value="Delivered"],
+.status-dropdown[value="Delivered"] {
+    background: #5cb85c;
+    color: white;
+}
+
+.status-dropdown option[value="Cancelled"],
+.status-dropdown[value="Cancelled"] {
+    background: #d9534f;
+    color: white;
 }
 
 .status-dropdown:focus {
