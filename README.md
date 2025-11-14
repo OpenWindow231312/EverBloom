@@ -223,7 +223,9 @@ Add your mockups to GitHub and they will appear here.
 **Developer:** Anika de Beer  
 **Institution:** Open Window Institute  
 **Degree:** Bachelor of Creative Technologies  
-**Project:** DV200 — *EverBloom*  
+**Project:** DV200 — *EverBloom* 
+**Lecturer:** Tsungai Katsuro
+
 
 ---
 
