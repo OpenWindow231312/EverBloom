@@ -208,12 +208,7 @@ Installed in `/public/index.html`.
 
 # 👩‍💻 Credits
 
-**Developer:** Anika de Beer  
-**Institution:** Open Window Institute  
-**Degree:** Bachelor of Creative Technologies  
-**Project:** DV200 — *EverBloom* 
-**Lecturer:** Tsungai Katsuro
-
+![anika de beer credits](https://github.com/user-attachments/assets/723db876-132c-4920-b4c9-39c77ce3abde)
 
 ---
 
