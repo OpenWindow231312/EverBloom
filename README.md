@@ -208,7 +208,7 @@ Installed in `/public/index.html`.
 
 # 👩‍💻 Credits
 
-![anika de beer credits](https://github.com/user-attachments/assets/723db876-132c-4920-b4c9-39c77ce3abde)
+<img width="1599" height="428" alt="Desktop - 2" src="https://github.com/user-attachments/assets/9d292dcc-3513-46f5-84db-2fc97706c410" />
 
 ---
 
