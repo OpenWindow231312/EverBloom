@@ -72,8 +72,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-left: 40px;
-    /* ✅ keep consistent spacing */
 }
 
 .dashboard-topbar h2 {
