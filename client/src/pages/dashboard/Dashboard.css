@@ -9,6 +9,8 @@
     font-family: "Poppins", sans-serif;
 }
 
+c
+
 /* Sidebar */
 .dashboard-sidebar {
     width: 240px;
@@ -351,7 +353,7 @@
 .overview-card {
     background: var(--white);
     border-radius: 16px;
-    padding: 20px;
+    padding: 30px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     text-align: center;
     transition: all 0.2s ease;
