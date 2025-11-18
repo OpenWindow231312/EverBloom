@@ -1,10 +1,12 @@
 // ========================================
 // 🌸 EverBloom — Auth Utility (Final Version)
 // ========================================
-const API_URL =
-  import.meta.env?.VITE_API_URL ||
-  process.env.REACT_APP_API_URL ||
-  "http://localhost:5001";
+
+// ✅ Detect environment and use correct backend URL
+const isLocal = window.location.hostname.includes("localhost");
+const API_URL = isLocal
+  ? "http://localhost:5001" // Local dev backend
+  : "https://everbloom-backend.onrender.com"; // Production backend
 
 // ✅ Check if user is authenticated
 export function isAuthenticated() {
