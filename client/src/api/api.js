@@ -9,7 +9,7 @@ const isLocal = window.location.hostname.includes("localhost");
 // ✅ Correct backend URLs for both environments
 const API_URL = isLocal
   ? "http://localhost:5001" // Local dev backend
-  : "https://everbloom.onrender.com"; // ✅ Your actual Render backend (no -backend subdomain)
+  : "https://everbloom-backend.onrender.com"; // ✅ Your actual Render backend
 
 // 🪴 Create axios instance
 const api = axios.create({
